@@ -1,7 +1,9 @@
 package States;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.input.GestureDetector;
 
 /**
  * Created by Evenilink on 27/04/2016.

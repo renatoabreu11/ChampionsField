@@ -1,6 +1,7 @@
 package States;
 
 import com.badlogic.gdx.ApplicationListener;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
@@ -11,10 +12,14 @@ import com.badlogic.gdx.input.GestureDetector;
 public abstract class State {
     protected OrthographicCamera cam;
     protected GameStateManager gsm;
+    protected float width;
+    protected float height;
 
     protected State(GameStateManager gsm) {
         this.gsm = gsm;
         cam = new OrthographicCamera();
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
     }
 
     protected abstract void handleInput();

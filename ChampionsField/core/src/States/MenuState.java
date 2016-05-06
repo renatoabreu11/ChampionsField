@@ -13,8 +13,6 @@ import com.badlogic.gdx.math.Vector2;
 public class MenuState extends State implements ApplicationListener, GestureDetector.GestureListener {
     private SpriteBatch sb;
     private Texture background;
-    private float width;
-    private float height;
 
     class Button {
         float x;
@@ -32,8 +30,6 @@ public class MenuState extends State implements ApplicationListener, GestureDete
 
         sb = new SpriteBatch();
         background = new Texture("MenuBackground.jpg");
-        width = Gdx.graphics.getWidth();
-        height = Gdx.graphics.getHeight();
         playBtn = new Button();
         exitBtn = new Button();
 

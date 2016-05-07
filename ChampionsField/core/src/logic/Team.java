@@ -18,7 +18,7 @@ public class Team {
 
         players = new ArrayList<Player>();
         for(int i = 0; i < numPlayers; i++)
-            players.add(new Player(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2));
+            players.add(new Player(Gdx.graphics.getWidth() / 2 - 100, i * 300));
     }
 
     public void render(SpriteBatch sb) {

@@ -17,8 +17,9 @@ public class Team {
         texture = new Texture("Player.png");
 
         players = new ArrayList<Player>();
-        for(int i = 0; i < numPlayers; i++)
-            players.add(new Player(Gdx.graphics.getWidth() / 2 - 100, i * 300));
+        players.add(new Player(Gdx.graphics.getWidth() / 2 - 100, 0 * 300, true));
+        for(int i = 1; i < numPlayers; i++)
+            players.add(new Player(Gdx.graphics.getWidth() / 2 - 100, i * 300, false));
     }
 
     public void render(SpriteBatch sb) {
@@ -29,8 +30,10 @@ public class Team {
     }
 
     public void updatePlayers() {
-        for(int i = 0; i < players.size(); i++)
+        for(int i = 0; i < players.size(); i++) {
+            players.get(i).updateMovement();
             players.get(i).updateCollider();
+        }
     }
 
     public ArrayList<Player> getPlayers() {

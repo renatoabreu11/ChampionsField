@@ -16,51 +16,23 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
  */
 public class Player implements GestureDetector.GestureListener{
     private Vector2 position;
+    private Vector2 lastPosition;
     private Texture texture;
     private float speed;
     private float radius;
     private Circle collider;
+    private boolean controlledPlayer;
 
-    private Stage stage;
-    private Touchpad touchpad;
-    private Touchpad.TouchpadStyle touchpadStyle;
-    private Skin touchpadSkin;
-    private Drawable touchBackground;
-    private Drawable touchKnob;
-
-    public Player(float xStartPosition, float yStartPosition) {
+    public Player(float xStartPosition, float yStartPosition, boolean controlledPlayer) {
         position = new Vector2();
         position.x = xStartPosition;
         position.y = yStartPosition;
+        lastPosition = new Vector2();
         texture = new Texture("Player.png");
         speed = 5f;
         radius = 32 / 2;
         collider = new Circle(xStartPosition, yStartPosition, radius);
-
-        //Create a touchpad skin
-        touchpadSkin = new Skin();
-        //Set background image
-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-        //Set knob image
-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-        //Create TouchPad Style
-        touchpadStyle = new Touchpad.TouchpadStyle();
-        //Create Drawable's from TouchPad skin
-        touchBackground = touchpadSkin.getDrawable("touchBackground");
-        touchKnob = touchpadSkin.getDrawable("touchKnob");
-        //Apply the Drawables to the TouchPad Style
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
-        //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 200, 200);
-
-        //Create a Stage and add TouchPad
-        stage = new Stage();
-        //stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true, batch);
-        stage.addActor(touchpad);
-        Gdx.input.setInputProcessor(stage);
+        this.controlledPlayer = controlledPlayer;
     }
 
     public Vector2 getPosition() {
@@ -79,11 +51,22 @@ public class Player implements GestureDetector.GestureListener{
         return radius;
     }
 
+    public Vector2 getLastPosition() {
+        return lastPosition;
+    }
+
     public void setPosition(float x, float y) {
         position.x = x;
         position.y = y;
         collider.setX(position.x + radius);
-        collider.setY(position.y + radius);    }
+        collider.setY(position.y + radius);
+    }
+
+    public void setPosition(Vector2 pos) {
+        position = pos;
+        collider.setX(position.x + radius);
+        collider.setY(position.y + radius);
+    }
 
     public void setPositionX(float x) {
         position.x = x;
@@ -93,6 +76,18 @@ public class Player implements GestureDetector.GestureListener{
     public void setPositionY(float y) {
         position.y = y;
         collider.setY(y + radius);
+    }
+
+    public void setLastPosition(Vector2 lastPosition) {
+        this.lastPosition = lastPosition;
+    }
+
+    public void updateMovement() {
+        lastPosition = position;
+
+        if(!controlledPlayer) {
+            position.x++;
+        }
     }
 
     public void updateCollider() {
@@ -141,13 +136,16 @@ public class Player implements GestureDetector.GestureListener{
     }
 
     public void render(SpriteBatch sb) {
-        //Move blockSprite with TouchPad
-        position.x = position.x + touchpad.getKnobPercentX() * speed;
-        position.y = position.y + touchpad.getKnobPercentY() * speed;
-
-        //Draw
         sb.draw(texture, position.x, position.y, 32, 32);
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+    }
+
+
+    //This need to be redefined, it's not good
+    @Override
+    public boolean equals(Object obj) {
+        Player p = (Player) obj;
+        if(position.x == p.getPosition().x && position.y == p.getPosition().y)
+            return true;
+        return false;
     }
 }

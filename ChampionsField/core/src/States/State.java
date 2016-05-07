@@ -20,6 +20,7 @@ public abstract class State {
         cam = new OrthographicCamera();
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
+        cam.setToOrtho(true);
     }
 
     protected abstract void handleInput();

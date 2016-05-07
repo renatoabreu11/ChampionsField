@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -17,6 +18,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 public class Player implements GestureDetector.GestureListener{
     private Vector2 position;
     private Texture texture;
+    private float speed;
+    private float radius;
+    private Circle collider;
 
     private Stage stage;
     private Touchpad touchpad;
@@ -30,9 +34,9 @@ public class Player implements GestureDetector.GestureListener{
         position.x = xStartPosition;
         position.y = yStartPosition;
         texture = new Texture("Player.png");
-
-        GestureDetector gd = new GestureDetector(this);
-        Gdx.input.setInputProcessor(gd);
+        speed = 5f;
+        radius = 32 / 2;
+        collider = new Circle(xStartPosition, yStartPosition, radius);
 
         //Create a touchpad skin
         touchpadSkin = new Skin();
@@ -62,6 +66,39 @@ public class Player implements GestureDetector.GestureListener{
 
     public Vector2 getPosition() {
         return position;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public Circle getCollider() {
+        return collider;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setPosition(float x, float y) {
+        position.x = x;
+        position.y = y;
+        collider.setX(position.x + radius);
+        collider.setY(position.y + radius);    }
+
+    public void setPositionX(float x) {
+        position.x = x;
+        collider.setX(x + radius);
+    }
+
+    public void setPositionY(float y) {
+        position.y = y;
+        collider.setY(y + radius);
+    }
+
+    public void updateCollider() {
+        collider.setX(position.x + radius);
+        collider.setY(position.y + radius);
     }
 
     @Override
@@ -106,8 +143,8 @@ public class Player implements GestureDetector.GestureListener{
 
     public void render(SpriteBatch sb) {
         //Move blockSprite with TouchPad
-        position.x = position.x + touchpad.getKnobPercentX()*5;
-        position.y = position.y + touchpad.getKnobPercentY()*5;
+        position.x = position.x + touchpad.getKnobPercentX() * speed;
+        position.y = position.y + touchpad.getKnobPercentY() * speed;
 
         //Draw
         sb.draw(texture, position.x, position.y, 32, 32);

@@ -81,7 +81,7 @@ public class Match {
 
     public void render(SpriteBatch sb) {
         sb.draw(field.getTexture(), 0, 0, field.width, field.height);
-        sb.draw(ball.getTexture(), ball.position.x, ball.position.y, ball.size, ball.size);
+        ball.render(sb);
         homeTeam.render(sb);
         visitorTeam.render(sb);
     }

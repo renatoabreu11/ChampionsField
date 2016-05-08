@@ -26,7 +26,7 @@ public class MenuState extends State implements ApplicationListener, GestureDete
         super(gsm);
 
         sb = new SpriteBatch();
-        background = new Texture("Field.jpg");
+        background = new Texture("Field.png");
         playBtn = new Button();
         exitBtn = new Button();
 

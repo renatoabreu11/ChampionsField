@@ -36,10 +36,8 @@ public class Team {
     }
 
     public void controlPlayer(int index){
-        for(int i = 0; i < players.size(); i++) {
-            if(i == index)
-                players.get(i).setControlledPlayer(true);
-        }
+        if(index >= 0 && index <= players.size() - 1)
+            players.get(index).setControlledPlayer(true);
     }
 
     public void render(SpriteBatch sb) {
@@ -74,7 +72,6 @@ public class Team {
                     }
                  }
             }
-            players.get(i).updateCollider();
         }
     }
 

@@ -12,7 +12,7 @@ public class Match {
     private Ball ball;
 
     public Match(float fieldWidth, float fieldHeight, float playersSize, int numberOfPlayers){
-        field = new Field("Field.jpg", fieldWidth, fieldHeight);
+        field = new Field("Field.png", fieldWidth, fieldHeight);
         Random r = new Random();
         int aux = r.nextInt(2);
         if(aux == 0){
@@ -27,14 +27,15 @@ public class Match {
     }
 
     public void updateMatch(float x, float y){
-        homeTeam.updatePlayers();
         homeTeam.updateControlledPlayer(x, y);
-        checkFieldCollisions(homeTeam);
-        checkVisitorTeamCollisions();
-        visitorTeam.updatePlayers();
         visitorTeam.updateControlledPlayer(x, y);
+        homeTeam.updatePlayers();
+        visitorTeam.updatePlayers();
+        checkFieldCollisions(homeTeam);
         checkFieldCollisions(visitorTeam);
         checkHomeTeamCollisions();
+        checkVisitorTeamCollisions();
+        checkBallCollisions();
     }
 
     void checkFieldCollisions(Team t) {
@@ -43,9 +44,9 @@ public class Match {
         for(int i = 0; i < t.getNumberPlayers(); i++){
             player = t.players.get(i);
             fieldLeft = player.getCollider().x - player.getRadius();
-            fieldRight = field.width - player.getCollider().x - player.getRadius();        //width of the field
+            fieldRight = field.width - player.getCollider().x - player.getRadius();
             fieldTop = player.getCollider().y - player.getRadius();
-            fieldBottom = field.height - player.getCollider().y - player.getRadius();      //height of the field
+            fieldBottom = field.height - player.getCollider().y - player.getRadius();
 
             if (fieldLeft < 0)
                 player.setPosition(0, player.position.y);
@@ -79,11 +80,26 @@ public class Match {
         }
     }
 
+    void checkBallCollisions() {
+        for(int i = 0; i < homeTeam.players.size(); i++) {
+            if(homeTeam.players.get(i).getCollider().overlaps(ball.getCollider())) {
+                System.out.println("Posicao inicial: x = " + homeTeam.players.get(i).position.x + ", y = " + homeTeam.players.get(i).position.y + "\n");
+                homeTeam.players.get(i).setLastPosition();
+                System.out.println("Posicao actual: x = " + homeTeam.players.get(i).position.x + ", y = " + homeTeam.players.get(i).position.y + "\n\n");
+            }
+        }
+
+        for(int i = 0; i < visitorTeam.players.size(); i++) {
+            if(visitorTeam.players.get(i).getCollider().overlaps(ball.getCollider()))
+                visitorTeam.players.get(i).setLastPosition();
+        }
+    }
+
     public void render(SpriteBatch sb) {
         sb.draw(field.getTexture(), 0, 0, field.width, field.height);
-        ball.render(sb);
         homeTeam.render(sb);
         visitorTeam.render(sb);
+        ball.render(sb);
     }
 
 }

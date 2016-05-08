@@ -78,9 +78,11 @@ public class Player implements GestureDetector.GestureListener{
     }
 
     public void updatePosition(float x, float y) {
+        System.out.println("Posicao antiga: x = " + position.x + ", y = " + position.y + "\n");
         lastPosition = position;
         position.x += x;
         position.y += y;
+        System.out.println("Posicao actual: x = " + position.x + ", y = " + position.y + "\n\n");
         updateCollider();
     }
 

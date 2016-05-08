@@ -11,12 +11,14 @@ public class Ball {
     private Animation ballAnim;
     Vector2 position;
     int size;
+    float speed;
     private float elapsedTime = 0;
 
     public Ball(float width, float height, int size){
         ballTex = new TextureAtlas("SoccerBall.atlas");
+        speed = 0;
         ballAnim = new Animation(1/15f, ballTex.getRegions());
-        position = new Vector2(width/2 - size / 2, height/2 - size / 2);
+        position = new Vector2(width/2 - size/2, height/2);
         this.size = size;
     }
 
@@ -26,7 +28,7 @@ public class Ball {
 
     public void render(SpriteBatch sb) {
         elapsedTime += Gdx.graphics.getDeltaTime();
-        sb.draw(ballAnim.getKeyFrame(elapsedTime, true), 0, 0);
+        sb.draw(ballAnim.getKeyFrame(elapsedTime, true), position.x, position.y, size, size);
     }
 
 

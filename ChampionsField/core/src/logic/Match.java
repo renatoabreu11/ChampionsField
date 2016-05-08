@@ -22,7 +22,7 @@ public class Match {
             homeTeam = new Team(numberOfPlayers, playersSize, "Benfica", Team.TeamState.Defending, fieldHeight, fieldWidth);
             visitorTeam = new Team(numberOfPlayers, playersSize, "Porto", Team.TeamState.Attacking, fieldHeight, fieldWidth);
         }
-        ball = new Ball(fieldWidth, fieldHeight, 40);
+        ball = new Ball(fieldWidth, fieldHeight, 20);
         homeTeam.controlPlayer(0);
     }
 

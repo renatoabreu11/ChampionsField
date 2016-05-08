@@ -7,9 +7,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 
-/**
- * Created by Evenilink on 27/04/2016.
- */
 public class MenuState extends State implements ApplicationListener, GestureDetector.GestureListener {
     private SpriteBatch sb;
     private Texture background;
@@ -29,7 +26,7 @@ public class MenuState extends State implements ApplicationListener, GestureDete
         super(gsm);
 
         sb = new SpriteBatch();
-        background = new Texture("MenuBackground.jpg");
+        background = new Texture("Field.jpg");
         playBtn = new Button();
         exitBtn = new Button();
 

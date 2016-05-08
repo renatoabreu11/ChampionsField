@@ -21,10 +21,10 @@ public class ChampionsField extends ApplicationAdapter {
 		gsm = new GameStateManager();
 		Gdx.gl.glClearColor(1, 0, 0, 1);
 
-		crownNoise = Gdx.audio.newMusic(Gdx.files.internal("CrownNoise.mp3"));
-		crownNoise.setVolume(0.3f);
-		crownNoise.setLooping(true);
-		crownNoise.play();
+		//crownNoise = Gdx.audio.newMusic(Gdx.files.internal("CrownNoise.mp3"));
+		//crownNoise.setVolume(0.3f);
+		//crownNoise.setLooping(true);
+		//crownNoise.play();
 		gsm.push(new MenuState(gsm));
 	}
 

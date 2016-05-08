@@ -11,32 +11,51 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
-/**
- * Created by Evenilink on 02/05/2016.
- */
+import java.util.Random;
+
 public class Player implements GestureDetector.GestureListener{
-    private Vector2 position;
-    private Vector2 lastPosition;
+
+    enum PlayerState{
+        Moving, Shooting, Idle, Spectating
+    }
+    Vector2 lastPosition;
+    Vector2 position;
     private Texture texture;
-    private float speed;
+    float speed;
     private float radius;
     private Circle collider;
     private boolean controlledPlayer;
+    int score;
+    String name;
+    private PlayerState state;
 
-    public Player(float xStartPosition, float yStartPosition, boolean controlledPlayer) {
-        position = new Vector2();
-        position.x = xStartPosition;
-        position.y = yStartPosition;
-        lastPosition = new Vector2();
+    public Player(float xStartPosition, float yStartPosition, String name, float radius, boolean controlledPlayer) {
+        lastPosition = new Vector2(xStartPosition, yStartPosition);
+        position = new Vector2(xStartPosition, yStartPosition);
         texture = new Texture("Player.png");
         speed = 5f;
-        radius = 32 / 2;
+        this.controlledPlayer = controlledPlayer;
+        this.radius = radius / 2;
         collider = new Circle(xStartPosition, yStartPosition, radius);
+        this.score = 0;
+        this.name = name;
+        this.state = PlayerState.Idle;
+    }
+
+    public boolean isControlledPlayer() {
+        return controlledPlayer;
+    }
+
+    public void setControlledPlayer(boolean controlledPlayer) {
         this.controlledPlayer = controlledPlayer;
     }
 
-    public Vector2 getPosition() {
-        return position;
+    public PlayerState getState() {
+        return state;
+    }
+
+    public void setState(PlayerState state) {
+        this.state = state;
     }
 
     public Texture getTexture() {
@@ -51,43 +70,35 @@ public class Player implements GestureDetector.GestureListener{
         return radius;
     }
 
-    public Vector2 getLastPosition() {
-        return lastPosition;
-    }
-
     public void setPosition(float x, float y) {
+        lastPosition = position;
         position.x = x;
         position.y = y;
-        collider.setX(position.x + radius);
-        collider.setY(position.y + radius);
+        updateCollider();
+    }
+
+    public void updatePosition(float x, float y) {
+        lastPosition = position;
+        position.x += x;
+        position.y += y;
+        updateCollider();
     }
 
     public void setPosition(Vector2 pos) {
-        position = pos;
-        collider.setX(position.x + radius);
-        collider.setY(position.y + radius);
-    }
-
-    public void setPositionX(float x) {
-        position.x = x;
-        collider.setX(x + radius);
-    }
-
-    public void setPositionY(float y) {
-        position.y = y;
-        collider.setY(y + radius);
-    }
-
-    public void setLastPosition(Vector2 lastPosition) {
-        this.lastPosition = lastPosition;
-    }
-
-    public void updateMovement() {
         lastPosition = position;
+        position = pos;
+        updateCollider();
+    }
 
-        if(!controlledPlayer) {
-            position.x++;
-        }
+    public void move() {
+        Random r = new Random();
+        int x = r.nextInt(5);
+        int y = r.nextInt(5);
+        updatePosition(x - 2, y - 2);
+    }
+
+    public void setLastPosition() {
+        position = lastPosition;
     }
 
     public void updateCollider() {
@@ -144,8 +155,9 @@ public class Player implements GestureDetector.GestureListener{
     @Override
     public boolean equals(Object obj) {
         Player p = (Player) obj;
-        if(position.x == p.getPosition().x && position.y == p.getPosition().y)
+        if((this.position == p.position) && this.name == p.name && this.score == p.score) {
             return true;
+        }
         return false;
     }
 }

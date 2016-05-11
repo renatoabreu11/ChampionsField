@@ -1,44 +1,76 @@
 package logic;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 
-public class Ball {
-    private TextureAtlas ballTex;
-    private Animation ballAnim;
+public class Ball{
     Vector2 position;
-    int size;
     float speed;
-    private float deltaTime = 0;
-    private Circle collider;
-    private float radius;
+    float radius;
+    Body body;
 
-    public Ball(float width, float height, int size){
-        ballTex = new TextureAtlas("SoccerBall.atlas");
+    public Ball(float xPosition, float yPosition, int size, World w){
+        position = new Vector2(xPosition * 0.01f, yPosition * 0.01f);
         speed = 0;
-        ballAnim = new Animation(1/15f, ballTex.getRegions());
-        position = new Vector2(width/2 - size/2, height/2 - size);
-        this.size = size;
         radius = size / 2;
-        collider = new Circle(position.x + radius / 2, position.y + radius / 2, radius);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(position.x, position.y);
+        body = w.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius * 0.01f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.25f;
+        fixtureDef.restitution = 0.8f;
+
+        Fixture fixture = body.createFixture(fixtureDef);
+        shape.dispose();
     }
 
-    public TextureAtlas getTexture() {
-        return ballTex;
+    public void setPosition(float x, float y) {
+        position.x = x;
+        position.y = y;
     }
 
-    public Circle getCollider() {
-        return collider;
+    public Vector2 getPosition() {
+        return position;
     }
 
-    public void render(SpriteBatch sb) {
-        deltaTime += Gdx.graphics.getDeltaTime();
-        sb.draw(ballAnim.getKeyFrame(deltaTime, true), position.x, position.y, size, size);
+    public void setPosition(Vector2 position) {
+        this.position = position;
     }
 
+    public float getSpeed() {
+        return speed;
+    }
 
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    public Body getBody() {
+        return body;
+    }
+
+    public void setPositionToBody(){
+        setPosition(body.getPosition());
+    }
 }

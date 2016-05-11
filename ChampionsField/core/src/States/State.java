@@ -1,14 +1,9 @@
 package States;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.input.GestureDetector;
 
-/**
- * Created by Evenilink on 27/04/2016.
- */
 public abstract class State {
     protected OrthographicCamera cam;
     protected GameStateManager gsm;
@@ -17,7 +12,7 @@ public abstract class State {
 
     protected State(GameStateManager gsm) {
         this.gsm = gsm;
-        cam = new OrthographicCamera();
+        cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
         cam.setToOrtho(true);       //top left corner is 0,0

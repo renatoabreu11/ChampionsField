@@ -1,45 +1,46 @@
 package logic;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.input.GestureDetector;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
-
-import java.util.Random;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.World;
 
 public class Player implements GestureDetector.GestureListener{
-
-    enum PlayerState{
-        Moving, Shooting, Idle, Spectating
-    }
-    Vector2 lastPosition;
     Vector2 position;
-    private Texture texture;
     float speed;
-    private float radius;
-    private Circle collider;
+    float radius;
     private boolean controlledPlayer;
     int score;
     String name;
-    private PlayerState state;
+    Body body;
 
-    public Player(float xStartPosition, float yStartPosition, String name, float radius, boolean controlledPlayer) {
-        lastPosition = new Vector2(xStartPosition, yStartPosition);
-        position = new Vector2(xStartPosition, yStartPosition);
-        texture = new Texture("Player.png");
+    public Player(float xPosition, float yPosition, String name,int size, boolean controlledPlayer, World w) {
+        position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         speed = 5f;
         this.controlledPlayer = controlledPlayer;
-        this.radius = radius / 2;
-        collider = new Circle(xStartPosition, yStartPosition, radius);
+        this.radius = size/2;
         this.score = 0;
         this.name = name;
-        this.state = PlayerState.Idle;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(position.x, position.y);
+        body = w.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius * 0.01f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.25f;
+        fixtureDef.restitution = 1f;
+        Fixture fixture = body.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     public boolean isControlledPlayer() {
@@ -50,62 +51,42 @@ public class Player implements GestureDetector.GestureListener{
         this.controlledPlayer = controlledPlayer;
     }
 
-    public PlayerState getState() {
-        return state;
-    }
-
-    public void setState(PlayerState state) {
-        this.state = state;
-    }
-
-    public Texture getTexture() {
-        return texture;
-    }
-
-    public Circle getCollider() {
-        return collider;
-    }
-
     public float getRadius() {
         return radius;
     }
 
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
     public void setPosition(float x, float y) {
-        lastPosition = position;
         position.x = x;
         position.y = y;
-        updateCollider();
     }
 
     public void updatePosition(float x, float y) {
-        System.out.println("Posicao antiga: x = " + position.x + ", y = " + position.y + "\n");
-        lastPosition = position;
         position.x += x;
         position.y += y;
-        System.out.println("Posicao actual: x = " + position.x + ", y = " + position.y + "\n\n");
-        updateCollider();
     }
 
     public void setPosition(Vector2 pos) {
-        lastPosition = position;
         position = pos;
-        updateCollider();
     }
 
-    public void move() {
-        Random r = new Random();
-        int x = r.nextInt(5);
-        int y = r.nextInt(5);
-        updatePosition(x - 2, y - 2);
+    public float getSpeed() {
+        return speed;
     }
 
-    public void setLastPosition() {
-        position = lastPosition;
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 
-    public void updateCollider() {
-        collider.setX(position.x + radius);
-        collider.setY(position.y + radius);
+    public Body getBody() {
+        return body;
+    }
+
+    public void setBody(Body body) {
+        this.body = body;
     }
 
     @Override
@@ -148,11 +129,6 @@ public class Player implements GestureDetector.GestureListener{
         return false;
     }
 
-    public void render(SpriteBatch sb) {
-        sb.draw(texture, position.x, position.y, 32, 32);
-    }
-
-
     //This need to be redefined, it's not good
     @Override
     public boolean equals(Object obj) {
@@ -162,4 +138,21 @@ public class Player implements GestureDetector.GestureListener{
         }
         return false;
     }
+
+    public Vector2 getPosition() {
+        return position;
+    }
+
+    public void setPositionToBody(){
+        setPosition(body.getPosition());
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
 }

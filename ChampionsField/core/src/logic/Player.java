@@ -1,5 +1,6 @@
 package logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -9,6 +10,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.util.ArrayList;
+
 public class Player implements GestureDetector.GestureListener{
     Vector2 position;
     float speed;
@@ -17,6 +20,11 @@ public class Player implements GestureDetector.GestureListener{
     int score;
     String name;
     Body body;
+
+    //Pan movement detection
+    private Vector2 panPosition;
+    private boolean changingPath;
+    ArrayList<Vector2> path;
 
     public Player(float xPosition, float yPosition, String name,int size, boolean controlledPlayer, World w) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
@@ -37,10 +45,14 @@ public class Player implements GestureDetector.GestureListener{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.25f;
+        fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 1f;
         Fixture fixture = body.createFixture(fixtureDef);
         shape.dispose();
+
+        panPosition = new Vector2();
+        changingPath = false;
+        path = new ArrayList<Vector2>();
     }
 
     public boolean isControlledPlayer() {
@@ -64,11 +76,6 @@ public class Player implements GestureDetector.GestureListener{
         position.y = y;
     }
 
-    public void updatePosition(float x, float y) {
-        position.x += x;
-        position.y += y;
-    }
-
     public void setPosition(Vector2 pos) {
         position = pos;
     }
@@ -87,6 +94,33 @@ public class Player implements GestureDetector.GestureListener{
 
     public void setBody(Body body) {
         this.body = body;
+    }
+
+    public ArrayList<Vector2> getPath() {
+        return path;
+    }
+
+    public boolean isWaypointReached() {
+        return path.get(0).x - position.x <= speed / 3 * Gdx.graphics.getDeltaTime() && path.get(0).y - position.y <= speed / 3 * Gdx.graphics.getDeltaTime();
+    }
+
+    public void updatePosition(float x, float y) {
+        position.x += x;
+        position.y += y;
+    }
+
+    public void updatePosition() {
+        if (path.size() != 0) {
+            float angle = (float) Math.atan2(path.get(0).y - position.y, path.get(0).x - position.x);
+            Vector2 velocity = new Vector2((float) Math.cos(angle) * speed * Gdx.graphics.getDeltaTime(), (float) Math.sin(angle) * speed * Gdx.graphics.getDeltaTime());
+
+            position.set(position.x + velocity.x, position.y + velocity.y);
+
+            if (isWaypointReached()) {
+                position.set(path.get(0).x, path.get(0).y);
+                path.remove(0);
+            }
+        }
     }
 
     @Override
@@ -111,12 +145,23 @@ public class Player implements GestureDetector.GestureListener{
 
     @Override
     public boolean pan(float x, float y, float deltaX, float deltaY) {
-        return false;
+        if(changingPath) {
+            panPosition.set(position.x, position.y);
+            for(int i = 0; i < path.size(); i++)
+                path.clear();
+            changingPath = false;
+        }
+
+        panPosition.x += deltaX;
+        panPosition.y -= deltaY;
+        path.add(new Vector2(panPosition.x + deltaX, panPosition.y - deltaY));
+        return true;
     }
 
     @Override
     public boolean panStop(float x, float y, int pointer, int button) {
-        return false;
+        changingPath = true;
+        return true;
     }
 
     @Override

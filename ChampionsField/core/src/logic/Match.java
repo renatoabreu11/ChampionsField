@@ -8,6 +8,9 @@ public class Match{
     private Field field;
     private Team homeTeam;
     private Team visitorTeam;
+    private Goal homeTeamGoal;
+    private Goal visitorTeamGoal;
+
     private Ball ball;
     private int numberOfPlayers;
 
@@ -24,7 +27,13 @@ public class Match{
         this.numberOfPlayers = numberOfPlayers;
         ball = new Ball(0, 0, 24, w);
         field = new Field(w);
-        //homeTeam.controlPlayer(0);
+        homeTeam.controlPlayer(0);
+        homeTeamGoal = new Goal(1, 1, 4, w);
+        visitorTeamGoal = new Goal(1, 1, 4, w);
+    }
+
+    public void updateMatch(float dt) {
+        homeTeam.updateControlledPlayer();
     }
 
     public void updateMatch(float x, float y){

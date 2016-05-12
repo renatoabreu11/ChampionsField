@@ -33,6 +33,15 @@ public class Team {
             players.get(index).setControlledPlayer(true);
     }
 
+    public void updateControlledPlayer() {
+        for(int i = 0; i < players.size(); i++) {
+            if(players.get(i).isControlledPlayer()) {
+                players.get(i).updatePosition();
+                break;
+            }
+        }
+    }
+
     public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).isControlledPlayer()) {

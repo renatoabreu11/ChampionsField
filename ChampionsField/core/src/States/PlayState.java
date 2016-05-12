@@ -62,54 +62,47 @@ public class PlayState extends State implements ApplicationListener{
 
     public PlayState(GameStateManager gsm){
         super(gsm);
-        /***********Touchpad construction************/
-        //Create a touchpad skin
-        touchpadSkin = new Skin();
-        //Set background image
-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-        //Set knob image
-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-        //Create TouchPad Style
-        touchpadStyle = new Touchpad.TouchpadStyle();
-        //Create Drawable's from TouchPad skin
-        touchBackground = touchpadSkin.getDrawable("touchBackground");
-        touchKnob = touchpadSkin.getDrawable("touchKnob");
-        //Apply the Drawables to the TouchPad Style
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
-        //setBounds(x,y,width,height)
-        touchpad.setBounds(15, 15, 200, 200);
 
+        if(gameplayController == 2) {
+            touchpadSkin = new Skin();
+            touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
+            touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
+            touchpadStyle = new Touchpad.TouchpadStyle();
+            //Create Drawable's from TouchPad skin
+            touchBackground = touchpadSkin.getDrawable("touchBackground");
+            touchKnob = touchpadSkin.getDrawable("touchKnob");
+            //Apply the Drawables to the TouchPad Style
+            touchpadStyle.background = touchBackground;
+            touchpadStyle.knob = touchKnob;
+            //Create new TouchPad with the created style
+            touchpad = new Touchpad(10, touchpadStyle);
+            touchpad.setBounds(15, 15, 200, 200);
 
-        //Textures definition
-        ballTexture = new TextureAtlas("SoccerBall.atlas");
-        ballAnimation = new Animation(1/15f, ballTexture.getRegions());
-        fieldTexture = new Texture("Field.png");
-        homeTeamTexture = new Texture("Player.png");
-        visitorTeamTexture = new Texture("Player.png");
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
+            //Create a Stage and add TouchPad
+            stage = new Stage();
+            stage.addActor(touchpad);
+            Gdx.input.setInputProcessor(stage);
+        }
 
-        //Physics World
-        Vector2 gravity = new Vector2(0, 0f);
-        world = new World(gravity, true);
+            //Textures definition
+            ballTexture = new TextureAtlas("SoccerBall.atlas");
+            ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
+            fieldTexture = new Texture("Field.png");
+            homeTeamTexture = new Texture("Player.png");
+            visitorTeamTexture = new Texture("Player.png");
+            font = new BitmapFont();
+            font.setColor(Color.WHITE);
 
-        camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        cam.setToOrtho(true);
-        camera.update();
-        debugRenderer = new Box2DDebugRenderer();
+            //Physics World
+            Vector2 gravity = new Vector2(0, 0f);
+            world = new World(gravity, true);
 
-        match = new Match(32, 4, world);
+            camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
+            cam.setToOrtho(true);
+            camera.update();
+            debugRenderer = new Box2DDebugRenderer();
 
-        //Create a Stage and add TouchPad
-        stage = new Stage();
-        //stage = new Stage(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true, batch);
-        stage.addActor(touchpad);
-        Gdx.input.setInputProcessor(stage);
-        /***********End of Touchpad construction************/
-
+            match = new Match(32, 4, world);
     }
 
 
@@ -176,15 +169,16 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
-        match.updateMatch(touchpad.getKnobPercentX() * 5, touchpad.getKnobPercentY() * 5);
+        if(gameplayController == 1)
+            match.updateMatch(dt);
+        else
+            match.updateMatch(touchpad.getKnobPercentX() * 5, touchpad.getKnobPercentY() * 5);
     }
 
 
     @Override
     public void render(SpriteBatch sb) {
         deltaTime += Gdx.graphics.getDeltaTime();
-        world.step(1f / 60f, 6, 2);
-        debugRenderer.render(world, camera.combined);
         sb.begin();
         sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -211,10 +205,26 @@ public class PlayState extends State implements ApplicationListener{
             font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
         }
 
+        Player controPlayer = null;
+        for(int i = 0; i < homeTeamPlayers.size(); i++) {
+            if(homeTeamPlayers.get(i).isControlledPlayer()) {
+                controPlayer = homeTeamPlayers.get(i);
+                break;
+            }
+        }
+
+        for(int i = 0; i < controPlayer.getPath().size(); i++)
+            sb.draw(homeTeamTexture, controPlayer.getPath().get(i).x, controPlayer.getPath().get(i).y, controPlayer.getRadius() * 2, controPlayer.getRadius() * 2);
+
         sb.end();
 
-        stage.act(Gdx.graphics.getDeltaTime());
-        stage.draw();
+        if(gameplayController == 2) {
+            stage.act(Gdx.graphics.getDeltaTime());
+            stage.draw();
+        }
+
+        world.step(1f / 60f, 6, 2);
+        debugRenderer.render(world, camera.combined);
     }
 
     private Vector2 convertToScreenCoordinates(Player player) {

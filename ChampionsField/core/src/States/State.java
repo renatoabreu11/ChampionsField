@@ -9,6 +9,7 @@ public abstract class State {
     protected GameStateManager gsm;
     protected float width;
     protected float height;
+    protected int gameplayController;       //1 --> pan movement, 2 --> joystick
 
     protected State(GameStateManager gsm) {
         this.gsm = gsm;
@@ -16,6 +17,7 @@ public abstract class State {
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
         cam.setToOrtho(true);       //top left corner is 0,0
+        gameplayController = 2;
     }
 
     protected abstract void handleInput();

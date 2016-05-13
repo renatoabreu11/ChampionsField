@@ -30,10 +30,11 @@ public class Ball{
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.65f;
+        fixtureDef.friction = 0.9f;
         fixtureDef.restitution = 0.8f;
 
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData("Ball");
         shape.dispose();
     }
 

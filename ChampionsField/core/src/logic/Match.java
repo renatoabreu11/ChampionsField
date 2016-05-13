@@ -1,5 +1,6 @@
 package logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Random;
@@ -25,11 +26,11 @@ public class Match{
             visitorTeam = new Team(numberOfPlayers, playersSize, "Porto", Team.TeamState.Attacking, w);
         }
         this.numberOfPlayers = numberOfPlayers;
-        ball = new Ball(0, 0, 24, w);
+        ball = new Ball(-800, 0, 24, w);
         field = new Field(w);
         homeTeam.controlPlayer(0);
-        homeTeamGoal = new Goal(1, 1, 4, w);
-        visitorTeamGoal = new Goal(1, 1, 4, w);
+        homeTeamGoal = new Goal(1, 1, 4, w, "HomeGoal");
+        //visitorTeamGoal = new Goal(1, 1, 4, w, "VisitorGoal");
     }
 
     public void updateMatch(float dt) {
@@ -37,11 +38,14 @@ public class Match{
     }
 
     public void updateMatch(float x, float y){
-        ball.body.setLinearVelocity(x, y);
         homeTeam.updateControlledPlayer(x, y);
         visitorTeam.updateControlledPlayer(x, y);
         homeTeam.updatePlayers();
         visitorTeam.updatePlayers();
+    }
+
+    public void teamScored(Team t) {
+        t.goalScored();
     }
 
     public Ball getBall(){
@@ -68,4 +72,11 @@ public class Match{
         this.numberOfPlayers = numberOfPlayers;
     }
 
+    public int getScoreHomeTeam() {
+        return homeTeam.score;
+    }
+
+    public int getScoreVisitorTeam() {
+        return visitorTeam.score;
+    }
 }

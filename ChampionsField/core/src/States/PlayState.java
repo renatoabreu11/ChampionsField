@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -21,6 +22,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import java.util.ArrayList;
@@ -84,25 +86,26 @@ public class PlayState extends State implements ApplicationListener{
             Gdx.input.setInputProcessor(stage);
         }
 
-            //Textures definition
-            ballTexture = new TextureAtlas("SoccerBall.atlas");
-            ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
-            fieldTexture = new Texture("Field.png");
-            homeTeamTexture = new Texture("Player.png");
-            visitorTeamTexture = new Texture("Player.png");
-            font = new BitmapFont();
-            font.setColor(Color.WHITE);
+        //Textures definition
+        ballTexture = new TextureAtlas("SoccerBall.atlas");
+        ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
+        fieldTexture = new Texture("Field.png");
+        homeTeamTexture = new Texture("Player.png");
+        visitorTeamTexture = new Texture("Player.png");
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
 
-            //Physics World
-            Vector2 gravity = new Vector2(0, 0f);
-            world = new World(gravity, true);
+        //Physics World
+        Vector2 gravity = new Vector2(0, 0f);
+        world = new World(gravity, true);
 
-            camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-            cam.setToOrtho(true);
-            camera.update();
-            debugRenderer = new Box2DDebugRenderer();
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
+        cam.setToOrtho(true);
+        camera.update();
+        debugRenderer = new Box2DDebugRenderer();
 
-            match = new Match(32, 4, world);
+        match = new Match(32, 4, world);
+        createCollisionListener();
     }
 
 
@@ -112,6 +115,14 @@ public class PlayState extends State implements ApplicationListener{
             public void beginContact(Contact contact) {
                 Fixture f1 = contact.getFixtureA();
                 Fixture f2 = contact.getFixtureB();
+
+                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
+                    match.teamScored(match.getVisitorTeam());
+                }
+                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
+                    match.teamScored(match.getHomeTeam());
+                }
+
             }
 
             @Override
@@ -179,6 +190,8 @@ public class PlayState extends State implements ApplicationListener{
     @Override
     public void render(SpriteBatch sb) {
         deltaTime += Gdx.graphics.getDeltaTime();
+        world.step(1f / 60f, 6, 2);
+
         sb.begin();
         sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -216,6 +229,9 @@ public class PlayState extends State implements ApplicationListener{
         for(int i = 0; i < controPlayer.getPath().size(); i++)
             sb.draw(homeTeamTexture, controPlayer.getPath().get(i).x, controPlayer.getPath().get(i).y, controPlayer.getRadius() * 2, controPlayer.getRadius() * 2);
 
+        font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
+        font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
+
         sb.end();
 
         if(gameplayController == 2) {
@@ -223,7 +239,6 @@ public class PlayState extends State implements ApplicationListener{
             stage.draw();
         }
 
-        world.step(1f / 60f, 6, 2);
         debugRenderer.render(world, camera.combined);
     }
 

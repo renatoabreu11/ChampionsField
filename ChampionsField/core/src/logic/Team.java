@@ -45,9 +45,10 @@ public class Team {
     public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).isControlledPlayer()) {
-                players.get(i).updatePosition(x, y);
+                players.get(i).getBody().setLinearVelocity(x, y);
+                /*players.get(i).updatePosition(x, y);
                 for (int j = 0; j < players.size(); j++) {
-                }
+                }*/
             }
         }
     }
@@ -59,6 +60,10 @@ public class Team {
                  }
             }
         }
+    }
+
+    public void goalScored() {
+        score++;
     }
 
     public ArrayList<Player> getPlayers() {

@@ -152,8 +152,8 @@ public class Player implements GestureDetector.GestureListener{
             changingPath = false;
         }
 
-        panPosition.x += deltaX;
-        panPosition.y -= deltaY;
+        panPosition.x += deltaX * 0.01f;
+        panPosition.y -= deltaY * 0.01f;
         path.add(new Vector2(panPosition.x + deltaX, panPosition.y - deltaY));
         return true;
     }

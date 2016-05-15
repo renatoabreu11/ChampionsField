@@ -100,7 +100,7 @@ public class PlayState extends State implements ApplicationListener{
         world = new World(gravity, true);
 
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        cam.setToOrtho(true);
+        cam.setToOrtho(false);
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
 
@@ -184,13 +184,14 @@ public class PlayState extends State implements ApplicationListener{
             match.updateMatch(dt);
         else
             match.updateMatch(touchpad.getKnobPercentX() * 5, touchpad.getKnobPercentY() * 5);
+
+        world.step(1f / 60f, 6, 2);
     }
 
 
     @Override
     public void render(SpriteBatch sb) {
         deltaTime += Gdx.graphics.getDeltaTime();
-        world.step(1f / 60f, 6, 2);
 
         sb.begin();
         sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

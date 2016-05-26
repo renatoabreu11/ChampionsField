@@ -8,11 +8,9 @@ import com.renaros.game.ChampionsField;
 public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new ChampionsField(), config);
-
+        new LwjglApplication(new ChampionsField(), config);
 		config.title = "Champions Field";
-		config.height = Gdx.graphics.getHeight();
 		config.width = Gdx.graphics.getWidth();
-		//config.fullscreen = true;
+        config.height = Gdx.graphics.getHeight();
 	}
 }

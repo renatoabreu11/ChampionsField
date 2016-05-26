@@ -8,6 +8,11 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import static logic.Match.entityMasks.BallMask;
+import static logic.Match.entityMasks.GoalMask;
+import static logic.Match.entityMasks.PlayerMask;
+import static logic.Match.entityMasks.ScreenBordersMask;
+
 public class Ball{
     Vector2 position;
     float speed;
@@ -32,6 +37,8 @@ public class Ball{
         fixtureDef.density = 2.5f;
         fixtureDef.friction = 0.9f;
         fixtureDef.restitution = 0.8f;
+        fixtureDef.filter.categoryBits = BallMask.getMask();
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | GoalMask.getMask() | ScreenBordersMask.getMask());
 
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData("Ball");

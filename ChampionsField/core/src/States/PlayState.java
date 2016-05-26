@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.input.GestureDetector;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -22,12 +21,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import java.util.ArrayList;
 
 import logic.Ball;
+import logic.Goal;
 import logic.Match;
 import logic.Player;
 
@@ -38,6 +37,7 @@ public class PlayState extends State implements ApplicationListener{
     private Texture fieldTexture;
     private Texture homeTeamTexture;
     private Texture visitorTeamTexture;
+    private Texture footballGoalTexture;
     private BitmapFont font;
 
     private float deltaTime = 0;
@@ -89,9 +89,10 @@ public class PlayState extends State implements ApplicationListener{
         //Textures definition
         ballTexture = new TextureAtlas("SoccerBall.atlas");
         ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
-        fieldTexture = new Texture("Field.png");
+        fieldTexture = new Texture("Field.jpg");
         homeTeamTexture = new Texture("Player.png");
         visitorTeamTexture = new Texture("Player.png");
+        footballGoalTexture = new Texture("FootballGoal.png");
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 
@@ -109,21 +110,21 @@ public class PlayState extends State implements ApplicationListener{
     }
 
 
-    private void createCollisionListener() {
-        world.setContactListener(new ContactListener() {
-            @Override
-            public void beginContact(Contact contact) {
-                Fixture f1 = contact.getFixtureA();
-                Fixture f2 = contact.getFixtureB();
+               private void createCollisionListener() {
+                world.setContactListener(new ContactListener() {
+                    @Override
+                    public void beginContact(Contact contact) {
+                        Fixture f1 = contact.getFixtureA();
+                        Fixture f2 = contact.getFixtureB();
 
-                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getVisitorTeam());
-                }
-                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getHomeTeam());
-                }
+                        if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
+                            match.teamScored(match.getVisitorTeam());
+                        }
+                        else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
+                            match.teamScored(match.getHomeTeam());
+                        }
 
-            }
+                    }
 
             @Override
             public void endContact(Contact contact) {
@@ -219,6 +220,10 @@ public class PlayState extends State implements ApplicationListener{
             font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
         }
 
+        Goal g = match.getVisitorTeamGoal();
+        screenPosition = convertToScreenCoordinates(g);
+        sb.draw(footballGoalTexture, screenPosition.x, screenPosition.y, g.getHorizontalLength() * 100f, g.getVerticalLength() * 100f);
+
         Player controPlayer = null;
         for(int i = 0; i < homeTeamPlayers.size(); i++) {
             if(homeTeamPlayers.get(i).isControlledPlayer()) {
@@ -241,6 +246,12 @@ public class PlayState extends State implements ApplicationListener{
         }
 
         debugRenderer.render(world, camera.combined);
+    }
+
+    private Vector2 convertToScreenCoordinates(Goal g) {
+        float x = g.getPosition().x * 100f + Gdx.graphics.getWidth()/2;
+        float y = g.getPosition().y * 100f + Gdx.graphics.getHeight()/2 + g.getVerticalLength()/2;
+        return new Vector2(x, y);
     }
 
     private Vector2 convertToScreenCoordinates(Player player) {

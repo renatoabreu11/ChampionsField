@@ -66,7 +66,7 @@ public class MenuState extends State  {
 
         //Load of all the available fields
         background = new ArrayList<Texture>();
-        background.add(new Texture("Field.png"));
+        background.add(new Texture("Field.jpg"));
         background.add(new Texture("FieldGalaxy.jpg"));
         random = new Random();
         currBack = random.nextInt(background.size());

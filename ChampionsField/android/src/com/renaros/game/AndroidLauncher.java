@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
+import com.renaros.game.ChampionsField;
 
 public class AndroidLauncher extends AndroidApplication {
 	@Override

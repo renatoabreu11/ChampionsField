@@ -4,11 +4,15 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Vector;
+
+import static logic.Match.entityMasks.BallMask;
+import static logic.Match.entityMasks.FootballGoalMask;
+import static logic.Match.entityMasks.PlayerMask;
+import static logic.Match.entityMasks.ScreenBordersMask;
 
 public class Field {
     Body northBorder;
@@ -45,8 +49,10 @@ public class Field {
         fixtureDef1.shape = shape1;
         fixtureDef1.friction = 0;
         fixtureDef1.restitution = 0.5f;
+        fixtureDef1.filter.categoryBits = ScreenBordersMask.getMask();
+        fixtureDef1.filter.maskBits = (short)(PlayerMask.getMask() | FootballGoalMask.getMask() | BallMask.getMask());
 
-        Fixture fixture = southBorder.createFixture(fixtureDef1);
+        southBorder.createFixture(fixtureDef1);
         shape1.dispose();
 
         fixtureDef1.shape = shape2;

@@ -29,9 +29,11 @@ import logic.Ball;
 import logic.Goal;
 import logic.Match;
 import logic.Player;
+import logic.Rain;
 
 public class PlayState extends State implements ApplicationListener{
     //Objects textures
+    private Texture rainTexture;
     private TextureAtlas ballTexture;
     private Animation ballAnimation;
     private Texture fieldTexture;
@@ -40,6 +42,7 @@ public class PlayState extends State implements ApplicationListener{
     private Texture footballGoalTexture;
     private BitmapFont font;
 
+    private Rain rain;
     private float deltaTime = 0;
     static final float WORLD_TO_BOX = 0.01f;
     static final float BOX_TO_WORLD = 100f;
@@ -93,6 +96,8 @@ public class PlayState extends State implements ApplicationListener{
         homeTeamTexture = new Texture("Player.png");
         visitorTeamTexture = new Texture("Player.png");
         footballGoalTexture = new Texture("FootballGoal.png");
+        rainTexture = new Texture("Rain.png");
+        rain = new Rain(width, height);
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 
@@ -186,6 +191,7 @@ public class PlayState extends State implements ApplicationListener{
         else
             match.updateMatch(touchpad.getKnobPercentX() * 5, touchpad.getKnobPercentY() * 5);
 
+        rain.update();
         world.step(1f / 60f, 6, 2);
     }
 
@@ -237,6 +243,9 @@ public class PlayState extends State implements ApplicationListener{
 
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
         font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
+
+        for(int i = 0; i < rain.getRainSize(); i++)
+            sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
 
         sb.end();
 

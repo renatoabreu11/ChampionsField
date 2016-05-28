@@ -76,9 +76,14 @@ public class Match{
 
     public void teamScored(Team t, World w) {
         t.goalScored();
+    }
 
+    public void repositionTeams() {
         homeTeam.repositionTeam();
-        //visitorTeam.repositionTeam();
+    }
+
+    public void getCout() {
+        homeTeam.getCout();
     }
 
     public void stopAllPlayersMotion() {
@@ -92,6 +97,10 @@ public class Match{
 
     public void activateBarriers() {
         field.activateBarriers();
+    }
+
+    public void erasePlayers() {
+        homeTeam.erasePlayers();
     }
 
     public Ball getBall(){

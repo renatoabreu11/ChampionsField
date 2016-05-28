@@ -37,11 +37,20 @@ public class Team {
         }
     }
 
+    public void getCout() {
+        for(int i = 0; i < players.size(); i++)
+            players.get(i).getCout();
+    }
+
     public void stopTeamMotion() {
         for(int i = 0; i < players.size(); i++) {
             players.get(i).stopPlayerMotion();
-            //System.out.println("Jogador num '' " + players.get(i).name + "', x = " + players.get(i).position.x);
         }
+    }
+
+    public void erasePlayers() {
+        for(int i = 0; i < players.size(); i++)
+            players.get(i).getBody().getWorld().destroyBody(players.get(i).getBody());
     }
 
     public void controlPlayer(int index){

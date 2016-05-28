@@ -51,6 +51,9 @@ public class PlayState extends State implements ApplicationListener{
     private float startController;
     public boolean scored;
     private float scoreAnimationTime;
+    private boolean scoredProcess;
+    private boolean canReposition;
+    private boolean auxCanReposition;
 
     static final float TIME_TO_START = 3;
     static final float GAME_SIMULATION_SPEED = 1 / 60f;
@@ -128,6 +131,9 @@ public class PlayState extends State implements ApplicationListener{
         startController = 0;
         scored = false;
         scoreAnimationTime = 0;
+        scoredProcess = true;
+        canReposition = false;
+        auxCanReposition = false;
     }
 
     private void createCollisionListener() {
@@ -205,6 +211,22 @@ public class PlayState extends State implements ApplicationListener{
         else
             startController += dt;
 
+        if(scored && scoredProcess) {
+            match.activateBarriers();
+            scoredProcess = false;
+        }
+
+        if(auxCanReposition) {
+            match.stopAllPlayersMotion();
+            auxCanReposition = false;
+        }
+
+        if(canReposition) {
+            match.repositionTeams();
+            canReposition = false;
+            auxCanReposition = true;
+        }
+
         if(gameplayController == 1)
             match.updateMatch(dt);
         else
@@ -266,10 +288,11 @@ public class PlayState extends State implements ApplicationListener{
         if(scored) {
             if(scoreAnimationTime >= EXPLOSION_DURATION) {
                 scored = false;
+                scoredProcess = true;
                 scoreAnimationTime = 0;
-                match.stopAllPlayersMotion();
                 startController = 0;
                 match.activateBarriers();
+                canReposition = true;
             } else {
                 sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), 10, height / 2, width / 4, height / 3);
                 scoreAnimationTime += Gdx.graphics.getDeltaTime();

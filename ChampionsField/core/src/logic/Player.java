@@ -61,7 +61,6 @@ public class Player implements GestureDetector.GestureListener{
         changingPath = false;
         path = new ArrayList<Vector2>();
 
-        //System.out.println("Jogador num '' " + name + "', x = " + position.x);
     }
 
     public void reposition(float x, float y) {
@@ -70,20 +69,24 @@ public class Player implements GestureDetector.GestureListener{
         float distX, distY;
 
         if(finalX >= position.x)
-            distX = position.x - finalX;
-        else
             distX = finalX - position.x;
+        else
+            distX = position.x - finalX;
 
         if(finalY >= position.y)
             distY = position.y - finalY;
         else
             distY = finalY - position.y;
 
-        distX *= 100;
+        distX = distX * 100 * 60f;
         distY *= 100;
 
-        body.setLinearVelocity(distX * 60, distY * 60);
+        body.setLinearVelocity(distX, 0);
         setPositionToBody();
+    }
+
+    public void getCout() {
+        System.out.println(name + ": final x = " + position.x);
     }
 
     public void stopPlayerMotion() {

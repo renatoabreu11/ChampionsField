@@ -1,5 +1,6 @@
 package logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -21,8 +22,8 @@ public class Ball{
     float radius;
     Body body;
 
-    public Ball(float xPosition, float yPosition, int size, World w){
-        position = new Vector2(-800 * 0.01f, yPosition * 0.01f);
+    public Ball(float xPosition, float yPosition, float size, World w){
+        position = new Vector2(-Gdx.graphics.getWidth() / 4f * 0.01f, yPosition * 0.01f);
         speed = 0;
         radius = size / 2;
 

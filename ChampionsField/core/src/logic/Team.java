@@ -15,7 +15,7 @@ public class Team {
     ArrayList<Player> players;
     TeamState teamState;
 
-    public Team(int numPlayers, int size, String name, TeamState initialState, World w) {
+    public Team(int numPlayers, float size, String name, TeamState initialState, World w) {
         score = 0;
         teamState = initialState;
         players = new ArrayList<Player>();
@@ -28,9 +28,20 @@ public class Team {
         }
     }
 
-    public void repositionTeam(int numPlayers, int size, World w) {
-        for(int i = 0; i < numPlayers; i++)
-            players.get(i).reposition(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, w);
+    public void repositionTeam() {
+        for(int i = 0; i < players.size(); i++) {
+            if(teamState == TeamState.Attacking)
+                players.get(i).reposition(- Gdx.graphics.getWidth() / 4 + i * 50 , 0);
+            else
+                players.get(i).reposition(Gdx.graphics.getWidth() / 4 - i * 50 ,0);
+        }
+    }
+
+    public void stopTeamMotion() {
+        for(int i = 0; i < players.size(); i++) {
+            players.get(i).stopPlayerMotion();
+            //System.out.println("Jogador num '' " + players.get(i).name + "', x = " + players.get(i).position.x);
+        }
     }
 
     public void controlPlayer(int index){

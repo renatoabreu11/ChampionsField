@@ -7,8 +7,10 @@ import java.util.Random;
 
 public class Match{
 
-    private float fieldTextureWidth = 2560;
-    private float fieldTextureHeight = 1600;
+    static final float BALL_SIZE = 48;
+    static final float PLAYER_SIZE = 60;
+    static final float FIELD_TEXTURE_WIDTH = 2560;
+    static final float FIELD_TEXTURE_HEIGHT = 1600;
 
     public enum entityMasks{
         BallMask(1),
@@ -35,24 +37,24 @@ public class Match{
 
     private Ball ball;
     private int numberOfPlayers;
-    private int playersSize;
 
-    public Match(int playersSize, int numberOfPlayers, World w){
-        this.playersSize = playersSize;
+    public Match(int numberOfPlayers, World w){
+        float playerSize = (PLAYER_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100;
 
         Random r = new Random();
-        int aux = r.nextInt(2);
+        int aux = r.nextInt(2);     //mudar aqui, so para questoes de debug
+        aux = 0;
         if(aux == 0){
-            homeTeam = new Team(numberOfPlayers, playersSize, "Benfica", Team.TeamState.Attacking, w);
-            visitorTeam = new Team(numberOfPlayers, playersSize, "Porto", Team.TeamState.Defending, w);
+            homeTeam = new Team(numberOfPlayers, playerSize, "Benfica", Team.TeamState.Attacking, w);
+            visitorTeam = new Team(numberOfPlayers, playerSize, "Porto", Team.TeamState.Defending, w);
         } else{
-            homeTeam = new Team(numberOfPlayers, playersSize, "Benfica", Team.TeamState.Defending, w);
-            visitorTeam = new Team(numberOfPlayers, playersSize, "Porto", Team.TeamState.Attacking, w);
+            homeTeam = new Team(numberOfPlayers, playerSize, "Benfica", Team.TeamState.Defending, w);
+            visitorTeam = new Team(numberOfPlayers, playerSize, "Porto", Team.TeamState.Attacking, w);
         }
-        float widthScale = Gdx.graphics.getWidth() / fieldTextureWidth;
-        float heightScale = Gdx.graphics.getHeight() /  fieldTextureHeight;
+        float widthScale = Gdx.graphics.getWidth() / FIELD_TEXTURE_WIDTH;
+        float heightScale = Gdx.graphics.getHeight() / FIELD_TEXTURE_HEIGHT;
         this.numberOfPlayers = numberOfPlayers;
-        ball = new Ball(0, 0, 24, w);
+        ball = new Ball(0, 0, (BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100, w);
         field = new Field(w);
         homeTeam.controlPlayer(0);
         homeTeamGoal = new Goal(-Gdx.graphics.getWidth()/2 + 30f * widthScale, 0, 500f * heightScale, 100f * widthScale,  w, "HomeGoal");
@@ -66,19 +68,24 @@ public class Match{
     public void updateMatch(float x, float y){
         homeTeam.updateControlledPlayer(x, y);
         visitorTeam.updateControlledPlayer(x, y);
-        homeTeam.updatePlayers();
-        visitorTeam.updatePlayers();
+        //homeTeam.updatePlayers();
+        //visitorTeam.updatePlayers();
     }
 
     public void teamScored(Team t, World w) {
         t.goalScored();
         float deltaTime = 0;
 
-        while(deltaTime <= 3)
-            deltaTime += Gdx.graphics.getDeltaTime();
+        /*while(deltaTime <= 3)
+            deltaTime += Gdx.graphics.getDeltaTime();*/
 
-        homeTeam.repositionTeam(numberOfPlayers, playersSize, w);
+        homeTeam.repositionTeam();
         //visitorTeam.repositionTeam();
+    }
+
+    public void stopAllPlayersMotion() {
+        homeTeam.stopTeamMotion();
+        //visitorTeam.stopTeamMotion();
     }
 
     public void deactivateBarriers() {

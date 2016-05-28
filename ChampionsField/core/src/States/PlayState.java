@@ -44,12 +44,16 @@ public class PlayState extends State implements ApplicationListener{
     private BitmapFont font;
 
     private Rain rain;
+
     private float deltaTime = 0;
     private float startController;
+    private boolean scored;
 
     static final float WORLD_TO_BOX = 0.01f;
     static final float BOX_TO_WORLD = 100f;
     static final float TIME_TO_START = 3;
+    static final float GAME_SIMULATION_SPEED = 1 / 60f;
+    static final float PLAYERS_SPEED = 5;
 
     //Match class init
     private Match match;
@@ -114,10 +118,11 @@ public class PlayState extends State implements ApplicationListener{
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
 
-        match = new Match(32, 4, world);
+        match = new Match(2, world);
         createCollisionListener();
 
         startController = 0;
+        scored = false;
     }
 
     private void createCollisionListener() {
@@ -127,10 +132,13 @@ public class PlayState extends State implements ApplicationListener{
                 Fixture f1 = contact.getFixtureA();
                 Fixture f2 = contact.getFixtureB();
 
-                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball"))
+                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
                     match.teamScored(match.getVisitorTeam(), world);
-                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball"))
+                    scored = true;
+                }  else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
                     match.teamScored(match.getHomeTeam(), world);
+                    scored = true;
+                }
             }
 
             @Override
@@ -198,10 +206,15 @@ public class PlayState extends State implements ApplicationListener{
         if(gameplayController == 1)
             match.updateMatch(dt);
         else
-            match.updateMatch(touchpad.getKnobPercentX() * 5, touchpad.getKnobPercentY() * 5);
+            match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED);
 
         rain.update();
-        world.step(1f / 60f, 6, 2);
+        world.step(GAME_SIMULATION_SPEED, 6, 2);
+
+        if(scored) {
+            match.stopAllPlayersMotion();
+            scored = false;
+        }
     }
 
 

@@ -27,9 +27,8 @@ public class Goal {
         float width = Gdx.graphics.getWidth() * 0.01f;
         float height = Gdx.graphics.getHeight() * 0.01f;
 
-        if(whichTeam.equals("VisitorGoal")){
+        if(whichTeam.equals("VisitorGoal"))
             this.horizontalLength *= -1;
-        }
 
         //Football goal borders except goal line.
         BodyDef bodyDef = new BodyDef();
@@ -46,7 +45,10 @@ public class Goal {
 
         //User data is to identify the goal collision
         EdgeShape goalTrigger = new EdgeShape();
-        goalTrigger.set(this.horizontalLength - 0.5f, this.verticalLength/2, this.horizontalLength - 0.5f, -this.verticalLength/2);
+        if(whichTeam.equals("VisitorGoal"))
+            goalTrigger.set(this.horizontalLength + Match.BALL_SIZE * 0.01f, this.verticalLength/2, this.horizontalLength + Match.BALL_SIZE * 0.01f, -this.verticalLength/2);
+        else
+            goalTrigger.set(this.horizontalLength - Match.BALL_SIZE * 0.01f, this.verticalLength/2, this.horizontalLength - Match.BALL_SIZE * 0.01f, -this.verticalLength/2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.filter.categoryBits = GoalMask.getMask();

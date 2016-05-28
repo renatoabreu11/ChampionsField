@@ -31,7 +31,7 @@ public class Player implements GestureDetector.GestureListener{
     private boolean changingPath;
     ArrayList<Vector2> path;
 
-    public Player(float xPosition, float yPosition, String name,int size, boolean controlledPlayer, World w) {
+    public Player(float xPosition, float yPosition, String name, float size, boolean controlledPlayer, World w) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         speed = 5f;
         this.controlledPlayer = controlledPlayer;
@@ -60,29 +60,34 @@ public class Player implements GestureDetector.GestureListener{
         panPosition = new Vector2();
         changingPath = false;
         path = new ArrayList<Vector2>();
+
+        //System.out.println("Jogador num '' " + name + "', x = " + position.x);
     }
 
-    public void reposition(float x, float y, World w) {
-        position.set(x, y);
-        body.getWorld().destroyBody(body);
+    public void reposition(float x, float y) {
+        float finalX = x * 0.01f;
+        float finalY = y * 0.01f;
+        float distX, distY;
 
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(position.x, position.y);
-        body = w.createBody(bodyDef);
+        if(finalX >= position.x)
+            distX = position.x - finalX;
+        else
+            distX = finalX - position.x;
 
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius * 0.01f);
+        if(finalY >= position.y)
+            distY = position.y - finalY;
+        else
+            distY = finalY - position.y;
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.8f;
-        fixtureDef.restitution = 1f;
-        fixtureDef.filter.categoryBits = PlayerMask.getMask();
-        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask());
-        Fixture fixture = body.createFixture(fixtureDef);
-        shape.dispose();
+        distX *= 100;
+        distY *= 100;
+
+        body.setLinearVelocity(distX * 60, distY * 60);
+        setPositionToBody();
+    }
+
+    public void stopPlayerMotion() {
+        body.setLinearVelocity(0, 0);
     }
 
     public boolean isControlledPlayer() {
@@ -132,11 +137,6 @@ public class Player implements GestureDetector.GestureListener{
 
     public boolean isWaypointReached() {
         return path.get(0).x - position.x <= speed / 3 * Gdx.graphics.getDeltaTime() && path.get(0).y - position.y <= speed / 3 * Gdx.graphics.getDeltaTime();
-    }
-
-    public void updatePosition(float x, float y) {
-        position.x += x;
-        position.y += y;
     }
 
     public void updatePosition() {
@@ -229,5 +229,4 @@ public class Player implements GestureDetector.GestureListener{
     public void setName(String name) {
         this.name = name;
     }
-
 }

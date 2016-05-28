@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import static logic.Match.entityMasks.BallMask;
 import static logic.Match.entityMasks.FootballGoalMask;
+import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 import static logic.Match.entityMasks.ScreenBordersMask;
 
@@ -53,7 +54,7 @@ public class Player implements GestureDetector.GestureListener{
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 1f;
         fixtureDef.filter.categoryBits = PlayerMask.getMask();
-        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | FootballGoalMask.getMask());
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask());
         Fixture fixture = body.createFixture(fixtureDef);
         shape.dispose();
 

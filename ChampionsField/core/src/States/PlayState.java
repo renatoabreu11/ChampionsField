@@ -115,21 +115,18 @@ public class PlayState extends State implements ApplicationListener{
     }
 
 
-               private void createCollisionListener() {
-                world.setContactListener(new ContactListener() {
-                    @Override
-                    public void beginContact(Contact contact) {
-                        Fixture f1 = contact.getFixtureA();
-                        Fixture f2 = contact.getFixtureB();
+    private void createCollisionListener() {
+        world.setContactListener(new ContactListener() {
+            @Override
+            public void beginContact(Contact contact) {
+                Fixture f1 = contact.getFixtureA();
+                Fixture f2 = contact.getFixtureB();
 
-                        if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
-                            match.teamScored(match.getVisitorTeam());
-                        }
-                        else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
-                            match.teamScored(match.getHomeTeam());
-                        }
-
-                    }
+                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball"))
+                    match.teamScored(match.getVisitorTeam());
+                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball"))
+                    match.teamScored(match.getHomeTeam());
+            }
 
             @Override
             public void endContact(Contact contact) {

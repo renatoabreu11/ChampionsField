@@ -7,13 +7,16 @@ import java.util.Random;
 
 public class Match{
 
+    private float fieldTextureWidth = 2560;
+    private float fieldTextureHeight = 1600;
+
     public enum entityMasks{
         BallMask(1),
         PlayerMask(2),
         FieldBordersMask(4),
         GoalMask(8),
         ScreenBordersMask(16),
-        FootballGoalMask(32);
+        FootballGoalMask(32);   //linha de golo
 
         private final short mask;
         entityMasks(int mask){
@@ -43,8 +46,8 @@ public class Match{
             homeTeam = new Team(numberOfPlayers, playersSize, "Benfica", Team.TeamState.Defending, w);
             visitorTeam = new Team(numberOfPlayers, playersSize, "Porto", Team.TeamState.Attacking, w);
         }
-        float widthScale = Gdx.graphics.getWidth() / 2560f;
-        float heightScale = Gdx.graphics.getHeight() /  1600f;
+        float widthScale = Gdx.graphics.getWidth() / fieldTextureWidth;
+        float heightScale = Gdx.graphics.getHeight() /  fieldTextureHeight;
         this.numberOfPlayers = numberOfPlayers;
         ball = new Ball(0, 0, 24, w);
         field = new Field(w);
@@ -66,6 +69,12 @@ public class Match{
 
     public void teamScored(Team t) {
         t.goalScored();
+        float deltaTime = 0;
+
+        while(deltaTime <= 3)
+            deltaTime += Gdx.graphics.getDeltaTime();
+
+
     }
 
     public Ball getBall(){

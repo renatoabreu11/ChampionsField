@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import static logic.Match.entityMasks.BallMask;
 import static logic.Match.entityMasks.FootballGoalMask;
+import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 
 public class Goal {
@@ -31,7 +32,6 @@ public class Goal {
         }
 
         //Football goal borders except goal line.
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         bodyDef.position.set(position.x, position.y);
@@ -44,22 +44,35 @@ public class Goal {
         EdgeShape horizontalDown = new EdgeShape();
         horizontalDown.set(0, -this.verticalLength/2, this.horizontalLength, -this.verticalLength/2);
 
-
         //User data is to identify the goal collision
         EdgeShape goalTrigger = new EdgeShape();
         goalTrigger.set(this.horizontalLength, this.verticalLength/2, this.horizontalLength, -this.verticalLength/2);
+
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = goalTrigger;
-        fixtureDef.filter.categoryBits = FootballGoalMask.getMask();
-        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask());
+        fixtureDef.filter.categoryBits = GoalMask.getMask();
+        fixtureDef.filter.maskBits = (short) (BallMask.getMask() | PlayerMask.getMask());
+
+        fixtureDef.shape = vertical;
+        body.createFixture(fixtureDef);
+        vertical.dispose();
+
+        fixtureDef.shape = horizontalUp;
+        body.createFixture(fixtureDef);
+        horizontalUp.dispose();
+
+        fixtureDef.shape = horizontalDown;
+        body.createFixture(fixtureDef);
+        horizontalDown.dispose();
+
+        FixtureDef goalTriggerFixture = new FixtureDef();
+        goalTriggerFixture.shape = goalTrigger;
+        goalTriggerFixture.filter.categoryBits = FootballGoalMask.getMask();
+        goalTriggerFixture.filter.maskBits = BallMask.getMask();
+
         Fixture fixture;
-        fixture = body.createFixture(fixtureDef);
+        fixture = body.createFixture(goalTriggerFixture);
         fixture.setUserData(whichTeam);
         goalTrigger.dispose();
-
-        body.createFixture(vertical, 1);
-        body.createFixture(horizontalUp, 1);
-        body.createFixture(horizontalDown, 1);
     }
 
     public Body getBody() {

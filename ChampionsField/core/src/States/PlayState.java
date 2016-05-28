@@ -33,27 +33,30 @@ import logic.Rain;
 
 public class PlayState extends State implements ApplicationListener{
     //Objects textures
+    private TextureAtlas explosionAtlas;
+    private Animation explosionAnimation;
     private Texture rainTexture;
     private TextureAtlas ballTexture;
     private Animation ballAnimation;
     private Texture fieldTexture;
     private Texture homeTeamTexture;
     private Texture visitorTeamTexture;
-    private Texture footballGoalTexture;
-    private Texture goalTexture;
+    private Texture leftGoalTexture;
+    private Texture rightGoalTexture;
     private BitmapFont font;
 
     private Rain rain;
 
     private float deltaTime = 0;
     private float startController;
-    private boolean scored;
+    public boolean scored;
+    private float scoreAnimationTime;
 
-    static final float WORLD_TO_BOX = 0.01f;
-    static final float BOX_TO_WORLD = 100f;
     static final float TIME_TO_START = 3;
     static final float GAME_SIMULATION_SPEED = 1 / 60f;
     static final float PLAYERS_SPEED = 5;
+    static final float EXPLOSION_SPEED = 5f;
+    static final float EXPLOSION_DURATION = 2.4f;
 
     //Match class init
     private Match match;
@@ -62,7 +65,6 @@ public class PlayState extends State implements ApplicationListener{
     private OrthographicCamera camera;
     private World world;
     private Box2DDebugRenderer debugRenderer;
-    private Matrix4 debugMatrix;
 
     //Touchpad
     private Stage stage;
@@ -97,13 +99,15 @@ public class PlayState extends State implements ApplicationListener{
         }
 
         //Textures definition
+        explosionAtlas = new TextureAtlas("Explosion.atlas");
+        explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
         ballTexture = new TextureAtlas("SoccerBall.atlas");
         ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
         fieldTexture = new Texture("Field.jpg");
         homeTeamTexture = new Texture("Player.png");
         visitorTeamTexture = new Texture("Player.png");
-        footballGoalTexture = new Texture("FootballGoal.png");
-        goalTexture = new Texture("FootballGoal.png");
+        leftGoalTexture = new Texture("LeftGoal.png");
+        rightGoalTexture = new Texture("RightGoal.png");
         rainTexture = new Texture("Rain.png");
         rain = new Rain(width, height);
         font = new BitmapFont();
@@ -123,6 +127,7 @@ public class PlayState extends State implements ApplicationListener{
 
         startController = 0;
         scored = false;
+        scoreAnimationTime = 0;
     }
 
     private void createCollisionListener() {
@@ -165,8 +170,7 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void resize(int width, int height) {
-        camera.viewportHeight = (Gdx.graphics.getWidth() * 0.01f / width) * height;
-        camera.update();
+
     }
 
     @Override
@@ -196,8 +200,6 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
-        deltaTime += Gdx.graphics.getDeltaTime();
-
         if(startController >= TIME_TO_START)
             match.deactivateBarriers();
         else
@@ -211,10 +213,7 @@ public class PlayState extends State implements ApplicationListener{
         rain.update();
         world.step(GAME_SIMULATION_SPEED, 6, 2);
 
-        if(scored) {
-            match.stopAllPlayersMotion();
-            scored = false;
-        }
+        deltaTime += dt;
     }
 
 
@@ -246,10 +245,6 @@ public class PlayState extends State implements ApplicationListener{
             font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
         }
 
-        Goal g = match.getVisitorTeamGoal();
-        screenPosition = convertToScreenCoordinates(g);
-        sb.draw(footballGoalTexture, screenPosition.x, screenPosition.y, g.getHorizontalLength() * 100f, g.getVerticalLength() * 100f);
-
         Player controPlayer = null;
         for(int i = 0; i < homeTeamPlayers.size(); i++) {
             if(homeTeamPlayers.get(i).isControlledPlayer()) {
@@ -264,12 +259,22 @@ public class PlayState extends State implements ApplicationListener{
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
         font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
 
-        float percentageFieldX = 45 * 100 / 2560;
-        float x = percentageFieldX * Gdx.graphics.getWidth() / 100;
-        float percentageGoalY = 550 * 100 / 1600;
-        float goalY = percentageGoalY * Gdx.graphics.getHeight() / 100;
+        /*float goalX = -Gdx.graphics.getWidth()/2 + 30f * (Gdx.graphics.getWidth() / Match.FIELD_TEXTURE_WIDTH);
+        float goalY = 500f * (Gdx.graphics.getHeight() / Match.FIELD_TEXTURE_HEIGHT);
+        sb.draw(leftGoalTexture, width / 2 + goalX, height / 2 - goalY / 2, width / 2 + goalX + 300, (height / 2 - goalY / 2) * 2);*/
 
-        sb.draw(goalTexture, x, height - goalY, 100, 100);
+        if(scored) {
+            if(scoreAnimationTime >= EXPLOSION_DURATION) {
+                scored = false;
+                scoreAnimationTime = 0;
+                match.stopAllPlayersMotion();
+                startController = 0;
+                match.activateBarriers();
+            } else {
+                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), 10, height / 2, width / 4, height / 3);
+                scoreAnimationTime += Gdx.graphics.getDeltaTime();
+            }
+        }
 
         for(int i = 0; i < rain.getRainSize(); i++)
             sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);

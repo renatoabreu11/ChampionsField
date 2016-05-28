@@ -168,14 +168,8 @@ public class Field {
         rightBarrier.setActive(false);
     }
 
-    public Vector<Body> getBodies(){
-        Vector<Body> bodies = new Vector<Body>();
-        bodies.add(northBorder);
-        bodies.add(southBorder);
-        bodies.add(eastBorder);
-        bodies.add(southBorder);
-
-        bodies.add(topLine);
-        return bodies;
+    public void activateBarriers() {
+        leftBarrier.setActive(true);
+        rightBarrier.setActive(true);
     }
 }

@@ -24,8 +24,6 @@ public class Goal {
         position = new Vector2(xPosition * 0.01f , yPosition * 0.01f );
         this.verticalLength = verticalLength * 0.01f;
         this.horizontalLength = horizontalLength * 0.01f;
-        float width = Gdx.graphics.getWidth() * 0.01f;
-        float height = Gdx.graphics.getHeight() * 0.01f;
 
         if(whichTeam.equals("VisitorGoal"))
             this.horizontalLength *= -1;
@@ -46,9 +44,9 @@ public class Goal {
         //User data is to identify the goal collision
         EdgeShape goalTrigger = new EdgeShape();
         if(whichTeam.equals("VisitorGoal"))
-            goalTrigger.set(this.horizontalLength + Match.BALL_SIZE * 0.01f, this.verticalLength/2, this.horizontalLength + Match.BALL_SIZE * 0.01f, -this.verticalLength/2);
+            goalTrigger.set(this.horizontalLength + ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength +((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
         else
-            goalTrigger.set(this.horizontalLength - Match.BALL_SIZE * 0.01f, this.verticalLength/2, this.horizontalLength - Match.BALL_SIZE * 0.01f, -this.verticalLength/2);
+            goalTrigger.set(this.horizontalLength - ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength - ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.filter.categoryBits = GoalMask.getMask();

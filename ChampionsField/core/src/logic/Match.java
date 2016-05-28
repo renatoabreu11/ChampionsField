@@ -5,12 +5,14 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Random;
 
+import States.PlayState;
+
 public class Match{
 
     static final float BALL_SIZE = 48;
     static final float PLAYER_SIZE = 60;
-    static final float FIELD_TEXTURE_WIDTH = 2560;
-    static final float FIELD_TEXTURE_HEIGHT = 1600;
+    public static final float FIELD_TEXTURE_WIDTH = 2560;
+    public static final float FIELD_TEXTURE_HEIGHT = 1600;
 
     public enum entityMasks{
         BallMask(1),
@@ -74,10 +76,6 @@ public class Match{
 
     public void teamScored(Team t, World w) {
         t.goalScored();
-        float deltaTime = 0;
-
-        /*while(deltaTime <= 3)
-            deltaTime += Gdx.graphics.getDeltaTime();*/
 
         homeTeam.repositionTeam();
         //visitorTeam.repositionTeam();
@@ -85,11 +83,15 @@ public class Match{
 
     public void stopAllPlayersMotion() {
         homeTeam.stopTeamMotion();
-        //visitorTeam.stopTeamMotion();
+        visitorTeam.stopTeamMotion();
     }
 
     public void deactivateBarriers() {
         field.deactivateBarriers();
+    }
+
+    public void activateBarriers() {
+        field.activateBarriers();
     }
 
     public Ball getBall(){

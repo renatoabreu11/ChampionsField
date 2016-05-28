@@ -23,7 +23,7 @@ public class Ball{
     Body body;
 
     public Ball(float xPosition, float yPosition, float size, World w){
-        position = new Vector2(-Gdx.graphics.getWidth() / 4f * 0.01f, yPosition * 0.01f);
+        position = new Vector2(-Gdx.graphics.getWidth() / 3f * 0.01f, yPosition * 0.01f);
         speed = 0;
         radius = size / 2;
 

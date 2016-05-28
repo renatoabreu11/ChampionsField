@@ -40,12 +40,16 @@ public class PlayState extends State implements ApplicationListener{
     private Texture homeTeamTexture;
     private Texture visitorTeamTexture;
     private Texture footballGoalTexture;
+    private Texture goalTexture;
     private BitmapFont font;
 
     private Rain rain;
     private float deltaTime = 0;
+    private float startController;
+
     static final float WORLD_TO_BOX = 0.01f;
     static final float BOX_TO_WORLD = 100f;
+    static final float TIME_TO_START = 3;
 
     //Match class init
     private Match match;
@@ -63,7 +67,6 @@ public class PlayState extends State implements ApplicationListener{
     private Skin touchpadSkin;
     private Drawable touchBackground;
     private Drawable touchKnob;
-
 
     public PlayState(GameStateManager gsm){
         super(gsm);
@@ -96,6 +99,7 @@ public class PlayState extends State implements ApplicationListener{
         homeTeamTexture = new Texture("Player.png");
         visitorTeamTexture = new Texture("Player.png");
         footballGoalTexture = new Texture("FootballGoal.png");
+        goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
         rain = new Rain(width, height);
         font = new BitmapFont();
@@ -112,8 +116,9 @@ public class PlayState extends State implements ApplicationListener{
 
         match = new Match(32, 4, world);
         createCollisionListener();
-    }
 
+        startController = 0;
+    }
 
     private void createCollisionListener() {
         world.setContactListener(new ContactListener() {
@@ -123,9 +128,9 @@ public class PlayState extends State implements ApplicationListener{
                 Fixture f2 = contact.getFixtureB();
 
                 if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball"))
-                    match.teamScored(match.getVisitorTeam());
+                    match.teamScored(match.getVisitorTeam(), world);
                 else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball"))
-                    match.teamScored(match.getHomeTeam());
+                    match.teamScored(match.getHomeTeam(), world);
             }
 
             @Override
@@ -183,6 +188,13 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
+        deltaTime += Gdx.graphics.getDeltaTime();
+
+        if(startController >= TIME_TO_START)
+            match.deactivateBarriers();
+        else
+            startController += dt;
+
         if(gameplayController == 1)
             match.updateMatch(dt);
         else
@@ -195,8 +207,6 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void render(SpriteBatch sb) {
-        deltaTime += Gdx.graphics.getDeltaTime();
-
         sb.begin();
         sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -240,6 +250,13 @@ public class PlayState extends State implements ApplicationListener{
 
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
         font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
+
+        float percentageFieldX = 45 * 100 / 2560;
+        float x = percentageFieldX * Gdx.graphics.getWidth() / 100;
+        float percentageGoalY = 550 * 100 / 1600;
+        float goalY = percentageGoalY * Gdx.graphics.getHeight() / 100;
+
+        sb.draw(goalTexture, x, height - goalY, 100, 100);
 
         for(int i = 0; i < rain.getRainSize(); i++)
             sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);

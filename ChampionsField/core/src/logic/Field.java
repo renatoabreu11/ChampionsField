@@ -28,6 +28,9 @@ public class Field {
     Body topRightLine;
     Body bottomRightLine;
 
+    Body leftBarrier;
+    Body rightBarrier;
+
     public Field(World w) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -44,6 +47,9 @@ public class Field {
         bottomLeftLine = w.createBody(bodyDef);
         topRightLine = w.createBody(bodyDef);
         bottomRightLine = w.createBody(bodyDef);
+
+        leftBarrier = w.createBody(bodyDef);
+        rightBarrier = w.createBody(bodyDef);
 
         createBorders(w);
     }
@@ -137,6 +143,29 @@ public class Field {
         innerLinesFixture.shape = bottomFieldRight;
         bottomRightLine.createFixture(innerLinesFixture);
         bottomFieldRight.dispose();
+
+        //Initial barriers
+        percentageFieldX = 1030 * 100 / 2560;
+        x = percentageFieldX * Gdx.graphics.getWidth() / 100;
+        x /= 100;
+
+        EdgeShape leftEdge = new EdgeShape();
+        leftEdge.set(- width / 2 + x, - height / 2, - width / 2 + x,  height / 2);
+        EdgeShape rightEdge = new EdgeShape();
+        rightEdge.set(width / 2 - x, - height / 2, width / 2 - x,  height / 2);
+
+        fixtureDef1.shape = leftEdge;
+        leftBarrier.createFixture(fixtureDef1);
+        leftEdge.dispose();
+
+        fixtureDef1.shape = rightEdge;
+        rightBarrier.createFixture(fixtureDef1);
+        rightEdge.dispose();
+    }
+
+    public void deactivateBarriers() {
+        leftBarrier.setActive(false);
+        rightBarrier.setActive(false);
     }
 
     public Vector<Body> getBodies(){

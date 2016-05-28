@@ -40,7 +40,7 @@ public class Ball{
         fixtureDef.friction = 0.9f;
         fixtureDef.restitution = 0.8f;
         fixtureDef.filter.categoryBits = BallMask.getMask();
-        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | GoalMask.getMask() | FieldBordersMask.getMask());
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | GoalMask.getMask() | FieldBordersMask.getMask() | GoalMask.getMask() | FootballGoalMask.getMask());
 
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData("Ball");

@@ -35,8 +35,11 @@ public class Match{
 
     private Ball ball;
     private int numberOfPlayers;
+    private int playersSize;
 
     public Match(int playersSize, int numberOfPlayers, World w){
+        this.playersSize = playersSize;
+
         Random r = new Random();
         int aux = r.nextInt(2);
         if(aux == 0){
@@ -67,14 +70,19 @@ public class Match{
         visitorTeam.updatePlayers();
     }
 
-    public void teamScored(Team t) {
+    public void teamScored(Team t, World w) {
         t.goalScored();
         float deltaTime = 0;
 
         while(deltaTime <= 3)
             deltaTime += Gdx.graphics.getDeltaTime();
 
+        homeTeam.repositionTeam(numberOfPlayers, playersSize, w);
+        //visitorTeam.repositionTeam();
+    }
 
+    public void deactivateBarriers() {
+        field.deactivateBarriers();
     }
 
     public Ball getBall(){

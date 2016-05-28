@@ -13,7 +13,6 @@ import com.badlogic.gdx.physics.box2d.World;
 import java.util.ArrayList;
 
 import static logic.Match.entityMasks.BallMask;
-import static logic.Match.entityMasks.FootballGoalMask;
 import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 import static logic.Match.entityMasks.ScreenBordersMask;
@@ -61,6 +60,29 @@ public class Player implements GestureDetector.GestureListener{
         panPosition = new Vector2();
         changingPath = false;
         path = new ArrayList<Vector2>();
+    }
+
+    public void reposition(float x, float y, World w) {
+        position.set(x, y);
+        body.getWorld().destroyBody(body);
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(position.x, position.y);
+        body = w.createBody(bodyDef);
+
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius * 0.01f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.8f;
+        fixtureDef.restitution = 1f;
+        fixtureDef.filter.categoryBits = PlayerMask.getMask();
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask());
+        Fixture fixture = body.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     public boolean isControlledPlayer() {

@@ -19,13 +19,18 @@ public class Team {
         score = 0;
         teamState = initialState;
         players = new ArrayList<Player>();
+
         for(int i = 0; i < numPlayers; i++){
-            if(teamState == TeamState.Attacking){
-                players.add(new Player(-Gdx.graphics.getWidth()/2 + 30+ i * 30 , -Gdx.graphics.getHeight()/2 + 30 + i * 30, i+"", size, false, w));
-            } else{
-                players.add(new Player(Gdx.graphics.getWidth()/2 - 30- i * 30 , -Gdx.graphics.getHeight()/2 + 30 + i * 30, i+"", size, false, w));
-            }
+            if(teamState == TeamState.Attacking)
+                players.add(new Player(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, i+"", size, false, w));
+            else
+                players.add(new Player(Gdx.graphics.getWidth() / 4 - i * 50 ,0, i+"", size, false, w));
         }
+    }
+
+    public void repositionTeam(int numPlayers, int size, World w) {
+        for(int i = 0; i < numPlayers; i++)
+            players.get(i).reposition(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, w);
     }
 
     public void controlPlayer(int index){

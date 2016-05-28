@@ -46,7 +46,7 @@ public class Goal {
 
         //User data is to identify the goal collision
         EdgeShape goalTrigger = new EdgeShape();
-        goalTrigger.set(this.horizontalLength, this.verticalLength/2, this.horizontalLength, -this.verticalLength/2);
+        goalTrigger.set(this.horizontalLength - 0.5f, this.verticalLength/2, this.horizontalLength - 0.5f, -this.verticalLength/2);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.filter.categoryBits = GoalMask.getMask();

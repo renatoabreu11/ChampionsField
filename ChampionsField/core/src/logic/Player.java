@@ -13,11 +13,12 @@ import com.badlogic.gdx.physics.box2d.World;
 import java.util.ArrayList;
 
 import static logic.Match.entityMasks.BallMask;
+import static logic.Match.entityMasks.CenterMask;
 import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 import static logic.Match.entityMasks.ScreenBordersMask;
 
-public class Player implements GestureDetector.GestureListener{
+public class Player implements GestureDetector.GestureListener, Coordinates{
     Vector2 position;
     float speed;
     float radius;
@@ -43,7 +44,7 @@ public class Player implements GestureDetector.GestureListener{
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(position.x, position.y);
         body = w.createBody(bodyDef);
-
+        body.setAngularDamping(0.5f);
         CircleShape shape = new CircleShape();
         shape.setRadius(radius * 0.01f);
 
@@ -53,7 +54,7 @@ public class Player implements GestureDetector.GestureListener{
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 1f;
         fixtureDef.filter.categoryBits = PlayerMask.getMask();
-        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask());
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask() | CenterMask.getMask());
         Fixture fixture = body.createFixture(fixtureDef);
         shape.dispose();
 
@@ -66,23 +67,9 @@ public class Player implements GestureDetector.GestureListener{
     public void reposition(float x, float y) {
         float finalX = x * 0.01f;
         float finalY = y * 0.01f;
-        float distX, distY;
-
-        if(finalX >= position.x)
-            distX = finalX - position.x;
-        else
-            distX = position.x - finalX;
-
-        if(finalY >= position.y)
-            distY = position.y - finalY;
-        else
-            distY = finalY - position.y;
-
-        distX = distX * 100 * 60f;
-        distY *= 100;
-
-        body.setLinearVelocity(distX, 0);
+        body.setTransform(finalX, finalY, 0);
         setPositionToBody();
+        body.setLinearVelocity(0, 0);
     }
 
     public void getCout() {
@@ -103,15 +90,6 @@ public class Player implements GestureDetector.GestureListener{
 
     public float getRadius() {
         return radius;
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
-    }
-
-    public void setPosition(float x, float y) {
-        position.x = x;
-        position.y = y;
     }
 
     public void setPosition(Vector2 pos) {
@@ -231,5 +209,12 @@ public class Player implements GestureDetector.GestureListener{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Vector2 getScreenCoordinates() {
+        float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2 - getRadius();
+        float y = getPosition().y * 100f + Gdx.graphics.getHeight()/2 - getRadius();
+        return new Vector2(x, y);
     }
 }

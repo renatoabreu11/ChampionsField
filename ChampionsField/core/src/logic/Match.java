@@ -5,14 +5,13 @@ import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.Random;
 
-import States.PlayState;
-
 public class Match{
 
     static final float BALL_SIZE = 48;
     static final float PLAYER_SIZE = 60;
-    public static final float FIELD_TEXTURE_WIDTH = 2560;
-    public static final float FIELD_TEXTURE_HEIGHT = 1600;
+    static final float FIELD_TEXTURE_WIDTH = 2560;
+    static final float FIELD_TEXTURE_HEIGHT = 1600;
+    static final float TIME_TO_START = 10;
 
     public enum entityMasks{
         BallMask(1),
@@ -20,7 +19,8 @@ public class Match{
         FieldBordersMask(4),
         GoalMask(8),
         ScreenBordersMask(16),
-        FootballGoalMask(32);   //linha de golo
+        FootballGoalMask(32),
+        CenterMask(64);
 
         private final short mask;
         entityMasks(int mask){
@@ -31,6 +31,13 @@ public class Match{
         }
     };
 
+    public enum matchState{
+        KickOff,
+        Pause,
+        Score,
+        Play;
+    }
+
     private Field field;
     private Team homeTeam;
     private Team visitorTeam;
@@ -39,6 +46,8 @@ public class Match{
 
     private Ball ball;
     private int numberOfPlayers;
+
+    private matchState currentState;
 
     public Match(int numberOfPlayers, World w){
         float playerSize = (PLAYER_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100;
@@ -61,42 +70,52 @@ public class Match{
         homeTeam.controlPlayer(0);
         homeTeamGoal = new Goal(-Gdx.graphics.getWidth()/2 + 30f * widthScale, 0, 500f * heightScale, 100f * widthScale,  w, "HomeGoal");
         visitorTeamGoal = new Goal(Gdx.graphics.getWidth()/2 - 30f * widthScale, 0, 500f * heightScale, 100f * widthScale,  w, "VisitorGoal");
+        currentState = matchState.KickOff;
     }
 
-    public void updateMatch(float dt) {
-        homeTeam.updateControlledPlayer();
+    public void teamScored(Team defendingTeam, Team attackingTeam ){
+        defendingTeam.goalScored();
+        defendingTeam.teamState = Team.TeamState.Defending;
+        attackingTeam.teamState = Team.TeamState.Attacking;
+        currentState = matchState.Score;
+    }
+
+
+    public matchState getCurrentState() {
+        return currentState;
     }
 
     public void updateMatch(float x, float y){
-        homeTeam.updateControlledPlayer(x, y);
-        visitorTeam.updateControlledPlayer(x, y);
-        //homeTeam.updatePlayers();
-        //visitorTeam.updatePlayers();
+        switch (currentState) {
+            case KickOff: {
+                if(homeTeam.getTeamState() == Team.TeamState.Attacking)
+                    field.activateBarriers(true);
+                else field.activateBarriers(false);
+                if (ball.body.getPosition().x != 0 || ball.body.getPosition().y != 0) {
+                    field.deactivateBarriers();
+                    homeTeam.teamState = Team.TeamState.Playing;
+                    visitorTeam.teamState = Team.TeamState.Playing;
+                    currentState = matchState.Play;
+                }
+                homeTeam.updateControlledPlayer(x, y);
+                break;
+            }
+            case Play: {
+                homeTeam.updateControlledPlayer(x, y);
+                break;
+            }
+            case Score:{
+                ball.body.setAwake(false);
+                break;
+            }
+        }
     }
 
-    public void teamScored(Team t, World w) {
-        t.goalScored();
-    }
-
-    public void repositionTeams() {
+    public void endScoreState(){
+        currentState = matchState.KickOff;
         homeTeam.repositionTeam();
-    }
-
-    public void getCout() {
-        homeTeam.getCout();
-    }
-
-    public void stopAllPlayersMotion() {
-        homeTeam.stopTeamMotion();
-        visitorTeam.stopTeamMotion();
-    }
-
-    public void deactivateBarriers() {
-        field.deactivateBarriers();
-    }
-
-    public void activateBarriers() {
-        field.activateBarriers();
+        visitorTeam.repositionTeam();
+        ball.reposition();
     }
 
     public void erasePlayers() {

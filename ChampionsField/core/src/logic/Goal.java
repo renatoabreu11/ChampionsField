@@ -14,7 +14,7 @@ import static logic.Match.entityMasks.FootballGoalMask;
 import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 
-public class Goal {
+public class Goal implements Coordinates{
     Vector2 position;
     float verticalLength;
     float horizontalLength;
@@ -103,4 +103,10 @@ public class Goal {
         this.position = position;
     }
 
+    @Override
+    public Vector2 getScreenCoordinates() {
+        float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2;
+        float y = getPosition().y * 100f + Gdx.graphics.getHeight()/2 - (getVerticalLength() * 100f)/2;
+        return new Vector2(x, y);
+    }
 }

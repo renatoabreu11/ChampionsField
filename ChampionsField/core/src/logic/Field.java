@@ -1,35 +1,35 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.ChainShape;
 import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import java.util.Vector;
-
 import static logic.Match.entityMasks.BallMask;
+import static logic.Match.entityMasks.CenterMask;
 import static logic.Match.entityMasks.FieldBordersMask;
-import static logic.Match.entityMasks.FootballGoalMask;
 import static logic.Match.entityMasks.PlayerMask;
 import static logic.Match.entityMasks.ScreenBordersMask;
 
 public class Field {
+
+    static final float FIELD_TEXTURE_WIDTH = 2560;
+    static final float FIELD_TEXTURE_HEIGHT = 1600;
+
     Body northBorder;
     Body southBorder;
     Body eastBorder;
     Body westBorder;
 
-    Body topLine;
-    Body bottomLine;
-    Body topLeftLine;
-    Body bottomLeftLine;
-    Body topRightLine;
-    Body bottomRightLine;
+    Body topBorder;
+    Body bottomBorder;
 
-    Body leftBarrier;
-    Body rightBarrier;
+    Body rightHalfMoon;
+    Body leftHalfMoon;
 
     public Field(World w) {
         BodyDef bodyDef = new BodyDef();
@@ -41,15 +41,11 @@ public class Field {
         eastBorder = w.createBody(bodyDef);
         westBorder = w.createBody(bodyDef);
 
-        topLine = w.createBody(bodyDef);
-        bottomLine = w.createBody(bodyDef);
-        topLeftLine = w.createBody(bodyDef);
-        bottomLeftLine = w.createBody(bodyDef);
-        topRightLine = w.createBody(bodyDef);
-        bottomRightLine = w.createBody(bodyDef);
+        topBorder = w.createBody(bodyDef);
+        bottomBorder = w.createBody(bodyDef);
 
-        leftBarrier = w.createBody(bodyDef);
-        rightBarrier = w.createBody(bodyDef);
+        rightHalfMoon = w.createBody(bodyDef);
+        leftHalfMoon = w.createBody(bodyDef);
 
         createBorders(w);
     }
@@ -57,6 +53,8 @@ public class Field {
     private void createBorders(World w) {
         float width =  Gdx.graphics.getWidth() * 0.01f;
         float height = Gdx.graphics.getHeight() * 0.01f;
+        float widthScale =  Gdx.graphics.getWidth() / FIELD_TEXTURE_WIDTH;
+        float heightScale = Gdx.graphics.getHeight() / FIELD_TEXTURE_HEIGHT;
 
         //Edges of the screen
         EdgeShape shape1 = new EdgeShape();
@@ -90,86 +88,84 @@ public class Field {
         southBorder.createFixture(fixtureDef1);
         shape4.dispose();
 
-        float percentageFieldX = 137 * 100 / 2560;
-        float x = percentageFieldX * Gdx.graphics.getWidth() / 100;
-        x = x / 100;
-
-        float percentageFieldY = 35 * 100 / 1600;
-        float y = percentageFieldY * Gdx.graphics.getHeight() / 100;
-        y = y / 100;
-
-        float percentageGoalY = 550 * 100 / 1600;
-        float goalY = percentageGoalY * Gdx.graphics.getHeight() / 100;
-        goalY = goalY / 100;
+        float x = 135 * 0.01f * widthScale;
+        float y = 35 * 0.01f * heightScale;
+        float goalY = 250 * 0.01f * heightScale;
 
         //Edges of the field
-        EdgeShape topFieldLine = new EdgeShape();
-        topFieldLine.set(-width / 2 + x, height / 2 - y, width / 2 - x, height  /2 - y);
-        EdgeShape bottomFieldLine = new EdgeShape();
-        bottomFieldLine.set(-width / 2 + x, -height / 2 + y, width / 2 - x, -height  /2 + y);
-        EdgeShape topFieldLeft = new EdgeShape();
-        topFieldLeft.set(-width / 2 + x, height / 2 - y, -width / 2 + x, height / 2 - goalY);
-        EdgeShape bottomFieldLeft = new EdgeShape();
-        bottomFieldLeft.set(-width / 2 + x, -height / 2 + goalY, -width / 2 + x, -height / 2 + y);
-        EdgeShape topFieldRight = new EdgeShape();
-        topFieldRight.set(width / 2 - x, height / 2 - y, width / 2 - x, height / 2 - goalY);
-        EdgeShape bottomFieldRight = new EdgeShape();
-        bottomFieldRight.set(width / 2 - x, -height / 2 + goalY, width / 2 - x, -height / 2 + y);
+        ChainShape topFieldBorder = new ChainShape();
+        Vector2[] topBorderVertices = new Vector2[4];
+        topBorderVertices[0] = new Vector2(-width / 2 + x, goalY);
+        topBorderVertices[1] = new Vector2(-width / 2 + x, height / 2 - y);
+        topBorderVertices[2] = new Vector2(width / 2 - x, height / 2 - y);
+        topBorderVertices[3] = new Vector2(width / 2 - x, goalY);
+        topFieldBorder.createChain(topBorderVertices);
+
+        ChainShape bottomFieldBorder = new ChainShape();
+        Vector2[] bottomBorderVertices = new Vector2[4];
+        bottomBorderVertices[0] = new Vector2(-width / 2 + x, -goalY);
+        bottomBorderVertices[1] = new Vector2(-width / 2 + x, -height / 2 + y);
+        bottomBorderVertices[2] = new Vector2(width / 2 - x, -height / 2 + y);
+        bottomBorderVertices[3] = new Vector2(width / 2 - x, -goalY);
+        bottomFieldBorder.createChain(bottomBorderVertices);
 
         FixtureDef innerLinesFixture = new FixtureDef();
         innerLinesFixture.filter.categoryBits = FieldBordersMask.getMask();
         innerLinesFixture.filter.maskBits = BallMask.getMask();
 
-        innerLinesFixture.shape = topFieldLine;
-        topLine.createFixture(innerLinesFixture);
-        topFieldLine.dispose();
+        innerLinesFixture.shape = topFieldBorder;
+        topBorder.createFixture(innerLinesFixture);
+        topFieldBorder.dispose();
 
-        innerLinesFixture.shape = bottomFieldLine;
-        bottomLine.createFixture(innerLinesFixture);
-        bottomFieldLine.dispose();
-
-        innerLinesFixture.shape = topFieldLeft;
-        topLeftLine.createFixture(innerLinesFixture);
-        topFieldLeft.dispose();
-
-        innerLinesFixture.shape = bottomFieldLeft;
-        bottomLeftLine.createFixture(innerLinesFixture);
-        bottomFieldLeft.dispose();
-
-        innerLinesFixture.shape = topFieldRight;
-        topRightLine.createFixture(innerLinesFixture);
-        topFieldRight.dispose();
-
-        innerLinesFixture.shape = bottomFieldRight;
-        bottomRightLine.createFixture(innerLinesFixture);
-        bottomFieldRight.dispose();
+        innerLinesFixture.shape = bottomFieldBorder;
+        bottomBorder.createFixture(innerLinesFixture);
+        bottomFieldBorder.dispose();
 
         //Initial barriers
-        percentageFieldX = 1030 * 100 / 2560;
-        x = percentageFieldX * Gdx.graphics.getWidth() / 100;
-        x /= 100;
+        FixtureDef centerFixture = new FixtureDef();
+        centerFixture.filter.categoryBits = CenterMask.getMask();
+        centerFixture.filter.maskBits = PlayerMask.getMask();
 
-        EdgeShape leftEdge = new EdgeShape();
-        leftEdge.set(- width / 2 + x, - height / 2, - width / 2 + x,  height / 2);
-        EdgeShape rightEdge = new EdgeShape();
-        rightEdge.set(width / 2 - x, - height / 2, width / 2 - x,  height / 2);
+        ChainShape leftMoon = new ChainShape();
+        ChainShape rightMoon = new ChainShape();
 
-        fixtureDef1.shape = leftEdge;
-        leftBarrier.createFixture(fixtureDef1);
-        leftEdge.dispose();
+        Vector2[] vertices = new Vector2[7];
+        vertices[0] = new Vector2(0, height  /2 - y);
+        vertices[1] = new Vector2(0, 250 * 0.01f * heightScale);
+        vertices[2] = new Vector2(-175 * 0.01f * widthScale, 175 * 0.01f * heightScale);
+        vertices[3] = new Vector2(- 250 * 0.01f * widthScale, 0);
+        vertices[4] = new Vector2(-175 * 0.01f * widthScale, -175 * 0.01f * heightScale);
+        vertices[5] = new Vector2(0, -250 * 0.01f * heightScale);
+        vertices[6] = new Vector2(0, -height  /2 - y);
 
-        fixtureDef1.shape = rightEdge;
-        rightBarrier.createFixture(fixtureDef1);
-        rightEdge.dispose();
+        leftMoon.createChain(vertices);
+
+        centerFixture.shape = leftMoon;
+        leftHalfMoon.createFixture(centerFixture);
+        leftMoon.dispose();
+
+        Vector2[] verts = new Vector2[7];
+        verts[0] = new Vector2(0, -height  /2 - y);
+        verts[1] = new Vector2(0, -250 * 0.01f * heightScale);
+        verts[2] = new Vector2(175 * 0.01f * widthScale, -175 * 0.01f * heightScale);
+        verts[3] = new Vector2(250 * 0.01f * widthScale, 0);
+        verts[4] = new Vector2(175 * 0.01f * widthScale, 175 * 0.01f * heightScale);
+        verts[5] = new Vector2(0, 250 * 0.01f * heightScale);
+        verts[6] = new Vector2(0, height  /2 - y);
+
+        rightMoon.createChain(verts);
+        centerFixture.shape = rightMoon;
+        rightHalfMoon.createFixture(centerFixture);
+        rightMoon.dispose();
     }
 
     public void deactivateBarriers() {
-        leftBarrier.setActive(false);
-        rightBarrier.setActive(false);
+        rightHalfMoon.setActive(false);
+        leftHalfMoon.setActive(false);
     }
 
-    public void activateBarriers() {
-        leftBarrier.setActive(true);
-        rightBarrier.setActive(true);
+    public void activateBarriers(boolean teamFlag) {
+        rightHalfMoon.setActive(teamFlag);
+        leftHalfMoon.setActive(!teamFlag);
     }
 }

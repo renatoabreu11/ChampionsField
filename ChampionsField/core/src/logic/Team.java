@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 public class Team {
     enum TeamState{
-        Playing, Attacking, Defending, Scoring
+        Playing, Attacking, Defending
     }
 
     int score;
@@ -58,31 +58,10 @@ public class Team {
             players.get(index).setControlledPlayer(true);
     }
 
-    public void updateControlledPlayer() {
-        for(int i = 0; i < players.size(); i++) {
-            if(players.get(i).isControlledPlayer()) {
-                players.get(i).updatePosition();
-                break;
-            }
-        }
-    }
-
     public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).isControlledPlayer()) {
                 players.get(i).getBody().setLinearVelocity(x, y);
-                /*players.get(i).updatePosition(x, y);
-                for (int j = 0; j < players.size(); j++) {
-                }*/
-            }
-        }
-    }
-
-    public void updatePlayers(){
-        for(int i = 0; i < players.size(); i++) {
-            if(!players.get(i).isControlledPlayer()){
-                for(int j = 0; j < players.size(); j++){
-                 }
             }
         }
     }

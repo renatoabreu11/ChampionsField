@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -41,25 +40,21 @@ public class PlayState extends State implements ApplicationListener{
     private Texture fieldTexture;
     private Texture homeTeamTexture;
     private Texture visitorTeamTexture;
-    private Texture leftGoalTexture;
-    private Texture rightGoalTexture;
+    private Texture goalTexture;
     private BitmapFont font;
 
     private Rain rain;
 
     private float deltaTime = 0;
-    private float startController;
-    public boolean scored;
     private float scoreAnimationTime;
-    private boolean scoredProcess;
-    private boolean canReposition;
-    private boolean auxCanReposition;
 
-    static final float TIME_TO_START = 3;
     static final float GAME_SIMULATION_SPEED = 1 / 60f;
     static final float PLAYERS_SPEED = 5;
     static final float EXPLOSION_SPEED = 5f;
     static final float EXPLOSION_DURATION = 2.4f;
+    static final float BOX_TO_WORLD = 100f;
+    static final float EXPLOSION_WIDTH = 100f;
+    static final float EXPLOSION_HEIGHT = 100f;
 
     //Match class init
     private Match match;
@@ -109,8 +104,7 @@ public class PlayState extends State implements ApplicationListener{
         fieldTexture = new Texture("Field.jpg");
         homeTeamTexture = new Texture("Player.png");
         visitorTeamTexture = new Texture("Player.png");
-        leftGoalTexture = new Texture("LeftGoal.png");
-        rightGoalTexture = new Texture("RightGoal.png");
+        goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
         rain = new Rain(width, height);
         font = new BitmapFont();
@@ -128,12 +122,7 @@ public class PlayState extends State implements ApplicationListener{
         match = new Match(2, world);
         createCollisionListener();
 
-        startController = 0;
-        scored = false;
         scoreAnimationTime = 0;
-        scoredProcess = true;
-        canReposition = false;
-        auxCanReposition = false;
     }
 
     private void createCollisionListener() {
@@ -144,11 +133,9 @@ public class PlayState extends State implements ApplicationListener{
                 Fixture f2 = contact.getFixtureB();
 
                 if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getVisitorTeam(), world);
-                    scored = true;
+                    match.teamScored(match.getVisitorTeam(), match.getHomeTeam());
                 }  else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getHomeTeam(), world);
-                    scored = true;
+                    match.teamScored(match.getHomeTeam(), match.getVisitorTeam());
                 }
             }
 
@@ -206,33 +193,15 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
-        if(startController >= TIME_TO_START)
-            match.deactivateBarriers();
-        else
-            startController += dt;
-
-        if(scored && scoredProcess) {
-            match.activateBarriers();
-            scoredProcess = false;
-        }
-
-        if(auxCanReposition) {
-            match.stopAllPlayersMotion();
-            auxCanReposition = false;
-        }
-
-        if(canReposition) {
-            match.repositionTeams();
-            canReposition = false;
-            auxCanReposition = true;
-        }
-
-        if(gameplayController == 1)
-            match.updateMatch(dt);
-        else
-            match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED);
+        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED);
 
         rain.update();
+
+        if(scoreAnimationTime >= EXPLOSION_DURATION) {
+            scoreAnimationTime = 0;
+            match.endScoreState();
+        }
+
         world.step(GAME_SIMULATION_SPEED, 6, 2);
 
         deltaTime += dt;
@@ -242,12 +211,21 @@ public class PlayState extends State implements ApplicationListener{
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
+
+        //Field draw
         sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
+        Vector2 screenPosition;
         Ball b = match.getBall();
         b.setPositionToBody();
-        Vector2 screenPosition = convertToScreenCoordinates(b);
-        sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2, b.getRadius()*2);
+        screenPosition = b.getScreenCoordinates();
+
+       if(match.getCurrentState() == Match.matchState.Score) {
+           sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), screenPosition.x - EXPLOSION_WIDTH/2, screenPosition.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+           scoreAnimationTime += Gdx.graphics.getDeltaTime();
+       } else{
+            sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2, b.getRadius()*2);
+        }
 
         //Teams
         ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
@@ -257,47 +235,28 @@ public class PlayState extends State implements ApplicationListener{
         for(int i = 0; i < match.getNumberOfPlayers(); i++){
 
             homeTeamPlayers.get(i).setPositionToBody();
-            screenPosition = convertToScreenCoordinates(homeTeamPlayers.get(i));
+            screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getRadius()*2, homeTeamPlayers.get(i).getRadius()*2);
             font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius + 15/2);
 
             visitorTeamPlayers.get(i).setPositionToBody();
-            screenPosition = convertToScreenCoordinates(visitorTeamPlayers.get(i));
+            screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getRadius()*2, visitorTeamPlayers.get(i).getRadius()*2);
             font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
         }
 
-        Player controPlayer = null;
-        for(int i = 0; i < homeTeamPlayers.size(); i++) {
-            if(homeTeamPlayers.get(i).isControlledPlayer()) {
-                controPlayer = homeTeamPlayers.get(i);
-                break;
-            }
-        }
-
-        for(int i = 0; i < controPlayer.getPath().size(); i++)
-            sb.draw(homeTeamTexture, controPlayer.getPath().get(i).x, controPlayer.getPath().get(i).y, controPlayer.getRadius() * 2, controPlayer.getRadius() * 2);
-
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
         font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
 
-        /*float goalX = -Gdx.graphics.getWidth()/2 + 30f * (Gdx.graphics.getWidth() / Match.FIELD_TEXTURE_WIDTH);
-        float goalY = 500f * (Gdx.graphics.getHeight() / Match.FIELD_TEXTURE_HEIGHT);
-        sb.draw(leftGoalTexture, width / 2 + goalX, height / 2 - goalY / 2, width / 2 + goalX + 300, (height / 2 - goalY / 2) * 2);*/
+        Goal g = match.getHomeTeamGoal();
+        screenPosition = g.getScreenCoordinates();
+        float vertLength = match.getHomeTeamGoal().getVerticalLength() * BOX_TO_WORLD;
+        float horLength = match.getHomeTeamGoal().getHorizontalLength() * BOX_TO_WORLD;
+        sb.draw(goalTexture, screenPosition.x, screenPosition.y, horLength, vertLength);
 
-        if(scored) {
-            if(scoreAnimationTime >= EXPLOSION_DURATION) {
-                scored = false;
-                scoredProcess = true;
-                scoreAnimationTime = 0;
-                startController = 0;
-                match.activateBarriers();
-                canReposition = true;
-            } else {
-                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), 10, height / 2, width / 4, height / 3);
-                scoreAnimationTime += Gdx.graphics.getDeltaTime();
-            }
-        }
+        g = match.getVisitorTeamGoal();
+        screenPosition = g.getScreenCoordinates();
+        sb.draw(goalTexture, screenPosition.x , screenPosition.y, -horLength, vertLength);
 
         for(int i = 0; i < rain.getRainSize(); i++)
             sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
@@ -309,24 +268,6 @@ public class PlayState extends State implements ApplicationListener{
             stage.draw();
         }
 
-        debugRenderer.render(world, camera.combined);
-    }
-
-    private Vector2 convertToScreenCoordinates(Goal g) {
-        float x = g.getPosition().x * 100f + Gdx.graphics.getWidth()/2;
-        float y = g.getPosition().y * 100f + Gdx.graphics.getHeight()/2 + g.getVerticalLength()/2;
-        return new Vector2(x, y);
-    }
-
-    private Vector2 convertToScreenCoordinates(Player player) {
-        float x = player.getPosition().x * 100f + Gdx.graphics.getWidth()/2 - player.getRadius();
-        float y = player.getPosition().y * 100f + Gdx.graphics.getHeight()/2 - player.getRadius();
-        return new Vector2(x, y);
-    }
-
-    private Vector2 convertToScreenCoordinates(Ball b) {
-        float x = b.getPosition().x * 100f + Gdx.graphics.getWidth()/2 - b.getRadius();
-        float y = b.getPosition().y * 100f + Gdx.graphics.getHeight()/2 - b.getRadius();
-        return new Vector2(x, y);
+       debugRenderer.render(world, camera.combined);
     }
 }

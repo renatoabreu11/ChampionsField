@@ -14,23 +14,22 @@ import static logic.Match.entityMasks.FieldBordersMask;
 import static logic.Match.entityMasks.FootballGoalMask;
 import static logic.Match.entityMasks.GoalMask;
 import static logic.Match.entityMasks.PlayerMask;
-import static logic.Match.entityMasks.ScreenBordersMask;
 
-public class Ball{
+public class Ball implements Coordinates{
     Vector2 position;
-    float speed;
     float radius;
     Body body;
 
     public Ball(float xPosition, float yPosition, float size, World w){
-        position = new Vector2(-Gdx.graphics.getWidth() / 3f * 0.01f, yPosition * 0.01f);
-        speed = 0;
+        position = new Vector2(xPosition * 0.01f, yPosition * 0.01f);
         radius = size / 2;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(position.x, position.y);
         body = w.createBody(bodyDef);
+        body.setLinearDamping(0.75f);
+        body.setAngularDamping(0.75f);
 
         CircleShape shape = new CircleShape();
         shape.setRadius(radius * 0.01f);
@@ -61,14 +60,6 @@ public class Ball{
         this.position = position;
     }
 
-    public float getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
     public float getRadius() {
         return radius;
     }
@@ -83,5 +74,18 @@ public class Ball{
 
     public void setPositionToBody(){
         setPosition(body.getPosition());
+    }
+
+    public void reposition(){
+        body.setTransform(0, 0, 0);
+        setPositionToBody();
+        body.setLinearVelocity(0, 0);
+    }
+
+    @Override
+    public Vector2 getScreenCoordinates() {
+        float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2 - radius;
+        float y = getPosition().y * 100f + Gdx.graphics.getHeight()/2 - radius;
+        return new Vector2(x, y);
     }
 }

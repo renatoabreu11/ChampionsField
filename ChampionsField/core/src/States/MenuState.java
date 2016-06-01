@@ -20,6 +20,7 @@ import java.util.Random;
 
 import logic.Ball;
 import logic.Field;
+import server.MPClient;
 
 public class MenuState extends State  {
     enum CameraState {
@@ -240,7 +241,10 @@ public class MenuState extends State  {
 
     private void changeState(int state) {
         switch(state) {
-            case 0: gsm.set(new PlayState(gsm)); break;
+            case 0:
+                gsm.set(new PlayState(gsm));
+                //MPClient client = new MPClient("1", 0, gsm);
+                break;
             case 1: gsm.set(new Options(gsm)); break;
             case 2: Gdx.app.exit(); break;
             default: break;

@@ -1,6 +1,5 @@
 package server;
 
-import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -8,7 +7,7 @@ import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 
-import States.PlayState;
+import States.GameStateManager;
 import logic.Match;
 
 public class MPClient {
@@ -16,22 +15,12 @@ public class MPClient {
     Client client;
 
     //0 --> homeTeam, 1 --> visitorTeam
-    public MPClient(PlayState playState, int team) {
+    public MPClient(String name, int team, GameStateManager gsm) {
         client = new Client();
         client.start();
 
         Network.registerPackets(client);
-
-        Network.Login login = new Network.Login();
-        Vector2 position;
-        position = playState.match.getNextClientPosition(team);
-        login.x = position.x;
-        login.y = position.y;
-        login.name = "1";
-        login.size = Match.PLAYER_SIZE;
-        login.controlledPlayer = true;
-
-        addListeners(playState, login.name, team);
+        addListeners();
 
         try {
             client.connect(TIME_OUT, "127.0.0.1", Network.PORT);
@@ -40,6 +29,13 @@ public class MPClient {
             client.stop();
         }
 
+        Network.Login login = new Network.Login();
+        login.x = 1;
+        login.y = 1;
+        login.name = name;
+        login.size = Match.PLAYER_SIZE;
+        login.team = team;
+
         client.sendTCP(login);
 
         while(true) {
@@ -47,7 +43,7 @@ public class MPClient {
         }
     }
 
-    private void addListeners(final PlayState playState, final String playerName, final int team) {
+    private void addListeners() {
         client.addListener(new Listener.ThreadedListener(new Listener() {
             @Override
             public void connected(Connection connection) {
@@ -61,15 +57,8 @@ public class MPClient {
 
             @Override
             public void received(Connection connection, Object object) {
-                /*if(object instanceof Network.ActivatePlayerPhysics) {
-                    playState.match.activateNextClientPhysics(playerName, team);
-                }*/
+
             }
         }));
     }
-
-    /*public static void main(String[] args) {
-        Log.set(Log.LEVEL_DEBUG);
-        new MPClient();
-    }*/
 }

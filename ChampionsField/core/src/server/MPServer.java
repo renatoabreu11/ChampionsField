@@ -8,14 +8,20 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
+import States.PlayState;
+import logic.Match;
 import logic.Player;
 
 public class MPServer {
-    ArrayList<Player> playersLoggedIn;
     Server server;
+    Match match;
+
+    ArrayList<Player> playersLoggedIn;
+    int numNewPlayers;
 
     public MPServer() throws IOException {
         playersLoggedIn = new ArrayList<Player>();
+        numNewPlayers = 0;
         server = new Server() {
             //Since we're implementing our own connection, we can store per
             //connection state without a connection ID to look up
@@ -48,11 +54,17 @@ public class MPServer {
                 PlayerConnection connection = (PlayerConnection) c;
                 Player player = connection.player;
 
-                if(object instanceof Network.Login) {
+                if (object instanceof Network.Login) {
                     Network.Login login = (Network.Login) object;
 
-                    player = new Player(login.x, login.y, login.name, login.size, true);
+                    player = new Player(login.x, login.y, login.name, login.size, login.team);
                     loggedIn(connection, player);
+
+                    numNewPlayers++;
+                    if (numNewPlayers == 2) {
+                        match = new Match();
+                        //playState.match.addPlayerToMatch(playersLoggedIn);
+                    }
                 }
             }
         });

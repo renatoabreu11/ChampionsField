@@ -1,6 +1,5 @@
 package server;
 
-import com.badlogic.gdx.math.Vector2;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.EndPoint;
 
@@ -12,10 +11,10 @@ public class Network {
     public static void registerPackets(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(Login.class);
-        kryo.register(ActivatePlayerPhysics.class);
         kryo.register(UpdatePlayer.class);
         kryo.register(AddPlayer.class);
         kryo.register(RemovePlayer.class);
+
         kryo.register(logic.Player.class);
         kryo.register(com.badlogic.gdx.math.Vector2.class);
     }
@@ -24,16 +23,12 @@ public class Network {
         float x, y;
         String name;
         float size;
-        boolean controlledPlayer;
-    }
-
-    static public class ActivatePlayerPhysics {
-
+        int team;
     }
 
     static public class UpdatePlayer {
         public String name;
-        public Vector2 updatedPosition;
+        public float newX, newY;
     }
 
     static public class AddPlayer {

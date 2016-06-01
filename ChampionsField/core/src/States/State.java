@@ -14,10 +14,15 @@ public abstract class State {
 
     protected State(GameStateManager gsm) {
         this.gsm = gsm;
-        cam = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         width = Gdx.graphics.getWidth();
         height = Gdx.graphics.getHeight();
-        cam.setToOrtho(true);       //top left corner is 0,0
+        sb = new SpriteBatch();
+        gameplayController = 2;
+    }
+
+    protected State() {
+        width = Gdx.graphics.getWidth();
+        height = Gdx.graphics.getHeight();
         sb = new SpriteBatch();
         gameplayController = 2;
     }

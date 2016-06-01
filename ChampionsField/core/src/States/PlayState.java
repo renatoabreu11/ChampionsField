@@ -42,13 +42,11 @@ public class PlayState extends State implements ApplicationListener{
     private Texture visitorTeamTexture;
     private Texture goalTexture;
     private BitmapFont font;
-
     private Rain rain;
 
     private float deltaTime = 0;
     private float scoreAnimationTime;
 
-    static final float GAME_SIMULATION_SPEED = 1 / 60f;
     static final float PLAYERS_SPEED = 5;
     static final float EXPLOSION_SPEED = 5f;
     static final float EXPLOSION_DURATION = 2.4f;
@@ -57,12 +55,10 @@ public class PlayState extends State implements ApplicationListener{
     static final float EXPLOSION_HEIGHT = 100f;
 
     //Match class init
-    private Match match;
+    public Match match;
 
     //Physics World
     private OrthographicCamera camera;
-    private World world;
-    private Box2DDebugRenderer debugRenderer;
 
     //Touchpad
     private Stage stage;
@@ -75,26 +71,24 @@ public class PlayState extends State implements ApplicationListener{
     public PlayState(GameStateManager gsm){
         super(gsm);
 
-        if(gameplayController == 2) {
-            touchpadSkin = new Skin();
-            touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-            touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-            touchpadStyle = new Touchpad.TouchpadStyle();
-            //Create Drawable's from TouchPad skin
-            touchBackground = touchpadSkin.getDrawable("touchBackground");
-            touchKnob = touchpadSkin.getDrawable("touchKnob");
-            //Apply the Drawables to the TouchPad Style
-            touchpadStyle.background = touchBackground;
-            touchpadStyle.knob = touchKnob;
-            //Create new TouchPad with the created style
-            touchpad = new Touchpad(10, touchpadStyle);
-            touchpad.setBounds(15, 15, 200, 200);
+        touchpadSkin = new Skin();
+        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
+        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
+        touchpadStyle = new Touchpad.TouchpadStyle();
+        //Create Drawable's from TouchPad skin
+        touchBackground = touchpadSkin.getDrawable("touchBackground");
+        touchKnob = touchpadSkin.getDrawable("touchKnob");
+        //Apply the Drawables to the TouchPad Style
+        touchpadStyle.background = touchBackground;
+        touchpadStyle.knob = touchKnob;
+        //Create new TouchPad with the created style
+        touchpad = new Touchpad(10, touchpadStyle);
+        touchpad.setBounds(15, 15, 200, 200);
 
-            //Create a Stage and add TouchPad
-            stage = new Stage();
-            stage.addActor(touchpad);
-            Gdx.input.setInputProcessor(stage);
-        }
+        //Create a Stage and add TouchPad
+        stage = new Stage();
+        stage.addActor(touchpad);
+        Gdx.input.setInputProcessor(stage);
 
         //Textures definition
         explosionAtlas = new TextureAtlas("Explosion.atlas");
@@ -106,56 +100,18 @@ public class PlayState extends State implements ApplicationListener{
         visitorTeamTexture = new Texture("Player.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
-        rain = new Rain(width, height);
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 
-        //Physics World
-        Vector2 gravity = new Vector2(0, 0f);
-        world = new World(gravity, true);
-
+        //Camera definition
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        cam.setToOrtho(false);
+        camera.setToOrtho(false);
         camera.update();
-        debugRenderer = new Box2DDebugRenderer();
 
-        match = new Match(2, world);
-        createCollisionListener();
-
+        rain = new Rain(width, height);
+        match = new Match(2);
         scoreAnimationTime = 0;
     }
-
-    private void createCollisionListener() {
-        world.setContactListener(new ContactListener() {
-            @Override
-            public void beginContact(Contact contact) {
-                Fixture f1 = contact.getFixtureA();
-                Fixture f2 = contact.getFixtureB();
-
-                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getVisitorTeam(), match.getHomeTeam());
-                }  else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")) {
-                    match.teamScored(match.getHomeTeam(), match.getVisitorTeam());
-                }
-            }
-
-            @Override
-            public void endContact(Contact contact) {
-
-            }
-
-            @Override
-            public void preSolve(Contact contact, Manifold oldManifold) {
-
-            }
-
-            @Override
-            public void postSolve(Contact contact, ContactImpulse impulse) {
-
-            }
-        });
-    }
-
 
     @Override
     public void create() {
@@ -193,16 +149,12 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
-        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED);
-
-        rain.update();
+        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain);
 
         if(scoreAnimationTime >= EXPLOSION_DURATION) {
             scoreAnimationTime = 0;
             match.endScoreState();
         }
-
-        world.step(GAME_SIMULATION_SPEED, 6, 2);
 
         deltaTime += dt;
     }
@@ -233,7 +185,6 @@ public class PlayState extends State implements ApplicationListener{
         float radius = homeTeamPlayers.get(0).getRadius();
 
         for(int i = 0; i < match.getNumberOfPlayers(); i++){
-
             homeTeamPlayers.get(i).setPositionToBody();
             screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getRadius()*2, homeTeamPlayers.get(i).getRadius()*2);
@@ -267,7 +218,5 @@ public class PlayState extends State implements ApplicationListener{
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
         }
-
-       debugRenderer.render(world, camera.combined);
     }
 }

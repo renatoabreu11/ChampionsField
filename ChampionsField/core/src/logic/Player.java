@@ -25,6 +25,7 @@ public class Player implements GestureDetector.GestureListener, Coordinates{
     private boolean controlledPlayer;
     int score;
     String name;
+    int team;
     Body body;
 
     //Pan movement detection
@@ -217,4 +218,47 @@ public class Player implements GestureDetector.GestureListener, Coordinates{
         float y = getPosition().y * 100f + Gdx.graphics.getHeight()/2 - getRadius();
         return new Vector2(x, y);
     }
+
+    /*
+    * BEGIN OF THE MULTIPLAYER FUNCTIONS
+    * */
+
+    public Player() {
+
+    }
+
+    public Player(float xPosition, float yPosition, String name, float size, int team) {
+        this.position = new Vector2();
+        this.position.x = xPosition;
+        this.position.y = yPosition;
+        this.name = name;
+        this.team = team;
+        this.radius = size / 2;
+        this.score = 0;
+        this.controlledPlayer = true;
+    }
+
+    public void addPhysics(World w) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(position.x, position.y);
+        body = w.createBody(bodyDef);
+        body.setAngularDamping(0.5f);
+        CircleShape shape = new CircleShape();
+        shape.setRadius(radius * 0.01f);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 2.5f;
+        fixtureDef.friction = 0.8f;
+        fixtureDef.restitution = 1f;
+        fixtureDef.filter.categoryBits = PlayerMask.getMask();
+        fixtureDef.filter.maskBits = (short)(PlayerMask.getMask() | BallMask.getMask() | ScreenBordersMask.getMask() | GoalMask.getMask() | CenterMask.getMask());
+        Fixture fixture = body.createFixture(fixtureDef);
+        shape.dispose();
+    }
+
+    /*
+    * END OF THE MULTIPLAYER FUNCTIONS
+    * */
 }

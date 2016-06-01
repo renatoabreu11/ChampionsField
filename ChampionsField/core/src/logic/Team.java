@@ -15,6 +15,9 @@ public class Team {
     ArrayList<Player> players;
     TeamState teamState;
 
+    //ONLINE VARIABLES
+    World world;
+
     public Team(int numPlayers, float size, String name, TeamState initialState, World w) {
         score = 0;
         teamState = initialState;
@@ -34,17 +37,6 @@ public class Team {
                 players.get(i).reposition(- Gdx.graphics.getWidth() / 4 + i * 50 , 0);
             else
                 players.get(i).reposition(Gdx.graphics.getWidth() / 4 - i * 50 ,0);
-        }
-    }
-
-    public void getCout() {
-        for(int i = 0; i < players.size(); i++)
-            players.get(i).getCout();
-    }
-
-    public void stopTeamMotion() {
-        for(int i = 0; i < players.size(); i++) {
-            players.get(i).stopPlayerMotion();
         }
     }
 
@@ -93,4 +85,25 @@ public class Team {
     public void setName(String name) {
         this.name = name;
     }
+
+    /*
+    * BEGIN OF THE MULTPLAYER FUNCTIONS
+    * */
+
+    public Team(String name, TeamState initialState, World w) {
+        this.name = name;
+        world = w;
+        score = 0;
+        teamState = initialState;
+        players = new ArrayList<Player>();
+    }
+
+    public void addPlayer(Player player) {
+        player.addPhysics(world);
+        players.add(player);
+    }
+
+    /*
+    * END OF THE MULTPLAYER FUNCTIONS
+    * */
 }

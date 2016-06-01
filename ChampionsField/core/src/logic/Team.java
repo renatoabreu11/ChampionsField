@@ -25,9 +25,9 @@ public class Team {
 
         for(int i = 0; i < numPlayers; i++){
             if(teamState == TeamState.Attacking)
-                players.add(new Player(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, i+"", size, false, w));
+                players.add(new Player(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, i+"", size, w));
             else
-                players.add(new Player(Gdx.graphics.getWidth() / 4 - i * 50 ,0, i+"", size, false, w));
+                players.add(new Player(Gdx.graphics.getWidth() / 4 - i * 50 ,0, i+"", size, w));
         }
     }
 
@@ -50,11 +50,12 @@ public class Team {
             players.get(index).setControlledPlayer(true);
     }
 
-    public void updateControlledPlayer(float x, float y) {
+    public void updateControlledPlayer(float x, float y, float dt) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).isControlledPlayer()) {
                 players.get(i).getBody().setLinearVelocity(x, y);
             }
+            players.get(i).update(dt);
         }
     }
 

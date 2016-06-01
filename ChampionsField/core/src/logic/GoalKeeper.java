@@ -7,15 +7,8 @@ import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
 
-import utils.Constants;
-
-public class Ball implements Coordinates, Steerable<Vector2> {
+public class GoalKeeper implements Steerable<Vector2>, Coordinates{
     Vector2 position;
     Body body;
 
@@ -26,104 +19,10 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
     SteeringBehavior<Vector2> steeringBehavior;
 
-    public Ball(float xPosition, float yPosition, float size, World w){
-        position = new Vector2(xPosition * 0.01f, yPosition * 0.01f);
-        radius = (size / 2) * 0.01f;
-
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(position.x, position.y);
-        body = w.createBody(bodyDef);
-        body.setLinearDamping(0.75f);
-        body.setAngularDamping(0.75f);
-
-        CircleShape shape = new CircleShape();
-        shape.setRadius(radius);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 2.5f;
-        fixtureDef.friction = 0.9f;
-        fixtureDef.restitution = 0.8f;
-        fixtureDef.filter.categoryBits = Constants.entityMasks.BallMask.getMask();
-        fixtureDef.filter.maskBits = (short)(Constants.entityMasks.PlayerMask.getMask() | Constants.entityMasks.GoalMask.getMask() |
-                Constants.entityMasks.FieldBordersMask.getMask() | Constants.entityMasks.GoalMask.getMask() | Constants.entityMasks.FootballGoalMask.getMask());
-
-        Fixture fixture = body.createFixture(fixtureDef);
-        fixture.setUserData("Ball");
-        shape.dispose();
-
-        maxLinearSpeed = 5;
-        maxLinearAcceleration = 50;
-        maxAngularSpeed = 3;
-        maxAngularAcceleration = 0.5f;
-        tagged = false;
-    }
-
-    public void update(float dt){
-        if(steeringBehavior != null){
-            steeringBehavior.calculateSteering(steeringOutput);
-            applySteering(dt);
-        }
-    }
-
-    private void applySteering(float dt){
-        boolean anyAccelerations = false;
-
-        if(!steeringOutput.linear.isZero()){
-            Vector2 force = steeringOutput.linear.scl(dt);
-            body.applyForceToCenter(force, true);
-            anyAccelerations = true;
-        }
-
-        if(steeringOutput.angular != 0){
-            body.applyTorque(steeringOutput.angular * dt, true);
-            anyAccelerations = true;
-        }
-
-        if(anyAccelerations){
-            Vector2 velocity = body.getLinearVelocity();
-            float currentSpeedSquare = velocity.len2();
-            if(currentSpeedSquare > maxLinearSpeed * maxLinearSpeed){
-                body.setLinearVelocity(velocity.scl(maxLinearSpeed/(float)Math.sqrt((currentSpeedSquare))));
-            }
-
-            if(body.getAngularVelocity() > maxAngularSpeed){
-                body.setAngularVelocity(maxAngularSpeed);
-            }
-
-        }
-    }
-
-    public void setPosition(Vector2 position) {
-        this.position = position;
-    }
-
-    public float getRadius() {
-        return radius;
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
-    }
-
-    public Body getBody() {
-        return body;
-    }
-
-    public void setPositionToBody(){
-        setPosition(body.getPosition());
-    }
-
-    public void reposition(){
-        body.setTransform(0, 0, 0);
-        setPositionToBody();
-        body.setLinearVelocity(0, 0);
-    }
-
     /**
      * Coordinates methods
      */
+
     @Override
     public Vector2 getScreenCoordinates() {
         float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2 - radius*100f;
@@ -134,6 +33,7 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     /**
      * Steerable methods
      */
+
     public Vector2 getPosition() {
         return position;
     }

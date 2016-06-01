@@ -8,7 +8,7 @@ import com.esotericsoftware.minlog.Log;
 import java.io.IOException;
 
 import States.GameStateManager;
-import logic.Match;
+import utils.Constants;
 
 public class MPClient {
     static final int TIME_OUT = 5000;
@@ -33,7 +33,7 @@ public class MPClient {
         login.x = 1;
         login.y = 1;
         login.name = name;
-        login.size = Match.PLAYER_SIZE;
+        login.size = Constants.PLAYER_SIZE;
         login.team = team;
 
         client.sendTCP(login);

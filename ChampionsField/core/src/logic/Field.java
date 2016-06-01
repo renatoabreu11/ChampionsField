@@ -9,17 +9,9 @@ import com.badlogic.gdx.physics.box2d.EdgeShape;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import static logic.Match.entityMasks.BallMask;
-import static logic.Match.entityMasks.CenterMask;
-import static logic.Match.entityMasks.FieldBordersMask;
-import static logic.Match.entityMasks.PlayerMask;
-import static logic.Match.entityMasks.ScreenBordersMask;
+import utils.Constants;
 
 public class Field {
-
-    static final float FIELD_TEXTURE_WIDTH = 2560;
-    static final float FIELD_TEXTURE_HEIGHT = 1600;
-
     Body northBorder;
     Body southBorder;
     Body eastBorder;
@@ -53,8 +45,8 @@ public class Field {
     private void createBorders(World w) {
         float width =  Gdx.graphics.getWidth() * 0.01f;
         float height = Gdx.graphics.getHeight() * 0.01f;
-        float widthScale =  Gdx.graphics.getWidth() / FIELD_TEXTURE_WIDTH;
-        float heightScale = Gdx.graphics.getHeight() / FIELD_TEXTURE_HEIGHT;
+        float widthScale =  Gdx.graphics.getWidth() / Constants.FIELD_TEXTURE_WIDTH;
+        float heightScale = Gdx.graphics.getHeight() / Constants.FIELD_TEXTURE_HEIGHT;
 
         //Edges of the screen
         EdgeShape shape1 = new EdgeShape();
@@ -70,8 +62,8 @@ public class Field {
         fixtureDef1.shape = shape1;
         fixtureDef1.friction = 0;
         fixtureDef1.restitution = 0.5f;
-        fixtureDef1.filter.categoryBits = ScreenBordersMask.getMask();
-        fixtureDef1.filter.maskBits = PlayerMask.getMask();
+        fixtureDef1.filter.categoryBits = Constants.entityMasks.ScreenBordersMask.getMask();
+        fixtureDef1.filter.maskBits = Constants.entityMasks.PlayerMask.getMask();
 
         southBorder.createFixture(fixtureDef1);
         shape1.dispose();
@@ -110,8 +102,8 @@ public class Field {
         bottomFieldBorder.createChain(bottomBorderVertices);
 
         FixtureDef innerLinesFixture = new FixtureDef();
-        innerLinesFixture.filter.categoryBits = FieldBordersMask.getMask();
-        innerLinesFixture.filter.maskBits = BallMask.getMask();
+        innerLinesFixture.filter.categoryBits = Constants.entityMasks.FieldBordersMask.getMask();
+        innerLinesFixture.filter.maskBits = Constants.entityMasks.BallMask.getMask();
 
         innerLinesFixture.shape = topFieldBorder;
         topBorder.createFixture(innerLinesFixture);
@@ -123,8 +115,8 @@ public class Field {
 
         //Initial barriers
         FixtureDef centerFixture = new FixtureDef();
-        centerFixture.filter.categoryBits = CenterMask.getMask();
-        centerFixture.filter.maskBits = PlayerMask.getMask();
+        centerFixture.filter.categoryBits = Constants.entityMasks.CenterMask.getMask();
+        centerFixture.filter.maskBits = Constants.entityMasks.PlayerMask.getMask();
 
         ChainShape leftMoon = new ChainShape();
         ChainShape rightMoon = new ChainShape();

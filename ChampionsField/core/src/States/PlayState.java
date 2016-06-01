@@ -10,13 +10,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Manifold;
-import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -29,6 +22,7 @@ import logic.Goal;
 import logic.Match;
 import logic.Player;
 import logic.Rain;
+import logic.SinglePlayMatch;
 
 public class PlayState extends State implements ApplicationListener{
     //Objects textures
@@ -109,7 +103,7 @@ public class PlayState extends State implements ApplicationListener{
         camera.update();
 
         rain = new Rain(width, height);
-        match = new Match(2);
+        match = new SinglePlayMatch(2);
         scoreAnimationTime = 0;
     }
 
@@ -149,7 +143,7 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
-        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain);
+        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
 
         if(scoreAnimationTime >= EXPLOSION_DURATION) {
             scoreAnimationTime = 0;
@@ -176,23 +170,23 @@ public class PlayState extends State implements ApplicationListener{
            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), screenPosition.x - EXPLOSION_WIDTH/2, screenPosition.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
            scoreAnimationTime += Gdx.graphics.getDeltaTime();
        } else{
-            sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2, b.getRadius()*2);
+            sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
         }
 
         //Teams
         ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
         ArrayList<Player> visitorTeamPlayers = match.getVisitorTeam().getPlayers();
-        float radius = homeTeamPlayers.get(0).getRadius();
+        float radius = homeTeamPlayers.get(0).getBoundingRadius();
 
         for(int i = 0; i < match.getNumberOfPlayers(); i++){
             homeTeamPlayers.get(i).setPositionToBody();
             screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
-            sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getRadius()*2, homeTeamPlayers.get(i).getRadius()*2);
+            sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius()*2* 100f, homeTeamPlayers.get(i).getBoundingRadius()*2 * 100f);
             font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius + 15/2);
 
             visitorTeamPlayers.get(i).setPositionToBody();
             screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
-            sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getRadius()*2, visitorTeamPlayers.get(i).getRadius()*2);
+            sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
             font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
         }
 

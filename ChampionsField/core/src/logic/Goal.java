@@ -9,10 +9,7 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
-import static logic.Match.entityMasks.BallMask;
-import static logic.Match.entityMasks.FootballGoalMask;
-import static logic.Match.entityMasks.GoalMask;
-import static logic.Match.entityMasks.PlayerMask;
+import utils.Constants;
 
 public class Goal implements Coordinates{
     Vector2 position;
@@ -44,13 +41,13 @@ public class Goal implements Coordinates{
         //User data is to identify the goal collision
         EdgeShape goalTrigger = new EdgeShape();
         if(whichTeam.equals("VisitorGoal"))
-            goalTrigger.set(this.horizontalLength + ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength +((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
+            goalTrigger.set(this.horizontalLength + ((Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength +((Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
         else
-            goalTrigger.set(this.horizontalLength - ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength - ((Match.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
+            goalTrigger.set(this.horizontalLength - ((Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, this.verticalLength/2, this.horizontalLength - ((Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100) * 0.01f, -this.verticalLength/2);
 
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.filter.categoryBits = GoalMask.getMask();
-        fixtureDef.filter.maskBits = (short) (BallMask.getMask() | PlayerMask.getMask());
+        fixtureDef.filter.categoryBits = Constants.entityMasks.GoalMask.getMask();
+        fixtureDef.filter.maskBits = (short) (Constants.entityMasks.BallMask.getMask() | Constants.entityMasks.PlayerMask.getMask());
 
         fixtureDef.shape = vertical;
         body.createFixture(fixtureDef);
@@ -66,8 +63,8 @@ public class Goal implements Coordinates{
 
         FixtureDef goalTriggerFixture = new FixtureDef();
         goalTriggerFixture.shape = goalTrigger;
-        goalTriggerFixture.filter.categoryBits = FootballGoalMask.getMask();
-        goalTriggerFixture.filter.maskBits = BallMask.getMask();
+        goalTriggerFixture.filter.categoryBits = Constants.entityMasks.FootballGoalMask.getMask();
+        goalTriggerFixture.filter.maskBits = Constants.entityMasks.BallMask.getMask();
 
         Fixture fixture;
         fixture = body.createFixture(goalTriggerFixture);
@@ -83,16 +80,8 @@ public class Goal implements Coordinates{
         return verticalLength;
     }
 
-    public void setVerticalLength(float verticalLength) {
-        this.verticalLength = verticalLength;
-    }
-
     public float getHorizontalLength() {
         return horizontalLength;
-    }
-
-    public void setHorizontalLength(float horizontalLength) {
-        this.horizontalLength = horizontalLength;
     }
 
     public Vector2 getPosition() {

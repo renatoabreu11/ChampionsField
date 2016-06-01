@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.0.0'
@@ -35,6 +36,7 @@ project(":desktop") {
 
     dependencies {
         compile project(":core")
+        compile "com.badlogicgames.gdx:gdx-ai:1.7.0"
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
@@ -48,6 +50,7 @@ project(":android") {
 
     dependencies {
         compile project(":core")
+        compile "com.badlogicgames.gdx:gdx-ai:1.7.0"
         compile "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi"
         natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
@@ -68,6 +71,7 @@ project(":core") {
 
 
     dependencies {
+        compile "com.badlogicgames.gdx:gdx-ai:1.7.0"
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.esotericsoftware:kryonet:2.22.0-RC1"

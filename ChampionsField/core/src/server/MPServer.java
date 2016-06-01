@@ -1,15 +1,15 @@
 package server;
 
-import java.io.IOException;
-import java.util.ArrayList;
-
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
 
-import States.PlayState;
+import java.io.IOException;
+import java.util.ArrayList;
+
 import logic.Match;
+import logic.MultiPlayMatch;
 import logic.Player;
 
 public class MPServer {
@@ -62,7 +62,7 @@ public class MPServer {
 
                     numNewPlayers++;
                     if (numNewPlayers == 2) {
-                        match = new Match();
+                        match = new MultiPlayMatch();
                         //playState.match.addPlayerToMatch(playersLoggedIn);
                     }
                 }

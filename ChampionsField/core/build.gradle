@@ -6,7 +6,9 @@ sourceCompatibility = 1.6
 sourceSets.main.java.srcDirs = [ "src/" ]
 
 dependencies {
-    compile files('src/libs/kryonet-2.21-all.jar')  }
+    compile files('src/libs/kryonet-2.21-all.jar')
+    compile 'junit:junit:4.12'
+}
 
 
 eclipse.project {

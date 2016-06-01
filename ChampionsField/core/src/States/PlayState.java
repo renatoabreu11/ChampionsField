@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import logic.Ball;
 import logic.Goal;
 import logic.Match;
+import logic.MultiPlayMatch;
 import logic.Player;
 import logic.Rain;
 import logic.SinglePlayMatch;
@@ -50,6 +51,7 @@ public class PlayState extends State implements ApplicationListener{
 
     //Match class init
     public Match match;
+    boolean gameMode;
 
     //Physics World
     private OrthographicCamera camera;
@@ -62,8 +64,10 @@ public class PlayState extends State implements ApplicationListener{
     private Drawable touchBackground;
     private Drawable touchKnob;
 
-    public PlayState(GameStateManager gsm){
+    public PlayState(GameStateManager gsm, boolean gameMode){
         super(gsm);
+
+        this.gameMode = gameMode;
 
         touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
@@ -103,7 +107,9 @@ public class PlayState extends State implements ApplicationListener{
         camera.update();
 
         rain = new Rain(width, height);
-        match = new SinglePlayMatch(2);
+        if(gameMode)
+             match = new SinglePlayMatch(2);
+        else match = new MultiPlayMatch();
         scoreAnimationTime = 0;
     }
 

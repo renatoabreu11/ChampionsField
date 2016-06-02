@@ -1,6 +1,7 @@
 package utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public final class Constants {
@@ -15,11 +16,28 @@ public final class Constants {
     public static final float GAME_SIMULATION_SPEED = 1 / 60f;
     public static final float widthScale = ScreenWidth / FIELD_TEXTURE_WIDTH;
     public static final float heightScale = ScreenHeight / FIELD_TEXTURE_HEIGHT;
+
+    //players positions
     public static final Vector2 Keeper = new Vector2(ScreenWidth/2 - 210 * widthScale , 0);
     public static final Vector2 CenterDefender = new Vector2(ScreenWidth/2 - 430 * widthScale , -225 * heightScale);
     public static final Vector2 DefensiveMidfielder = new Vector2(650 * widthScale, 225 * heightScale );
     public static final Vector2 AttackingMidfielder = new Vector2(325 * widthScale , - 375 * heightScale);
     public static final Vector2 Striker = new Vector2(200 * widthScale, 425 * heightScale);
+
+    //Attacking team field regions
+    public static final Rectangle AttackKeeper = new Rectangle();
+    public static final Rectangle AttackCD = new Rectangle();
+    public static final Rectangle AttackDM = new Rectangle();
+    public static final Rectangle AttackAM = new Rectangle();
+    public static final Rectangle AttackST = new Rectangle();
+
+    //Defending team field regions
+    public static final Rectangle DefendKeeper = new Rectangle();
+    public static final Rectangle DefendCD = new Rectangle();
+    public static final Rectangle DefendDM = new Rectangle();
+    public static final Rectangle DefendAM = new Rectangle();
+    public static final Rectangle DefendST = new Rectangle();
+
 
     public enum entityMasks{
         BallMask(1),

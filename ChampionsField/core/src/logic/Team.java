@@ -1,7 +1,9 @@
 package logic;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
@@ -16,6 +18,7 @@ public class Team {
     String name;
     ArrayList<Player> players;
     TeamState teamState;
+    Array<Rectangle> regions;
 
     //ONLINE VARIABLES
     World world;
@@ -24,6 +27,21 @@ public class Team {
         score = 0;
         teamState = initialState;
         players = new ArrayList<Player>();
+
+        regions = new Array<Rectangle>(5);
+        if(teamState == TeamState.Attacking){
+            regions.add(Constants.AttackKeeper);
+            regions.add(Constants.AttackCD);
+            regions.add(Constants.AttackDM);
+            regions.add(Constants.AttackAM);
+            regions.add(Constants.AttackST);
+        } else{
+            regions.add(Constants.DefendKeeper);
+            regions.add(Constants.DefendCD);
+            regions.add(Constants.DefendDM);
+            regions.add(Constants.DefendAM);
+            regions.add(Constants.DefendST);
+        }
 
         for(int i = 0; i < numPlayers; i++){
             Vector2 position = new Vector2(0, 0);

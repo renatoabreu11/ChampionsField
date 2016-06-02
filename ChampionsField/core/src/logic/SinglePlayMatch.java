@@ -1,8 +1,5 @@
 package logic;
 
-import com.badlogic.gdx.ai.steer.behaviors.Arrive;
-import com.badlogic.gdx.math.Vector2;
-
 import java.util.Random;
 
 import utils.Constants;
@@ -31,10 +28,13 @@ public class SinglePlayMatch extends Match{
         homeTeam.repositionTeam();
         visitorTeam.repositionTeam();
         ball.reposition();
-        Arrive<Vector2> arrive = new Arrive<Vector2>(homeTeam.players.get(1), ball);
-        arrive.setArrivalTolerance(0.1f);
-        arrive.setDecelerationRadius(10);
-        homeTeam.players.get(1).setSteeringBehavior(arrive);
+        switchPlayer();
+    }
+
+    public void switchPlayer(){
+        if(homeTeam.switchPlayer(ball.position))
+            return;
+        else visitorTeam.switchPlayer(ball.position);
     }
 
     @Override
@@ -58,11 +58,15 @@ public class SinglePlayMatch extends Match{
                     visitorTeam.teamState = Team.TeamState.Playing;
                     currentState = matchState.Play;
                 }
-                homeTeam.updateControlledPlayer(x, y, dt);
+                homeTeam.updateControlledPlayer(x, y);
+                homeTeam.updatePlayers(dt, ball);
+                visitorTeam.updatePlayers(dt, ball);
                 break;
             }
             case Play: {
-                homeTeam.updateControlledPlayer(x, y, dt);
+                homeTeam.updateControlledPlayer(x, y);
+                homeTeam.updatePlayers(dt, ball);
+                visitorTeam.updatePlayers(dt, ball);
                 break;
             }
             case Score:{

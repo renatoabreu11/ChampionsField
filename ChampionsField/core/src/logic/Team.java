@@ -1,9 +1,11 @@
 package logic;
 
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
 
 import java.util.ArrayList;
+
+import utils.Constants;
 
 public class Team {
     enum TeamState{
@@ -24,19 +26,67 @@ public class Team {
         players = new ArrayList<Player>();
 
         for(int i = 0; i < numPlayers; i++){
+            Vector2 position = new Vector2(0, 0);
+            String n = "";
+            switch(i){
+                case 0:
+                    position = Constants.Keeper;
+                    n = "GK";
+                    break;
+                case 1:
+                    position = Constants.CenterDefender;
+                    n = "CD";
+                    break;
+                case 2:
+                    position = Constants.DefensiveMidfielder;
+                    n = "DM";
+                    break;
+                case 3:
+                    position = Constants.AttackingMidfielder;
+                    n = "AM";
+                    break;
+                case 4:
+                    position = Constants.Striker;
+                    n = "ST";
+                    break;
+            }
             if(teamState == TeamState.Attacking)
-                players.add(new Player(- Gdx.graphics.getWidth() / 4 + i * 50 , 0, i+"", size, w));
+                players.add(new Player(- position.x , position.y, n, size, w));
             else
-                players.add(new Player(Gdx.graphics.getWidth() / 4 - i * 50 ,0, i+"", size, w));
+                players.add(new Player(position.x, position.y, n, size, w));
         }
+    }
+
+    public boolean switchPlayer(Vector2 ballPosition) {
+        int playerIndex = -1;
+        float minDistance = Integer.MAX_VALUE;
+        float auxDistance = 0;
+
+        for(int i = 0; i < players.size(); i++) {
+            if(players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled){
+                players.get(i).setControlled(false);
+                for(int j = 0; j < players.size(); j++) {
+                    if(j != i){
+                        float xDiff = (float)Math.pow(ballPosition.x - players.get(j).position.x, 2);
+                        float yDiff = (float)Math.pow(ballPosition.y - players.get(j).position.y, 2);
+                        auxDistance = (float)Math.sqrt(xDiff + yDiff);
+                        if(auxDistance < minDistance) {
+                            minDistance = auxDistance;
+                            playerIndex = j;
+                        }
+                    }
+                }
+
+                players.get(playerIndex).setControlled(true);
+                return true;
+            }
+        }
+        return false;
     }
 
     public void repositionTeam() {
         for(int i = 0; i < players.size(); i++) {
-            if(teamState == TeamState.Attacking)
-                players.get(i).reposition(- Gdx.graphics.getWidth() / 4 + i * 50 , 0);
-            else
-                players.get(i).reposition(Gdx.graphics.getWidth() / 4 - i * 50 ,0);
+            players.get(i).reposition();
         }
     }
 
@@ -47,15 +97,22 @@ public class Team {
 
     public void controlPlayer(int index){
         if(index >= 0 && index <= players.size() - 1)
-            players.get(index).setControlledPlayer(true);
+            players.get(index).setControlled(true);
     }
 
-    public void updateControlledPlayer(float x, float y, float dt) {
+    public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
-            if (players.get(i).isControlledPlayer()) {
+            if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
                 players.get(i).getBody().setLinearVelocity(x, y);
             }
-            players.get(i).update(dt);
+        }
+    }
+
+    public void updatePlayers(float dt, Ball b){
+        for(int i = 0; i < players.size(); i++) {
+            if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
+                players.get(i).update(dt);
+            }
         }
     }
 

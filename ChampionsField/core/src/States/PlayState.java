@@ -24,6 +24,7 @@ import logic.MultiPlayMatch;
 import logic.Player;
 import logic.Rain;
 import logic.SinglePlayMatch;
+import utils.Constants;
 
 public class PlayState extends State implements ApplicationListener{
     //Objects textures
@@ -45,7 +46,6 @@ public class PlayState extends State implements ApplicationListener{
     static final float PLAYERS_SPEED = 5;
     static final float EXPLOSION_SPEED = 5f;
     static final float EXPLOSION_DURATION = 2.4f;
-    static final float BOX_TO_WORLD = 100f;
     static final float EXPLOSION_WIDTH = 100f;
     static final float EXPLOSION_HEIGHT = 100f;
 
@@ -108,7 +108,7 @@ public class PlayState extends State implements ApplicationListener{
 
         rain = new Rain(width, height);
         if(gameMode)
-             match = new SinglePlayMatch(2);
+             match = new SinglePlayMatch(5);
         else match = new MultiPlayMatch();
         scoreAnimationTime = 0;
     }
@@ -188,12 +188,12 @@ public class PlayState extends State implements ApplicationListener{
             homeTeamPlayers.get(i).setPositionToBody();
             screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius()*2* 100f, homeTeamPlayers.get(i).getBoundingRadius()*2 * 100f);
-            font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius + 15/2);
+            font.draw(sb, homeTeamPlayers.get(i).getName() , screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
 
             visitorTeamPlayers.get(i).setPositionToBody();
             screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
-            font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius - 15/2, screenPosition.y + radius+ 15/2);
+            font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);
         }
 
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
@@ -201,8 +201,8 @@ public class PlayState extends State implements ApplicationListener{
 
         Goal g = match.getHomeTeamGoal();
         screenPosition = g.getScreenCoordinates();
-        float vertLength = match.getHomeTeamGoal().getVerticalLength() * BOX_TO_WORLD;
-        float horLength = match.getHomeTeamGoal().getHorizontalLength() * BOX_TO_WORLD;
+        float vertLength = match.getHomeTeamGoal().getVerticalLength() * Constants.BOX_TO_WORLD;
+        float horLength = match.getHomeTeamGoal().getHorizontalLength() * Constants.BOX_TO_WORLD;
         sb.draw(goalTexture, screenPosition.x, screenPosition.y, horLength, vertLength);
 
         g = match.getVisitorTeamGoal();

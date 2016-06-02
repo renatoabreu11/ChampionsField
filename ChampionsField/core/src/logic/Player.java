@@ -1,6 +1,8 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
+import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
@@ -16,10 +18,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import utils.Constants;
 
 public class Player implements Coordinates, Steerable<Vector2>{
+    Vector2 initialPosition;
     Vector2 position;
     Body body;
 
-    boolean controlledPlayer;
     int score;
     String name;
     int team;
@@ -31,9 +33,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
     SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
     SteeringBehavior<Vector2> steeringBehavior;
 
+    public StateMachine<Player, PlayerState> stateMachine;
+
     public Player(float xPosition, float yPosition, String name, float size, World w) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
-        this.controlledPlayer = false;
+        initialPosition = position;
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.name = name;
@@ -62,9 +66,12 @@ public class Player implements Coordinates, Steerable<Vector2>{
         maxAngularSpeed = 3;
         maxAngularAcceleration = 0.5f;
         tagged = false;
+
+        stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.Static);
     }
 
     public void update(float dt){
+        stateMachine.update();
         if(steeringBehavior != null){
             steeringBehavior.calculateSteering(steeringOutput);
             applySteering(dt);
@@ -99,20 +106,18 @@ public class Player implements Coordinates, Steerable<Vector2>{
         }
     }
 
-    public void reposition(float x, float y) {
-        float finalX = x * 0.01f;
-        float finalY = y * 0.01f;
-        body.setTransform(finalX, finalY, 0);
+    public void reposition() {
+        body.setTransform(initialPosition.x, initialPosition.y, 0);
         setPositionToBody();
         body.setLinearVelocity(0, 0);
     }
 
-    public boolean isControlledPlayer() {
-        return controlledPlayer;
-    }
-
-    public void setControlledPlayer(boolean controlledPlayer) {
-        this.controlledPlayer = controlledPlayer;
+    public void setControlled(boolean control) {
+        if(control){
+            this.stateMachine.changeState(PlayerState.Controlled);
+        } else{
+            this.stateMachine.changeState(PlayerState.toOriginalRegion);
+        }
     }
 
     public void setPosition(Vector2 pos) {
@@ -148,7 +153,6 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.team = team;
         this.radius = size / 2;
         this.score = 0;
-        this.controlledPlayer = true;
     }
 
     public void addPhysics(World w) {

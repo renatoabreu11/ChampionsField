@@ -14,6 +14,9 @@ public class WayPoint implements  Steerable<Vector2> {
         position = pos;
     }
 
+    public void setPosition(Vector2 pos){
+        position = pos;
+    }
     /**
      * Steerable methods
      */

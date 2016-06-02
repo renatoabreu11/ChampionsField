@@ -12,6 +12,10 @@ import com.badlogic.gdx.physics.box2d.World;
 import utils.Constants;
 
 public abstract class Match{
+    public World getWorld() {
+        return w;
+    }
+
     public enum matchState{
         KickOff,
         Pause,

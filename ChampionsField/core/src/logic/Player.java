@@ -27,17 +27,19 @@ public class Player implements Coordinates, Steerable<Vector2>{
     int team;
 
     boolean tagged;
-    float maxLinearSpeed, maxLinearAcceleration;
-    float maxAngularSpeed, maxAngularAcceleration;
+    private float maxLinearSpeed, maxLinearAcceleration;
+    private float maxAngularSpeed, maxAngularAcceleration;
     float radius;
-    SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
-    SteeringBehavior<Vector2> steeringBehavior;
+    private SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
+    private SteeringBehavior<Vector2> steeringBehavior;
 
-    public StateMachine<Player, PlayerState> stateMachine;
+    StateMachine<Player, PlayerState> stateMachine;
+    WayPoint wayPoint;
 
     public Player(float xPosition, float yPosition, String name, float size, World w) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         initialPosition = position;
+        wayPoint = new WayPoint(position);
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.name = name;

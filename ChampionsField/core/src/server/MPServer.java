@@ -59,7 +59,6 @@ public class MPServer {
 
                     player = new Player(login.x, login.y, login.name, login.size, login.team);
                     loggedIn(connection, player);
-
                     numNewPlayers++;
                     if (numNewPlayers == 2) {
                         match = new MultiPlayMatch();

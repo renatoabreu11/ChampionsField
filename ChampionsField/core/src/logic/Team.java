@@ -30,13 +30,13 @@ public class Team {
 
         regions = new Array<Rectangle>(5);
         if(teamState == TeamState.Attacking){
-            regions.add(Constants.AttackKeeper);
+            regions.add(Constants.AttackGR);
             regions.add(Constants.AttackCD);
             regions.add(Constants.AttackDM);
             regions.add(Constants.AttackAM);
             regions.add(Constants.AttackST);
         } else{
-            regions.add(Constants.DefendKeeper);
+            regions.add(Constants.DefendGR);
             regions.add(Constants.DefendCD);
             regions.add(Constants.DefendDM);
             regions.add(Constants.DefendAM);

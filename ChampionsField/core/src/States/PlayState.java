@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
@@ -48,7 +50,8 @@ public class PlayState extends State implements ApplicationListener{
     static final float EXPLOSION_DURATION = 2.4f;
     static final float EXPLOSION_WIDTH = 100f;
     static final float EXPLOSION_HEIGHT = 100f;
-
+    Box2DDebugRenderer debugRenderer;
+    Matrix4 debugMatrix;
     //Match class init
     public Match match;
     boolean gameMode;
@@ -100,12 +103,11 @@ public class PlayState extends State implements ApplicationListener{
         rainTexture = new Texture("Rain.png");
         font = new BitmapFont();
         font.setColor(Color.WHITE);
-
         //Camera definition
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        camera.setToOrtho(false);
+        cam.setToOrtho(false);
         camera.update();
-
+        debugRenderer = new Box2DDebugRenderer();
         rain = new Rain(width, height);
         if(gameMode)
              match = new SinglePlayMatch(5);
@@ -218,5 +220,6 @@ public class PlayState extends State implements ApplicationListener{
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
         }
+        debugRenderer.render(match.getWorld(), camera.combined);
     }
 }

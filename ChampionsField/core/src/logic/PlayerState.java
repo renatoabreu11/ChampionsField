@@ -23,8 +23,8 @@ public enum PlayerState implements State<Player>{
     toOriginalRegion(){
         @Override
         public void enter(Player entity) {
-            WayPoint wp = new WayPoint(entity.initialPosition);
-            Arrive<Vector2> arrive = new Arrive<Vector2>(entity, wp);
+            entity.wayPoint.setPosition(entity.initialPosition);
+            Arrive<Vector2> arrive = new Arrive<Vector2>(entity, entity.wayPoint);
             arrive.setArrivalTolerance(0.2f);
             arrive.setDecelerationRadius(10);
             entity.setSteeringBehavior(arrive);

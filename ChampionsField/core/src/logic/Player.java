@@ -122,6 +122,12 @@ public class Player implements Coordinates, Steerable<Vector2>{
         }
     }
 
+    public float distanceBetweenPoints(Vector2 p1, Vector2 p2){
+        float xDiff = (float)Math.pow(p1.x - p2.x, 2);
+        float yDiff = (float)Math.pow(p1.y - p2.y, 2);
+        return (float)Math.sqrt(xDiff + yDiff);
+    }
+
     public void setPosition(Vector2 pos) {
         position = pos;
     }

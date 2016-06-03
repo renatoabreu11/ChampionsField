@@ -45,6 +45,7 @@ public class PlayState extends State implements ApplicationListener{
     private float deltaTime = 0;
     private float scoreAnimationTime;
 
+    private Vector2 explosionPos;
     static final float PLAYERS_SPEED = 5;
     static final float EXPLOSION_SPEED = 5f;
     static final float EXPLOSION_DURATION = 2.4f;
@@ -153,6 +154,10 @@ public class PlayState extends State implements ApplicationListener{
     public void update(float dt) {
         match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
 
+        if(match.getCurrentState() == Match.matchState.Score) {
+            explosionPos = match.getBall().getScreenCoordinates();
+        }
+
         if(scoreAnimationTime >= EXPLOSION_DURATION) {
             scoreAnimationTime = 0;
             match.endScoreState();
@@ -175,7 +180,7 @@ public class PlayState extends State implements ApplicationListener{
         screenPosition = b.getScreenCoordinates();
 
        if(match.getCurrentState() == Match.matchState.Score) {
-           sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), screenPosition.x - EXPLOSION_WIDTH/2, screenPosition.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+           sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
            scoreAnimationTime += Gdx.graphics.getDeltaTime();
        } else{
             sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);

@@ -1,5 +1,6 @@
 package logic;
 
+import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -85,16 +86,13 @@ public class Team {
                 players.get(i).setControlled(false);
                 for(int j = 0; j < players.size(); j++) {
                     if(j != i){
-                        float xDiff = (float)Math.pow(ballPosition.x - players.get(j).position.x, 2);
-                        float yDiff = (float)Math.pow(ballPosition.y - players.get(j).position.y, 2);
-                        auxDistance = (float)Math.sqrt(xDiff + yDiff);
+                        auxDistance = distanceBetweenPoints(ballPosition, players.get(j).position);
                         if(auxDistance < minDistance) {
                             minDistance = auxDistance;
                             playerIndex = j;
                         }
                     }
                 }
-
                 players.get(playerIndex).setControlled(true);
                 return true;
             }
@@ -129,9 +127,21 @@ public class Team {
     public void updatePlayers(float dt, Ball b){
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
+                if(!regions.get(i).contains(players.get(i).getPosition())){
+                    players.get(i).stateMachine.handleMessage(new Telegram());
+                } else if(regions.get(i).contains(b.getPosition())){
+                    players.get(i).wayPoint.setPosition(b.getPosition());
+                    players.get(i).stateMachine.changeState(PlayerState.ChaseBall);
+                }
                 players.get(i).update(dt);
             }
         }
+    }
+
+    private float distanceBetweenPoints(Vector2 p1, Vector2 p2){
+        float xDiff = (float)Math.pow(p1.x - p2.x, 2);
+        float yDiff = (float)Math.pow(p1.y - p2.y, 2);
+        return (float)Math.sqrt(xDiff + yDiff);
     }
 
     public void goalScored() {

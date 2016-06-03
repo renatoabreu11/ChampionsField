@@ -152,6 +152,10 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void update(float dt) {
+        if(match.getElapsedTime() >= Constants.GAME_TIME){
+            match.endGame();
+        }
+
         match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
 
         if(match.getCurrentState() == Match.matchState.Score) {
@@ -205,6 +209,8 @@ public class PlayState extends State implements ApplicationListener{
 
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
         font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
+
+        font.draw(sb, match.getTime(), width / 2  - 28, height - height / 6);
 
         Goal g = match.getHomeTeamGoal();
         screenPosition = g.getScreenCoordinates();

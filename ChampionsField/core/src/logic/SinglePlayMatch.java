@@ -1,8 +1,14 @@
 package logic;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Random;
 
 import utils.Constants;
+import utils.Statistics;
 
 public class SinglePlayMatch extends Match{
 
@@ -31,6 +37,11 @@ public class SinglePlayMatch extends Match{
         switchPlayer();
     }
 
+    @Override
+    public void endGame() {
+
+    }
+
     public void switchPlayer(){
         if(homeTeam.switchPlayer(ball.position))
             return;
@@ -38,8 +49,14 @@ public class SinglePlayMatch extends Match{
     }
 
     @Override
-    public void teamScored(Team defendingTeam, Team attackingTeam ){
-        defendingTeam.goalScored();
+    public void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch){
+        ArrayList<String> attackingTeamNames = attackingTeam.getPlayerNames();
+
+        //auto goal
+        if(attackingTeamNames.contains(lastTouch)){
+            attackingTeam.autoGoal(lastTouch);
+        } else defendingTeam.goalScored(lastTouch);
+
         defendingTeam.teamState = Team.TeamState.Defending;
         attackingTeam.teamState = Team.TeamState.Attacking;
         currentState = matchState.Score;
@@ -77,6 +94,9 @@ public class SinglePlayMatch extends Match{
 
         rain.update();
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
+        elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
+        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
+        time = timeOfDay.toString();
     }
 
 }

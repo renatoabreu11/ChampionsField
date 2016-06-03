@@ -25,6 +25,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
     int score;
     String name;
     int team;
+    int matchesPlayed;
 
     boolean tagged;
     private float maxLinearSpeed, maxLinearAcceleration;
@@ -43,6 +44,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.name = name;
+        matchesPlayed = 0;
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -61,6 +63,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         fixtureDef.filter.maskBits = (short)(Constants.entityMasks.PlayerMask.getMask() | Constants.entityMasks.BallMask.getMask() |
                 Constants.entityMasks.ScreenBordersMask.getMask() | Constants.entityMasks.GoalMask.getMask() | Constants.entityMasks.CenterMask.getMask());
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this.name);
         shape.dispose();
 
         maxLinearSpeed = 5;
@@ -322,5 +325,9 @@ public class Player implements Coordinates, Steerable<Vector2>{
             return true;
         }
         return false;
+    }
+
+    public void addMatchPlayed(){
+        matchesPlayed++;
     }
 }

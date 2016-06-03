@@ -72,7 +72,7 @@ public class Team {
             if(teamState == TeamState.Attacking)
                 players.add(new Player(- position.x , position.y, n, size, w));
             else
-                players.add(new Player(position.x, position.y, n, size, w));
+                players.add(new Player(position.x, position.y, n+ i, size, w));
         }
     }
 
@@ -144,8 +144,19 @@ public class Team {
         return (float)Math.sqrt(xDiff + yDiff);
     }
 
-    public void goalScored() {
+    public void goalScored(String scorer) {
+        for(int i = 0; i < players.size(); i++) {
+            if(players.get(i).name == scorer)
+                players.get(i).score++;
+        }
         score++;
+    }
+
+    public void autoGoal(String scorer) {
+        for(int i = 0; i < players.size(); i++) {
+            if(players.get(i).name == scorer)
+                players.get(i).score--;
+        }
     }
 
     public ArrayList<Player> getPlayers() {
@@ -171,6 +182,17 @@ public class Team {
     public void setName(String name) {
         this.name = name;
     }
+
+    public ArrayList<String> getPlayerNames(){
+        ArrayList<String> names;
+        names = new ArrayList<String>();
+        for(int i = 0; i < players.size(); i++) {
+            names.add(players.get(i).name);
+        }
+        return names;
+    }
+
+
 
     /*
     * BEGIN OF THE MULTPLAYER FUNCTIONS

@@ -1,6 +1,8 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.PriorityQueue;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -9,13 +11,15 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.TreeMap;
+
 import utils.Constants;
+import utils.Statistics;
 
 public abstract class Match{
-    public World getWorld() {
-        return w;
-    }
-
     public enum matchState{
         KickOff,
         Pause,
@@ -34,6 +38,9 @@ public abstract class Match{
     int numberOfPlayers;
     float playerSize;
     matchState currentState;
+    long elapsedTime;
+    long startTime;
+    String time;
 
     public Match(int numberOfPlayers){
         Vector2 gravity = new Vector2(0, 0f);
@@ -50,6 +57,10 @@ public abstract class Match{
         ball = new Ball(0, 0, (Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100, w);
 
         currentState = matchState.KickOff;
+        startTime = System.currentTimeMillis();
+        elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
+        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
+        time = timeOfDay.toString();
     }
 
     private void createCollisionListener() {
@@ -59,10 +70,29 @@ public abstract class Match{
                 Fixture f1 = contact.getFixtureA();
                 Fixture f2 = contact.getFixtureB();
 
-                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball"))
-                    teamScored(visitorTeam, homeTeam);
-                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball"))
-                    teamScored(homeTeam, visitorTeam);
+                if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")){
+                    teamScored(visitorTeam, homeTeam, ball.lastTouch);
+                }
+                else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")){
+                    teamScored(homeTeam, visitorTeam, ball.lastTouch);
+                }
+                else{
+                    if((f1.getUserData() != "Ball" && f2.getUserData() != "Ball") || (f1.getUserData() == null || f2.getUserData() == null)){
+                        return;
+                    } else{
+                        String data1 = f1.getUserData().toString();
+                        String data2 = f2.getUserData().toString();
+
+                        ArrayList<String> homeTeamNames = homeTeam.getPlayerNames();
+                        ArrayList<String> visitorTeamNames = visitorTeam.getPlayerNames();
+
+                        if(homeTeamNames.contains(data1) || visitorTeamNames.contains(data1)){
+                            ball.lastTouch = data1;
+                        } else if(homeTeamNames.contains(data2) || visitorTeamNames.contains(data2)){
+                            ball.lastTouch = data2;
+                        }
+                    }
+                }
             }
 
             @Override
@@ -82,7 +112,15 @@ public abstract class Match{
         });
     }
 
-    public abstract void teamScored(Team defendingTeam, Team attackingTeam);
+    public World getWorld() {
+        return w;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public abstract void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch);
 
     public abstract void updateMatch(float x, float y, Rain rain, float dt);
 
@@ -143,4 +181,11 @@ public abstract class Match{
     public void setVisitorTeamGoal(Goal visitorTeamGoal) {
         this.visitorTeamGoal = visitorTeamGoal;
     }
+
+    public abstract void endGame();
+
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
 }

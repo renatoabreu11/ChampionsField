@@ -26,6 +26,8 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     SteeringAcceleration<Vector2> steeringOutput = new SteeringAcceleration<Vector2>(new Vector2());
     SteeringBehavior<Vector2> steeringBehavior;
 
+    String lastTouch;
+
     public Ball(float xPosition, float yPosition, float size, World w){
         position = new Vector2(xPosition * 0.01f, yPosition * 0.01f);
         radius = (size / 2) * 0.01f;
@@ -52,6 +54,8 @@ public class Ball implements Coordinates, Steerable<Vector2> {
         Fixture fixture = body.createFixture(fixtureDef);
         fixture.setUserData("Ball");
         shape.dispose();
+
+        lastTouch = "";
 
         maxLinearSpeed = 5;
         maxLinearAcceleration = 50;

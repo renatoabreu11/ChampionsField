@@ -18,6 +18,7 @@ public final class Constants {
     public static final float heightScale = ScreenHeight / FIELD_TEXTURE_HEIGHT;
     public static final float regionWidth = 345 * widthScale * WORLD_TO_BOX;
     public static final float regionHeight = 770 * heightScale * WORLD_TO_BOX;
+    public static final long GAME_TIME = 300;
 
     //players positions
     public static final Vector2 Keeper = new Vector2(ScreenWidth/2 - 210 * widthScale , 0);
@@ -39,10 +40,6 @@ public final class Constants {
     public static final Rectangle DefendDM = new Rectangle(345 * widthScale * WORLD_TO_BOX, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
     public static final Rectangle DefendAM = new Rectangle(0, 0, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
     public static final Rectangle DefendST = new Rectangle(0, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
-
-    public static final int ReturnToRegion = 0;
-    public static final int BallAtRegion = 1;
-
 
     public enum entityMasks{
         BallMask(1),

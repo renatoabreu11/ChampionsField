@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import utils.Constants;
 
 public class Team {
+
     enum TeamState{
         Playing, Attacking, Defending
     }
@@ -70,9 +71,9 @@ public class Team {
                     break;
             }
             if(teamState == TeamState.Attacking)
-                players.add(new Player(- position.x , position.y, n, size, w));
+                players.add(new Player(- position.x , position.y, n, size, w, regions.get(i)));
             else
-                players.add(new Player(position.x, position.y, n+ i, size, w));
+                players.add(new Player(position.x, position.y, n+ i, size, w, regions.get(i)));
         }
     }
 
@@ -106,6 +107,15 @@ public class Team {
         }
     }
 
+    public Player getControlledPlayer() {
+        for(int i = 0; i < players.size(); i++) {
+            if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
+                return players.get(i);
+            }
+        }
+        return null;
+    }
+
     public void erasePlayers() {
         for(int i = 0; i < players.size(); i++)
             players.get(i).getBody().getWorld().destroyBody(players.get(i).getBody());
@@ -124,15 +134,18 @@ public class Team {
         }
     }
 
-    public void updatePlayers(float dt, Ball b){
+    public void updatePlayers(float dt, Ball ball, Player controlledPlayer){
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
-                if(!regions.get(i).contains(players.get(i).getPosition())){
-                    players.get(i).stateMachine.handleMessage(new Telegram());
-                } else if(regions.get(i).contains(b.getPosition())){
-                    players.get(i).wayPoint.setPosition(b.getPosition());
-                    players.get(i).stateMachine.changeState(PlayerState.ChaseBall);
-                }
+                players.get(i).updateWayPoints(ball, controlledPlayer);
+                players.get(i).update(dt);
+            }
+        }
+    }
+
+    public void updatePlayers(float dt) {
+        for(int i = 0; i < players.size(); i++) {
+            if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
                 players.get(i).update(dt);
             }
         }
@@ -156,6 +169,16 @@ public class Team {
         for(int i = 0; i < players.size(); i++) {
             if(players.get(i).name == scorer)
                 players.get(i).score--;
+        }
+    }
+
+    public void initWayPoints(Ball ball, Player controlledPlayer) {
+        for(int i = 0; i < players.size(); i++) {
+            if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
+                players.get(i).ballWayPoint = new WayPoint(ball.body, ball.radius);
+                if(controlledPlayer != null)
+                     players.get(i).controlledPlayerWayPoint = new WayPoint(controlledPlayer.body, controlledPlayer.radius);
+            }
         }
     }
 

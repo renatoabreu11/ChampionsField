@@ -7,6 +7,7 @@ import com.badlogic.gdx.ai.steer.Steerable;
 import com.badlogic.gdx.ai.steer.SteeringAcceleration;
 import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -35,12 +36,15 @@ public class Player implements Coordinates, Steerable<Vector2>{
     private SteeringBehavior<Vector2> steeringBehavior;
 
     StateMachine<Player, PlayerState> stateMachine;
-    WayPoint wayPoint;
+    WayPoint controlledPlayerWayPoint;
+    WayPoint ballWayPoint;
+    Rectangle region;
 
-    public Player(float xPosition, float yPosition, String name, float size, World w) {
+    public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         initialPosition = position;
-        wayPoint = new WayPoint(position);
+        controlledPlayerWayPoint = null;
+        ballWayPoint = null;
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.name = name;
@@ -73,6 +77,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         tagged = false;
 
         stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.Static);
+        region = rectangle;
     }
 
     public void update(float dt){
@@ -154,7 +159,6 @@ public class Player implements Coordinates, Steerable<Vector2>{
     /*
     * BEGIN OF THE MULTIPLAYER FUNCTIONS
     * */
-    public Player() {}
 
     public Player(float xPosition, float yPosition, String name, float size, int team) {
         this.position = new Vector2();
@@ -329,5 +333,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
 
     public void addMatchPlayed(){
         matchesPlayed++;
+    }
+
+    public void updateWayPoints(Ball ball, Player p) {
+        if(p != null)
+            controlledPlayerWayPoint.setWayPoint(p.body, p.radius);
+        ballWayPoint.setWayPoint(ball.body, ball.radius);
     }
 }

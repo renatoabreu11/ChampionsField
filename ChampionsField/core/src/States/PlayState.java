@@ -106,7 +106,6 @@ public class PlayState extends State implements ApplicationListener{
         font.setColor(Color.WHITE);
         //Camera definition
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        cam.setToOrtho(false);
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
         rain = new Rain(width, height);
@@ -166,7 +165,6 @@ public class PlayState extends State implements ApplicationListener{
             scoreAnimationTime = 0;
             match.endScoreState();
         }
-
         deltaTime += dt;
     }
 

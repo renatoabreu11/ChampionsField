@@ -1,6 +1,8 @@
 package States;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.PriorityQueue;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,16 +13,22 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
-public class Options extends State {
+import java.util.ArrayList;
+
+import utils.Statistics;
+
+public class Leaderboard extends State {
     private Stage stage;
-    private int selectedOption;
+    private int back;
     private Texture background;
     private BitmapFont font;
     private TextureAtlas buttonsAtlas;
     private Skin buttonSkin;
     private TextButton button;
 
-    public Options(GameStateManager gsm) {
+    private PriorityQueue<Statistics> highScores;
+
+    public Leaderboard(GameStateManager gsm) {
         super(gsm);
 
         background = new Texture("Field.jpg");
@@ -45,19 +53,34 @@ public class Options extends State {
         button.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                //selectedOption = 1;
                 return  true;
             }
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                selectedOption  = 1;
+                back  = 1;
             }
         }) ;
 
         stage.addActor(button);
 
         Gdx.input.setInputProcessor(stage);
+
+        Statistics parser = new Statistics("", 0, 0);
+        highScores = new PriorityQueue<Statistics>();
+        ArrayList<Statistics> stats = new ArrayList<Statistics>();
+
+        FileHandle globalStatistics = Gdx.files.local("Statistics.txt");
+        String info;
+        boolean exist;
+        exist=Gdx.files.local("Statistics.txt").exists();
+        if(!exist){
+            System.out.println("Error opening file!");
+            return;
+        } else{
+            info = globalStatistics.readString();
+            highScores = parser.parseHighScores(info);
+        }
     }
 
     @Override
@@ -75,16 +98,10 @@ public class Options extends State {
 
     @Override
     public void update(float dt) {
-        switch (selectedOption) {
-            case 0:
-                break;
-            case 1:
-                dispose();
-                gsm.set(new MenuState(gsm));
-                break;
-            case 2:
-                gsm.set(new PlayState(gsm, true));
-        }
+       if(back == 1) {
+           dispose();
+           gsm.set(new MenuState(gsm));
+       }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.ai.msg.PriorityQueue;
 import com.badlogic.gdx.files.FileHandle;
 
 import java.time.LocalTime;
@@ -75,19 +76,20 @@ public class SinglePlayMatch extends Match{
                     visitorTeam.teamState = Team.TeamState.Playing;
                     currentState = matchState.Play;
                 }
+                homeTeam.initWayPoints(ball, visitorTeam.getControlledPlayer());
+                visitorTeam.initWayPoints(ball, homeTeam.getControlledPlayer());
                 homeTeam.updateControlledPlayer(x, y);
-                homeTeam.updatePlayers(dt, ball);
-                visitorTeam.updatePlayers(dt, ball);
+                homeTeam.updatePlayers(dt);
+                visitorTeam.updatePlayers(dt);
                 break;
             }
             case Play: {
                 homeTeam.updateControlledPlayer(x, y);
-                homeTeam.updatePlayers(dt, ball);
-                visitorTeam.updatePlayers(dt, ball);
+                homeTeam.updatePlayers(dt, ball, visitorTeam.getControlledPlayer());
+                visitorTeam.updatePlayers(dt, ball, homeTeam.getControlledPlayer());
                 break;
             }
             case Score:{
-                ball.body.setAwake(false);
                 break;
             }
         }

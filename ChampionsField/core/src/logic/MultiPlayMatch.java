@@ -1,15 +1,9 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.PriorityQueue;
 import com.badlogic.gdx.files.FileHandle;
-
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Scanner;
 
 import utils.Statistics;
 
@@ -75,6 +69,7 @@ public class MultiPlayMatch extends Match {
         String name;
         int score, matches;
 
+        Statistics parser = new Statistics("", 0, 0);
         FileHandle globalStatistics = Gdx.files.local("Statistics.txt");
         String info;
         boolean exist;
@@ -84,7 +79,7 @@ public class MultiPlayMatch extends Match {
             return;
         } else{
             info = globalStatistics.readString();
-            stats = parseStatistics(info);
+            stats = parser.parseStatisticsToArray(info);
         }
 
         for (int i = 0; i < homeTeam.getNumberPlayers(); i++) {
@@ -119,43 +114,5 @@ public class MultiPlayMatch extends Match {
             if(i != stats.size() - 1)
                 globalStatistics.writeString("\n", true);
         }
-    }
-
-    public ArrayList<Statistics> parseStatistics(String info) {
-        ArrayList<Statistics> stats = new ArrayList<Statistics>();
-        String name = "";
-        int score = 0, matches = 0;
-
-        String delims = "[;\\n\\r]+";
-        String[] tokens = info.split(delims);
-        int counter = 0;
-        for(int i = 0; i < tokens.length; i++){
-            switch(counter){
-                case 0:
-                    name = tokens[i];
-                    break;
-                case 1:
-                    try {
-                        score = Integer.parseInt(tokens[i]);
-                    } catch(NumberFormatException nFE) {
-                        System.out.println("Not an Integer");
-                    }
-                    break;
-                case 2:
-                    try {
-                        matches = Integer.parseInt(tokens[i]);
-                    } catch(NumberFormatException nFE) {
-                        System.out.println("Not an Integer");
-                    }
-                    break;
-            }
-            counter++;
-            if(counter == 3) {
-                Statistics s = new Statistics(name, score, matches);
-                stats.add(s);
-                counter = 0;
-            }
-        }
-        return stats;
     }
 }

@@ -1,32 +1,47 @@
 package logic;
 
 import com.badlogic.gdx.ai.steer.Steerable;
+import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class WayPoint implements  Steerable<Vector2> {
     boolean tagged;
     float maxLinearSpeed, maxLinearAcceleration;
     float maxAngularSpeed, maxAngularAcceleration;
+    Body body;
+    float radius;
     Vector2 position;
 
-    public WayPoint(Vector2 pos){
-        position = pos;
+
+    public WayPoint(Body b, float r){
+        body = b;
+        radius = r;
     }
 
-    public void setPosition(Vector2 pos){
-        position = pos;
+    public WayPoint(Vector2 position){
+        this.position = position;
     }
+
+    public void setWayPoint(Body b, float r){
+        body = b;
+        radius = r;
+        position = body.getPosition();
+    }
+
     /**
      * Steerable methods
      */
     public Vector2 getPosition() {
-        return position;
+        if(body == null)
+            return position;
+        else return body.getPosition();
     }
 
     @Override
     public float getOrientation() {
-        return 0;
+        return body.getAngle();
     }
 
     @Override
@@ -47,17 +62,17 @@ public class WayPoint implements  Steerable<Vector2> {
 
     @Override
     public Vector2 getLinearVelocity() {
-        return null;
+        return body.getLinearVelocity();
     }
 
     @Override
     public float getAngularVelocity() {
-        return 0;
+        return body.getAngularVelocity();
     }
 
     @Override
     public float getBoundingRadius() {
-        return 0;
+        return radius;
     }
 
     @Override

@@ -29,17 +29,17 @@ public final class Constants {
 
     //Attacking team field regions
     public static final Rectangle AttackGR = new Rectangle((-ScreenWidth/2 + 130 * widthScale) * WORLD_TO_BOX, (-ScreenHeight/2 + 250 * heightScale) * WORLD_TO_BOX, 460 * widthScale * WORLD_TO_BOX, 1100 * heightScale * WORLD_TO_BOX);
-    public static final Rectangle AttackCD = new Rectangle((-ScreenWidth/2 + 590 * widthScale) * WORLD_TO_BOX, 0, regionWidth, regionHeight);
-    public static final Rectangle AttackDM = new Rectangle((-ScreenWidth/2 + 590 * widthScale) * WORLD_TO_BOX, -regionHeight, regionWidth, regionHeight);
-    public static final Rectangle AttackAM = new Rectangle(-regionWidth, 0, regionWidth, regionHeight);
-    public static final Rectangle AttackST = new Rectangle(-regionWidth, - regionHeight, regionWidth, regionHeight);
+    public static final Rectangle AttackCD = new Rectangle((-ScreenWidth/2 + 590 * widthScale) * WORLD_TO_BOX, -regionHeight, regionWidth, regionHeight);
+    public static final Rectangle AttackDM = new Rectangle((-ScreenWidth/2 + 590 * widthScale) * WORLD_TO_BOX, 0, regionWidth, regionHeight);
+    public static final Rectangle AttackAM = new Rectangle(-regionWidth, - regionHeight, regionWidth, regionHeight);
+    public static final Rectangle AttackST = new Rectangle(-regionWidth, 0, regionWidth, regionHeight);
 
     //Defending team field regions
     public static final Rectangle DefendGR = new Rectangle((ScreenWidth/2 - 590 * widthScale) * WORLD_TO_BOX, (-ScreenHeight/2 + 250 * heightScale) * WORLD_TO_BOX, 460 * widthScale * WORLD_TO_BOX, 1100 * heightScale * WORLD_TO_BOX);
-    public static final Rectangle DefendCD = new Rectangle(345 * widthScale * WORLD_TO_BOX, 0, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
-    public static final Rectangle DefendDM = new Rectangle(345 * widthScale * WORLD_TO_BOX, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
-    public static final Rectangle DefendAM = new Rectangle(0, 0, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
-    public static final Rectangle DefendST = new Rectangle(0, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
+    public static final Rectangle DefendCD = new Rectangle(345 * widthScale * WORLD_TO_BOX, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
+    public static final Rectangle DefendDM = new Rectangle(345 * widthScale * WORLD_TO_BOX, 0, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
+    public static final Rectangle DefendAM = new Rectangle(0, (- 770 * heightScale) * WORLD_TO_BOX, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
+    public static final Rectangle DefendST =  new Rectangle(0, 0, 345 * widthScale * WORLD_TO_BOX, 770 * heightScale * WORLD_TO_BOX);
 
     public enum entityMasks{
         BallMask(1),

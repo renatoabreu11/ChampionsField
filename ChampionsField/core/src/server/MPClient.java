@@ -7,15 +7,16 @@ import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
 
-import States.GameStateManager;
-import utils.Constants;
+import logic.*;
 
 public class MPClient {
     static final int TIME_OUT = 5000;
     Client client;
+    MultiPlayMatch match;
 
     //0 --> homeTeam, 1 --> visitorTeam
-    public MPClient(String name, int team, GameStateManager gsm) {
+    public MPClient(String name, int team, MultiPlayMatch match) {
+        this.match = match;
         client = new Client();
         client.start();
 
@@ -30,17 +31,27 @@ public class MPClient {
         }
 
         Network.Login login = new Network.Login();
-        login.x = 1;
-        login.y = 1;
         login.name = name;
-        login.size = Constants.PLAYER_SIZE;
         login.team = team;
-
         client.sendTCP(login);
 
-        while(true) {
+        PlayerInfo playerInfo = new PlayerInfo();
+        Network.UpdatePlayer updatePlayer = new Network.UpdatePlayer();
+        updatePlayer.name = name;
+        updatePlayer.team = team;
 
+        while(true) {
+            if(match.moved) {
+                match.moved = false;
+                playerInfo.x = match.getClientPlayerX(team);
+                playerInfo.y = match.getClientPlayerY(team);
+
+                updatePlayer.x = playerInfo.x;
+                updatePlayer.y = playerInfo.y;
+                client.sendTCP(updatePlayer);
+            }
         }
+
     }
 
     private void addListeners() {
@@ -57,7 +68,15 @@ public class MPClient {
 
             @Override
             public void received(Connection connection, Object object) {
+                if(object instanceof Network.AddPlayer) {
+                    Network.AddPlayer addPlayer = (Network.AddPlayer) object;
+                    match.addPlayerToMatch(addPlayer.name, addPlayer.team, addPlayer.controlledPlayer);
+                }
 
+                if(object instanceof Network.UpdatePlayer) {
+                    Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
+                    match.setPlayerPosition(updatePlayer.x, updatePlayer.y, updatePlayer.name, updatePlayer.team);
+                }
             }
         }));
     }

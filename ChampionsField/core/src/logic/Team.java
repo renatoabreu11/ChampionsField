@@ -229,9 +229,45 @@ public class Team {
         players = new ArrayList<Player>();
     }
 
-    public void addPlayer(Player player) {
-        player.addPhysics(world);
+    public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w) {
+        float x = 100 + 100 * players.size();
+        float y = 300;
+
+        boolean controlled;
+        if(playerAlreadyControlled() || !controlledPlayer)
+            controlled = false;
+        else
+            controlled = true;
+
+        Player player = new Player(x, y, name, team, controlled, size);
+        player.addPhysics(w);
         players.add(player);
+    }
+
+    private boolean playerAlreadyControlled() {
+        for(Player player : players) {
+            if(player.getControlled())
+                return true;
+        }
+
+        return false;
+    }
+
+    public void updateControlledPlayerOnline(float x, float y) {
+        for(int i = 0; i < players.size(); i++) {
+            if (players.get(i).getControlled()) {
+                players.get(i).getBody().setLinearVelocity(x, y);
+            }
+        }
+    }
+
+    public void changePlayerPosition(float x, float y, String name) {
+        for(Player player : players) {
+            if(player.name.equals(name)) {
+                player.updatePlayerPosition(x, y);
+                break;
+            }
+        }
     }
 
     /*

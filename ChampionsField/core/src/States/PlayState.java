@@ -26,6 +26,7 @@ import logic.MultiPlayMatch;
 import logic.Player;
 import logic.Rain;
 import logic.SinglePlayMatch;
+import server.MPClient;
 import utils.Constants;
 
 public class PlayState extends State implements ApplicationListener{
@@ -191,18 +192,21 @@ public class PlayState extends State implements ApplicationListener{
         //Teams
         ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
         ArrayList<Player> visitorTeamPlayers = match.getVisitorTeam().getPlayers();
-        float radius = homeTeamPlayers.get(0).getBoundingRadius();
 
-        for(int i = 0; i < match.getNumberOfPlayers(); i++){
-            homeTeamPlayers.get(i).setPositionToBody();
-            screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
-            sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius()*2* 100f, homeTeamPlayers.get(i).getBoundingRadius()*2 * 100f);
-            font.draw(sb, homeTeamPlayers.get(i).getName() , screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+        if(homeTeamPlayers.size() != 0) {
+            float radius = homeTeamPlayers.get(0).getBoundingRadius();
 
-            visitorTeamPlayers.get(i).setPositionToBody();
+            for (int i = 0; i < match.getNumberOfPlayers(); i++) {
+                homeTeamPlayers.get(i).setPositionToBody();
+                screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
+                sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
+                font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+
+            /*visitorTeamPlayers.get(i).setPositionToBody();
             screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
             sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
-            font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);
+            font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);*/
+            }
         }
 
         font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
@@ -231,4 +235,68 @@ public class PlayState extends State implements ApplicationListener{
         }
         debugRenderer.render(match.getWorld(), camera.combined);
     }
+
+    /*
+    * BEGIN OF ONLINE FUNCTION ONLY
+    * */
+
+    public PlayState(GameStateManager gsm, final MultiPlayMatch match){
+        super(gsm);
+
+        this.match = match;
+
+        touchpadSkin = new Skin();
+        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
+        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
+        touchpadStyle = new Touchpad.TouchpadStyle();
+        //Create Drawable's from TouchPad skin
+        touchBackground = touchpadSkin.getDrawable("touchBackground");
+        touchKnob = touchpadSkin.getDrawable("touchKnob");
+        //Apply the Drawables to the TouchPad Style
+        touchpadStyle.background = touchBackground;
+        touchpadStyle.knob = touchKnob;
+        //Create new TouchPad with the created style
+        touchpad = new Touchpad(10, touchpadStyle);
+        touchpad.setBounds(15, 15, 200, 200);
+
+        //Create a Stage and add TouchPad
+        stage = new Stage();
+        stage.addActor(touchpad);
+        Gdx.input.setInputProcessor(stage);
+
+        //Textures definition
+        explosionAtlas = new TextureAtlas("Explosion.atlas");
+        explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
+        ballTexture = new TextureAtlas("SoccerBall.atlas");
+        ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
+        fieldTexture = new Texture("Field.jpg");
+        homeTeamTexture = new Texture("Player.png");
+        visitorTeamTexture = new Texture("Player.png");
+        goalTexture = new Texture("FootballGoal.png");
+        rainTexture = new Texture("Rain.png");
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
+
+        //Camera definition
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
+        cam.setToOrtho(false);
+        camera.update();
+        debugRenderer = new Box2DDebugRenderer();
+
+        rain = new Rain(width, height);
+        scoreAnimationTime = 0;
+
+        class MyClient implements Runnable {
+            @Override
+            public void run() {
+                MPClient client = new MPClient("1", 0, match);
+            }
+        }
+        Thread newPlayer = new Thread(new MyClient());
+        newPlayer.start();
+    }
+
+    /*
+    * END OF ONLINE FUNCTION ONLY
+    * */
 }

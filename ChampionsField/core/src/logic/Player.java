@@ -40,6 +40,9 @@ public class Player implements Coordinates, Steerable<Vector2>{
     WayPoint ballWayPoint;
     Rectangle region;
 
+    //ONLINE VARIABLES ONLY
+    boolean isControlledPlayer;
+
     public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         initialPosition = position;
@@ -160,14 +163,17 @@ public class Player implements Coordinates, Steerable<Vector2>{
     * BEGIN OF THE MULTIPLAYER FUNCTIONS
     * */
 
-    public Player(float xPosition, float yPosition, String name, float size, int team) {
+    public Player() {}
+
+    public Player(float xPosition, float yPosition, String name, int team, boolean controlledPlayer, float size) {
         this.position = new Vector2();
-        this.position.x = xPosition;
-        this.position.y = yPosition;
+        this.position.x = xPosition * 0.01f;
+        this.position.y = yPosition * 0.01f;
         this.name = name;
         this.team = team;
-        this.radius = size / 2;
+        this.radius = (size/2) * 0.01f;
         this.score = 0;
+        this.isControlledPlayer = controlledPlayer;
     }
 
     public void addPhysics(World w) {
@@ -185,11 +191,21 @@ public class Player implements Coordinates, Steerable<Vector2>{
         fixtureDef.friction = 0.8f;
         fixtureDef.restitution = 0.75f;
         fixtureDef.filter.categoryBits = Constants.entityMasks.PlayerMask.getMask();
-        fixtureDef.filter.maskBits = (short)(Constants.entityMasks.PlayerMask.getMask() | Constants.entityMasks.BallMask.getMask() |
-                Constants.entityMasks.ScreenBordersMask.getMask() | Constants.entityMasks.GoalMask.getMask() | Constants.entityMasks.CenterMask.getMask());
+        fixtureDef.filter.maskBits = (short)(Constants.entityMasks.PlayerMask.getMask() | Constants.entityMasks.BallMask.getMask() | Constants.entityMasks.ScreenBordersMask.getMask() | Constants.entityMasks.GoalMask.getMask() | Constants.entityMasks.CenterMask.getMask());
         Fixture fixture = body.createFixture(fixtureDef);
         shape.dispose();
     }
+
+    public boolean getControlled() {
+        return isControlledPlayer;
+    }
+
+    public void updatePlayerPosition(float x, float y) {
+        body.setTransform(x * 0.01f, y * 0.01f, 0);
+        setPositionToBody();
+        body.setLinearVelocity(0, 0);
+    }
+
     /*
     * END OF THE MULTIPLAYER FUNCTIONS
     * */

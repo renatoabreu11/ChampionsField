@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle;
 import java.util.ArrayList;
 import java.util.Random;
 
+import utils.Constants;
 import utils.Statistics;
 
 public class MultiPlayMatch extends Match {
@@ -15,29 +16,34 @@ public class MultiPlayMatch extends Match {
         Play;
     }
 
-    public MultiPlayMatch() {
+    public boolean moved;
+
+    public MultiPlayMatch(){
         super(0);
 
         Random r = new Random();
         int aux = r.nextInt(2);     //MUDAR AQUI, SO PARA QUESTOES DE DEBUG! :D
         aux = 0;
-        if (aux == 0) {
-            homeTeam = new Team(numberOfPlayers, playerSize, "Benfica", Team.TeamState.Attacking, w);
-            visitorTeam = new Team(numberOfPlayers, playerSize, "Porto", Team.TeamState.Defending, w);
-        } else {
-            homeTeam = new Team(numberOfPlayers, playerSize, "Benfica", Team.TeamState.Defending, w);
-            visitorTeam = new Team(numberOfPlayers, playerSize, "Porto", Team.TeamState.Attacking, w);
+        if(aux == 0){
+            homeTeam = new Team("Benfica", Team.TeamState.Attacking, w);
+            visitorTeam = new Team("Porto", Team.TeamState.Defending, w);
+        } else{
+            homeTeam = new Team("Benfica", Team.TeamState.Defending, w);
+            visitorTeam = new Team("Porto", Team.TeamState.Attacking, w);
         }
-        homeTeam.controlPlayer(0);
+        //homeTeam.controlPlayer(0);
+
+        numberOfPlayers = 0;
+        moved = false;
     }
 
-    public void addPlayerToMatch(ArrayList<Player> players) {
-        for (Player player : players) {
-            if (player.team == 0)
-                homeTeam.addPlayer(player);
-            else
-                visitorTeam.addPlayer(player);
-        }
+    public void addPlayerToMatch(String name, int team, boolean controlledPlayer) {
+        if(team == 0)
+            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
+        else
+            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
+
+        numberOfPlayers++;
     }
 
     @Override
@@ -55,7 +61,13 @@ public class MultiPlayMatch extends Match {
 
     @Override
     public void updateMatch(float x, float y, Rain rain, float dt) {
+        homeTeam.updateControlledPlayerOnline(x, y);
 
+        rain.update();
+        w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
+
+        if(x != 0 || y != 0) moved = true;
+        //else moved = false;
     }
 
     @Override
@@ -114,5 +126,40 @@ public class MultiPlayMatch extends Match {
             if(i != stats.size() - 1)
                 globalStatistics.writeString("\n", true);
         }
+    }
+
+    public float getClientPlayerX(int team) {
+        if(team == 0) {
+            for(Player player : homeTeam.getPlayers())
+                if(player.getControlled())
+                    return player.body.getTransform().getPosition().x;
+        } else {
+            for(Player player : visitorTeam.getPlayers())
+                if(player.getControlled())
+                    return player.body.getTransform().getPosition().x;
+        }
+
+        return -1;
+    }
+
+    public float getClientPlayerY(int team) {
+        if(team == 0) {
+            for(Player player : homeTeam.getPlayers())
+                if(player.getControlled())
+                    return player.body.getTransform().getPosition().y;
+        } else {
+            for(Player player : visitorTeam.getPlayers())
+                if(player.getControlled())
+                    return player.body.getTransform().getPosition().y;
+        }
+
+        return -1;
+    }
+
+    public void setPlayerPosition(float x, float y, String name, int team) {
+        if(team == 0)
+            homeTeam.changePlayerPosition(x, y, name);
+        else
+            visitorTeam.changePlayerPosition(x, y, name);
     }
 }

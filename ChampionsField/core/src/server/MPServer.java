@@ -1,5 +1,6 @@
 package server;
 
+import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -14,21 +15,13 @@ import logic.Player;
 
 public class MPServer {
     Server server;
-    Match match;
-
-    ArrayList<Player> playersLoggedIn;
+    Array<PlayerInfo> playersInfo;
     int numNewPlayers;
 
     public MPServer() throws IOException {
-        playersLoggedIn = new ArrayList<Player>();
         numNewPlayers = 0;
-        server = new Server() {
-            //Since we're implementing our own connection, we can store per
-            //connection state without a connection ID to look up
-            protected Connection newConnection() {
-                return new PlayerConnection();
-            }
-        };
+        playersInfo = new Array<PlayerInfo>();
+        server = new Server();
 
         Network.registerPackets(server);
         addListeners();
@@ -50,45 +43,35 @@ public class MPServer {
 
             @Override
             public void received(Connection c, Object object) {
-                //All connection for this server are PlayerConnections
-                PlayerConnection connection = (PlayerConnection) c;
-                Player player = connection.player;
-
                 if (object instanceof Network.Login) {
                     Network.Login login = (Network.Login) object;
+                    playersInfo.add(new PlayerInfo(login.team, login.name));
 
-                    player = new Player(login.x, login.y, login.name, login.size, login.team);
-                    loggedIn(connection, player);
-                    numNewPlayers++;
-                    if (numNewPlayers == 2) {
-                        match = new MultiPlayMatch();
-                        //playState.match.addPlayerToMatch(playersLoggedIn);
+                    //Sends the player's info to the new created match, so that match will have the existing players already
+                    for(int i = 0; i < numNewPlayers; i++) {
+                        Network.AddPlayer addPlayer = new Network.AddPlayer();
+                        addPlayer.team = playersInfo.get(i).team;
+                        addPlayer.name = playersInfo.get(i).name;
+                        addPlayer.controlledPlayer = false;
+                        c.sendTCP(addPlayer);
                     }
+
+                    numNewPlayers++;
+
+                    //Adds the new player to the match in all devices
+                    Network.AddPlayer addPlayer = new Network.AddPlayer();
+                    addPlayer.name = login.name;
+                    addPlayer.team = login.team;
+                    addPlayer.controlledPlayer = true;
+                    server.sendToAllTCP(addPlayer);
+                }
+
+                if(object instanceof Network.UpdatePlayer) {
+                    Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
+                    server.sendToAllTCP(updatePlayer);
                 }
             }
         });
-    }
-
-    void loggedIn(PlayerConnection c, Player player) {
-        c.player = player;
-
-        //Adds all the current existing players to the new player
-        for(int i = 0; i < playersLoggedIn.size(); i++) {
-            Network.AddPlayer addPlayer = new Network.AddPlayer();
-            addPlayer.player = playersLoggedIn.get(i);
-            c.sendTCP(addPlayer);
-        }
-
-        playersLoggedIn.add(player);
-
-        //Adds the new player to the current existing players
-        Network.AddPlayer addPlayer = new Network.AddPlayer();
-        addPlayer.player = player;
-        server.sendToAllTCP(addPlayer);
-    }
-
-    static class PlayerConnection extends Connection {
-        public Player player;
     }
 
     public static void main(String[] args) {

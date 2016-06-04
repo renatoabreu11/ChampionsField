@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 
 import java.util.ArrayList;
 
+import utils.Constants;
 import utils.Statistics;
 
 public class Leaderboard extends State {
@@ -26,12 +27,12 @@ public class Leaderboard extends State {
     private Skin buttonSkin;
     private TextButton button;
 
-    private PriorityQueue<Statistics> highScores;
+    private ArrayList<Statistics> highScores;
 
     public Leaderboard(GameStateManager gsm) {
         super(gsm);
 
-        background = new Texture("Field.jpg");
+        background = new Texture("Leaderboard.png");
         buttonsAtlas = new TextureAtlas("button.pack");
         buttonSkin = new Skin();
         buttonSkin.addRegions(buttonsAtlas);
@@ -45,10 +46,10 @@ public class Leaderboard extends State {
         style.font = font;
 
         button = new TextButton("Back", style);
-        button.setHeight(width / 9.6f);
-        button.setWidth(height / 5.4f);
+        button.setHeight(125 * Constants.leaderboardHeightScale);
+        button.setWidth(100 * Constants.leaderboardWidthScale);
 
-        button.setPosition(width / 2 - button.getWidth() / 2, height / 2 - button.getHeight() / 2);
+        button.setPosition(300 * Constants.leaderboardWidthScale,  0);
 
         button.addListener(new InputListener() {
             @Override
@@ -66,8 +67,9 @@ public class Leaderboard extends State {
 
         Gdx.input.setInputProcessor(stage);
 
+        highScores = new ArrayList<Statistics>();
         Statistics parser = new Statistics("", 0, 0);
-        highScores = new PriorityQueue<Statistics>();
+        PriorityQueue<Statistics> scores = new PriorityQueue<Statistics>();
         ArrayList<Statistics> stats = new ArrayList<Statistics>();
 
         FileHandle globalStatistics = Gdx.files.local("Statistics.txt");
@@ -79,8 +81,14 @@ public class Leaderboard extends State {
             return;
         } else{
             info = globalStatistics.readString();
-            highScores = parser.parseHighScores(info);
+            scores = parser.parseHighScores(info);
         }
+
+        while(scores.size() != 0){
+            highScores.add(scores.peek());
+            scores.poll();
+        }
+
     }
 
     @Override
@@ -108,6 +116,11 @@ public class Leaderboard extends State {
     public void render(SpriteBatch sb) {
         sb.begin();
         sb.draw(background, 0, 0, width, height);
+        for(int i = 0; i < highScores.size(); i++){
+            font.draw(sb, highScores.get(i).getName(), 175 * Constants.leaderboardWidthScale, 140 * Constants.leaderboardHeightScale + i * 62 * Constants.leaderboardHeightScale);
+            font.draw(sb, Integer.toString(highScores.get(i).getGoalsScored()), 385 * Constants.leaderboardWidthScale, 150 * Constants.leaderboardHeightScale + i * 62 * Constants.leaderboardHeightScale);
+            font.draw(sb, Integer.toString(highScores.get(i).getMatchesPlayed()), 600 * Constants.leaderboardWidthScale, 150 * Constants.leaderboardHeightScale + i * 62 * Constants.leaderboardHeightScale);
+        }
         sb.end();
 
         stage.act(Gdx.graphics.getDeltaTime());

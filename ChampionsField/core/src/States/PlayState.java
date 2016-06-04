@@ -12,7 +12,10 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -53,7 +56,7 @@ public class PlayState extends State implements ApplicationListener{
     static final float EXPLOSION_WIDTH = 100f;
     static final float EXPLOSION_HEIGHT = 100f;
     Box2DDebugRenderer debugRenderer;
-    Matrix4 debugMatrix;
+
     //Match class init
     public Match match;
     boolean gameMode;
@@ -68,6 +71,10 @@ public class PlayState extends State implements ApplicationListener{
     private Skin touchpadSkin;
     private Drawable touchBackground;
     private Drawable touchKnob;
+
+    private TextureAtlas switchTexture;
+    private Skin switchSkin;
+    private Button switchBtn;
 
     public PlayState(GameStateManager gsm, boolean gameMode){
         super(gsm);
@@ -93,6 +100,24 @@ public class PlayState extends State implements ApplicationListener{
         stage.addActor(touchpad);
         Gdx.input.setInputProcessor(stage);
 
+        switchTexture = new TextureAtlas("Switch.pack");
+        switchSkin = new Skin();
+        switchSkin.addRegions(switchTexture);
+
+        Button.ButtonStyle btnStyle = new Button.ButtonStyle();
+        btnStyle.up = switchSkin.getDrawable("Switch");
+        btnStyle.down = switchSkin.getDrawable("SwitchPressed");
+
+        switchBtn = new Button(btnStyle);
+        switchBtn.setRound(true);
+        switchBtn.setHeight(Constants.Switch_Height);
+        switchBtn.setWidth(Constants.Switch_Width);
+        switchBtn.setPosition(width - Constants.Switch_Width * 2, Constants.Switch_Height/2);
+        if(this.gameMode){
+            addListeners();
+            stage.addActor(switchBtn);
+        }
+
         //Textures definition
         explosionAtlas = new TextureAtlas("Explosion.atlas");
         explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
@@ -114,6 +139,21 @@ public class PlayState extends State implements ApplicationListener{
              match = new SinglePlayMatch(5);
         else match = new MultiPlayMatch();
         scoreAnimationTime = 0;
+    }
+
+    private void addListeners() {
+        switchBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                match.switchPlayer();
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+
+            }
+        });
     }
 
     @Override
@@ -158,7 +198,7 @@ public class PlayState extends State implements ApplicationListener{
 
         match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
 
-        if(match.getCurrentState() == Match.matchState.Score) {
+        if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {
             explosionPos = match.getBall().getScreenCoordinates();
         }
 

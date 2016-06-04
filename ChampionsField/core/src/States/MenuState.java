@@ -43,6 +43,7 @@ public class MenuState extends State  {
     private TextButton playBtn;
     private TextButton settingsBtn;
     private TextButton exitBtn;
+    private TextButton leaderboardBtn;
 
     private World world;
 
@@ -99,10 +100,15 @@ public class MenuState extends State  {
         exitBtn.setHeight(width / 9.6f);
         exitBtn.setWidth(height / 5.4f);
 
+        leaderboardBtn = new TextButton("Leaderboard", style);
+        leaderboardBtn.setHeight(width / 9.6f);
+        leaderboardBtn.setWidth(height / 5.4f);
+
         //Setting the buttons position
-        playBtn.setPosition(width / 2 - playBtn.getWidth() / 2, height - height / 4 - playBtn.getHeight() / 2);
+        playBtn.setPosition(width / 2 - playBtn.getWidth() / 2, height - height /  4- playBtn.getHeight() / 2);
         settingsBtn.setPosition(width / 2 - settingsBtn.getWidth() / 2, height / 2 - settingsBtn.getHeight() / 2);
         exitBtn.setPosition(width / 2 - exitBtn.getWidth() / 2, height / 4 - exitBtn.getHeight() / 2);
+        leaderboardBtn.setPosition(width / 2 - exitBtn.getWidth() / 2, height / 6 - exitBtn.getHeight() / 2);
 
         addListeners();
 
@@ -110,6 +116,7 @@ public class MenuState extends State  {
         stage.addActor(playBtn);
         stage.addActor(settingsBtn);
         stage.addActor(exitBtn);
+        stage.addActor(leaderboardBtn);
 
         Gdx.input.setInputProcessor(stage);
         sbUnique = new SpriteBatch();
@@ -158,6 +165,18 @@ public class MenuState extends State  {
             }
         });
 
+        leaderboardBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                changeState(2);
+            }
+        });
+
         exitBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -167,7 +186,7 @@ public class MenuState extends State  {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 dispose();
-                changeState(2);
+                changeState(3);
             }
         });
     }
@@ -220,7 +239,7 @@ public class MenuState extends State  {
         sbUnique.draw(background.get(currBack), 0, 0, width, height);
         for(int i = 0; i < balls.size(); i++) {
             balls.get(i).setPositionToBody();
-            Vector2 screenPosition = convertToScreenCoordinates(balls.get(i));
+            Vector2 screenPosition =  balls.get(i).getScreenCoordinates();
             sbUnique.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, balls.get(0).getRadius()*2, balls.get(0).getRadius()*2);
         }
         sbUnique.end();
@@ -242,21 +261,16 @@ public class MenuState extends State  {
     private void changeState(int state) {
         switch(state) {
             case 0:
-                //gsm.set(new PlayState(gsm, true));
+               // gsm.set(new PlayState(gsm, true));
 
                 //Online match
-                MultiPlayMatch match = new MultiPlayMatch();
+               MultiPlayMatch match = new MultiPlayMatch();
                 gsm.set(new PlayState(gsm, match));
                 break;
             case 1: gsm.set(new Options(gsm)); break;
-            case 2: Gdx.app.exit(); break;
+            case 2: gsm.set(new Leaderboard(gsm)); break;
+            case 3: Gdx.app.exit(); break;
             default: break;
         }
-    }
-
-    private Vector2 convertToScreenCoordinates(Ball b) {
-        float x = b.getPosition().x * 100f + Gdx.graphics.getWidth()/2 - b.getRadius();
-        float y = b.getPosition().y * 100f + Gdx.graphics.getHeight()/2 - b.getRadius();
-        return new Vector2(x, y);
     }
 }

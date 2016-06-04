@@ -55,7 +55,16 @@ public enum PlayerState implements State<Player>{
         }
     },
 
-    Controlled(){},
+    Controlled(){
+        @Override
+        public void enter(Player entity) {
+            entity.setSteeringBehavior(null);
+        }
+
+        @Override
+        public void update(Player entity) {
+        }
+    },
 
     Block(){
         @Override

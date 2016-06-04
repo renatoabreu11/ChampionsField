@@ -1,15 +1,10 @@
 package logic;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.ai.msg.PriorityQueue;
-import com.badlogic.gdx.files.FileHandle;
-
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
 import utils.Constants;
-import utils.Statistics;
 
 public class SinglePlayMatch extends Match{
 
@@ -72,24 +67,24 @@ public class SinglePlayMatch extends Match{
                 else field.activateBarriers(false);
                 if (ball.body.getPosition().x != 0 || ball.body.getPosition().y != 0) {
                     field.deactivateBarriers();
-                    homeTeam.teamState = Team.TeamState.Playing;
-                    visitorTeam.teamState = Team.TeamState.Playing;
-                    currentState = matchState.Play;
-                }
-                homeTeam.initWayPoints(ball, visitorTeam.getControlledPlayer());
-                visitorTeam.initWayPoints(ball, homeTeam.getControlledPlayer());
-                homeTeam.updateControlledPlayer(x, y);
-                homeTeam.updatePlayers(dt);
-                visitorTeam.updatePlayers(dt);
-                break;
+                homeTeam.teamState = Team.TeamState.Playing;
+                visitorTeam.teamState = Team.TeamState.Playing;
+                currentState = matchState.Play;
             }
-            case Play: {
-                homeTeam.updateControlledPlayer(x, y);
-                homeTeam.updatePlayers(dt, ball, visitorTeam.getControlledPlayer());
-                visitorTeam.updatePlayers(dt, ball, homeTeam.getControlledPlayer());
-                break;
-            }
-            case Score:{
+            homeTeam.initWayPoints(ball, visitorTeam.getControlledPlayer());
+            visitorTeam.initWayPoints(ball, homeTeam.getControlledPlayer());
+            homeTeam.updateControlledPlayer(x, y);
+            homeTeam.updatePlayers(dt);
+            visitorTeam.updatePlayers(dt);
+            break;
+        }
+        case Play: {
+            homeTeam.updateControlledPlayer(x, y);
+            homeTeam.updatePlayers(dt, ball, visitorTeam.getControlledPlayer());
+            visitorTeam.updatePlayers(dt, ball, homeTeam.getControlledPlayer());
+            break;
+        }
+        case Score:{
                 break;
             }
         }

@@ -3,6 +3,7 @@ package utils;
 import com.badlogic.gdx.ai.msg.PriorityQueue;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Statistics implements Comparable<Statistics> {
     private String name;

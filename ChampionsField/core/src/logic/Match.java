@@ -112,6 +112,8 @@ public abstract class Match{
         });
     }
 
+    public abstract void switchPlayer();
+
     public World getWorld() {
         return w;
     }

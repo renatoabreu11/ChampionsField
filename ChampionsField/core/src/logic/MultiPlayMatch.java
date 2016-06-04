@@ -16,7 +16,7 @@ public class MultiPlayMatch extends Match {
         Play;
     }
 
-    public boolean moved;
+    public volatile boolean moved;
 
     public MultiPlayMatch(){
         super(0);
@@ -44,6 +44,11 @@ public class MultiPlayMatch extends Match {
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
 
         numberOfPlayers++;
+    }
+
+    @Override
+    public void switchPlayer() {
+
     }
 
     @Override

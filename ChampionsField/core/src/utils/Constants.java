@@ -19,6 +19,10 @@ public final class Constants {
     public static final float regionWidth = 345 * widthScale * WORLD_TO_BOX;
     public static final float regionHeight = 770 * heightScale * WORLD_TO_BOX;
     public static final long GAME_TIME = 300;
+    public static final float Switch_Height = 220 * heightScale;
+    public static final float Switch_Width = 220 * widthScale;
+    public static final float leaderboardWidthScale = ScreenWidth / 700;
+    public static final float leaderboardHeightScale = ScreenHeight / 1000;
 
     //players positions
     public static final Vector2 Keeper = new Vector2(ScreenWidth/2 - 210 * widthScale , 0);

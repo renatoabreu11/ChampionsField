@@ -1,6 +1,5 @@
 package logic;
 
-import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -174,11 +173,9 @@ public class Team {
 
     public void initWayPoints(Ball ball, Player controlledPlayer) {
         for(int i = 0; i < players.size(); i++) {
-            if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
-                players.get(i).ballWayPoint = new WayPoint(ball.body, ball.radius);
-                if(controlledPlayer != null)
-                     players.get(i).controlledPlayerWayPoint = new WayPoint(controlledPlayer.body, controlledPlayer.radius);
-            }
+            players.get(i).ballWayPoint = new WayPoint(ball.body, ball.radius);
+            if(controlledPlayer != null)
+                players.get(i).controlledPlayerWayPoint = new WayPoint(controlledPlayer.body, controlledPlayer.radius);
         }
     }
 

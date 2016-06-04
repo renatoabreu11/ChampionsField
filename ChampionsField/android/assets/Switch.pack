@@ -1,0 +1,19 @@
+
+Switch.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Switch
+  rotate: false
+  xy: 1, 1
+  size: 250, 250
+  orig: 250, 250
+  offset: 0, 0
+  index: -1
+SwitchPressed
+  rotate: false
+  xy: 253, 30
+  size: 222, 221
+  orig: 222, 221
+  offset: 0, 0
+  index: -1

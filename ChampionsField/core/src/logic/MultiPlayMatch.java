@@ -2,6 +2,10 @@ package logic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.math.Circle;
+
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -17,6 +21,7 @@ public class MultiPlayMatch extends Match {
     }
 
     public volatile boolean moved;
+    PowerUp powerUp;
 
     public MultiPlayMatch(){
         super(0);
@@ -35,6 +40,7 @@ public class MultiPlayMatch extends Match {
 
         numberOfPlayers = 0;
         moved = false;
+        powerUp = new PowerUp();
     }
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer) {
@@ -47,8 +53,8 @@ public class MultiPlayMatch extends Match {
     }
 
     @Override
-    public void switchPlayer() {
-
+    public PowerUp getPowerUp() {
+        return powerUp;
     }
 
     @Override
@@ -66,7 +72,52 @@ public class MultiPlayMatch extends Match {
 
     @Override
     public void updateMatch(float x, float y, Rain rain, float dt) {
+        if(powerUp.isActive()){
+            Circle c = null;
+            int team = -1;
+            int playerIndex = -1;
+            for(int i = 0; i < homeTeam.getNumberPlayers(); i++){
+                Player p = homeTeam.players.get(i);
+                c = new Circle(p.getPosition(), p.radius);
+                if(c.contains(powerUp.getPosition())){
+                    playerIndex = i;
+                    team = 0;
+                }
+            }
+
+            if(team == -1 && playerIndex == -1) {
+                for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
+                    Player p = visitorTeam.players.get(i);
+                    c = new Circle(p.getPosition(), p.radius);
+                    if (c.contains(powerUp.getPosition())) {
+                        playerIndex = i;
+                        team = 1;
+                    }
+                }
+            }
+
+            Constants.powerUpType type = powerUp.getType();
+                switch(type){
+                    case TeamSpeedInc:
+
+                        break;
+                    case TeamSpeedDec:
+
+                        break;
+                    case PlayerSpeedInc:
+
+                        break;
+                }
+        }
         homeTeam.updateControlledPlayerOnline(x, y);
+
+        elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
+        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
+        time = timeOfDay.toString();
+
+        if(!powerUp.isActive()){
+            powerUp.checkPowerUpAppearance(elapsedTime);
+        }
 
         rain.update();
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);

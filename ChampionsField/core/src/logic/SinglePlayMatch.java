@@ -8,6 +8,11 @@ import utils.Constants;
 
 public class SinglePlayMatch extends Match{
 
+    @Override
+    public PowerUp getPowerUp() {
+        return null;
+    }
+
     public SinglePlayMatch(int numberOfPlayers) {
         super(numberOfPlayers);
 
@@ -71,8 +76,8 @@ public class SinglePlayMatch extends Match{
                 visitorTeam.teamState = Team.TeamState.Playing;
                 currentState = matchState.Play;
             }
-            homeTeam.initWayPoints(ball, visitorTeam.getControlledPlayer());
-            visitorTeam.initWayPoints(ball, homeTeam.getControlledPlayer());
+            homeTeam.initWayPoints(ball, visitorTeam);
+            visitorTeam.initWayPoints(ball, homeTeam);
             homeTeam.updateControlledPlayer(x, y);
             homeTeam.updatePlayers(dt);
             visitorTeam.updatePlayers(dt);
@@ -80,8 +85,8 @@ public class SinglePlayMatch extends Match{
         }
         case Play: {
             homeTeam.updateControlledPlayer(x, y);
-            homeTeam.updatePlayers(dt, ball, visitorTeam.getControlledPlayer());
-            visitorTeam.updatePlayers(dt, ball, homeTeam.getControlledPlayer());
+            homeTeam.updatePlayers(dt, ball, visitorTeam);
+            visitorTeam.updatePlayers(dt, ball, homeTeam);
             break;
         }
         case Score:{

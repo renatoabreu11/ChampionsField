@@ -83,7 +83,7 @@ public class Options extends State {
                 gsm.set(new MenuState(gsm));
                 break;
             case 2:
-                gsm.set(new PlayState(gsm, true));
+                gsm.set(new SinglePlayState(gsm));
         }
     }
 

@@ -261,11 +261,13 @@ public class MenuState extends State  {
     private void changeState(int state) {
         switch(state) {
             case 0:
-               // gsm.set(new PlayState(gsm, true));
+
+                //gsm.set(new SinglePlayState(gsm));
 
                 //Online match
-               MultiPlayMatch match = new MultiPlayMatch();
-                gsm.set(new PlayState(gsm, match));
+
+                MultiPlayMatch match = new MultiPlayMatch();
+                gsm.set(new MultiPlayState(gsm, match));
                 break;
             case 1: gsm.set(new Options(gsm)); break;
             case 2: gsm.set(new Leaderboard(gsm)); break;

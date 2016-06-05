@@ -9,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -25,61 +24,56 @@ import java.util.ArrayList;
 import logic.Ball;
 import logic.Goal;
 import logic.Match;
-import logic.MultiPlayMatch;
 import logic.Player;
 import logic.Rain;
 import logic.SinglePlayMatch;
-import server.MPClient;
 import utils.Constants;
 
-public class PlayState extends State implements ApplicationListener{
-    //Objects textures
-    private TextureAtlas explosionAtlas;
-    private Animation explosionAnimation;
-    private Texture rainTexture;
-    private TextureAtlas ballTexture;
-    private Animation ballAnimation;
-    private Texture fieldTexture;
-    private Texture homeTeamTexture;
-    private Texture visitorTeamTexture;
-    private Texture goalTexture;
-    private BitmapFont font;
-    private Rain rain;
+public class SinglePlayState extends State implements ApplicationListener {
+        //Objects textures
+        private TextureAtlas explosionAtlas;
+        private Animation explosionAnimation;
+        private Texture rainTexture;
+        private TextureAtlas ballTexture;
+        private Animation ballAnimation;
+        private Texture fieldTexture;
+        private Texture homeTeamTexture;
+        private Texture visitorTeamTexture;
+        private Texture goalTexture;
+        private BitmapFont font;
+        private Rain rain;
 
-    private float deltaTime = 0;
-    private float scoreAnimationTime;
+        private float deltaTime = 0;
+        private float scoreAnimationTime;
 
-    private Vector2 explosionPos;
-    static final float PLAYERS_SPEED = 5;
-    static final float EXPLOSION_SPEED = 5f;
-    static final float EXPLOSION_DURATION = 2.4f;
-    static final float EXPLOSION_WIDTH = 100f;
-    static final float EXPLOSION_HEIGHT = 100f;
-    Box2DDebugRenderer debugRenderer;
+        private Vector2 explosionPos;
+        static final float PLAYERS_SPEED = 5;
+        static final float EXPLOSION_SPEED = 5f;
+        static final float EXPLOSION_DURATION = 2.4f;
+        static final float EXPLOSION_WIDTH = 100f;
+        static final float EXPLOSION_HEIGHT = 100f;
+        Box2DDebugRenderer debugRenderer;
 
-    //Match class init
-    public Match match;
-    boolean gameMode;
+        //Match class init
+        public SinglePlayMatch match;
 
-    //Physics World
-    private OrthographicCamera camera;
+        //Physics World
+        private OrthographicCamera camera;
 
-    //Touchpad
-    private Stage stage;
-    private Touchpad touchpad;
-    private Touchpad.TouchpadStyle touchpadStyle;
-    private Skin touchpadSkin;
-    private Drawable touchBackground;
-    private Drawable touchKnob;
+        //Touchpad
+        private Stage stage;
+        private Touchpad touchpad;
+        private Touchpad.TouchpadStyle touchpadStyle;
+        private Skin touchpadSkin;
+        private Drawable touchBackground;
+        private Drawable touchKnob;
 
-    private TextureAtlas switchTexture;
-    private Skin switchSkin;
-    private Button switchBtn;
+        private TextureAtlas switchTexture;
+        private Skin switchSkin;
+        private Button switchBtn;
 
-    public PlayState(GameStateManager gsm, boolean gameMode){
+    public SinglePlayState(GameStateManager gsm) {
         super(gsm);
-
-        this.gameMode = gameMode;
 
         touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
@@ -113,10 +107,8 @@ public class PlayState extends State implements ApplicationListener{
         switchBtn.setHeight(Constants.Switch_Height);
         switchBtn.setWidth(Constants.Switch_Width);
         switchBtn.setPosition(width - Constants.Switch_Width * 2, Constants.Switch_Height/2);
-        if(this.gameMode){
-            addListeners();
-            stage.addActor(switchBtn);
-        }
+        addListeners();
+        stage.addActor(switchBtn);
 
         //Textures definition
         explosionAtlas = new TextureAtlas("Explosion.atlas");
@@ -128,6 +120,7 @@ public class PlayState extends State implements ApplicationListener{
         visitorTeamTexture = new Texture("Player.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
+
         font = new BitmapFont();
         font.setColor(Color.WHITE);
         //Camera definition
@@ -135,9 +128,7 @@ public class PlayState extends State implements ApplicationListener{
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
         rain = new Rain(width, height);
-        if(gameMode)
-             match = new SinglePlayMatch(5);
-        else match = new MultiPlayMatch();
+        match = new SinglePlayMatch(3);
         scoreAnimationTime = 0;
     }
 
@@ -158,6 +149,7 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void create() {
+
     }
 
     @Override
@@ -177,11 +169,6 @@ public class PlayState extends State implements ApplicationListener{
 
     @Override
     public void resume() {
-
-    }
-
-    @Override
-    public void dispose() {
 
     }
 
@@ -206,9 +193,9 @@ public class PlayState extends State implements ApplicationListener{
             scoreAnimationTime = 0;
             match.endScoreState();
         }
+
         deltaTime += dt;
     }
-
 
     @Override
     public void render(SpriteBatch sb) {
@@ -222,10 +209,10 @@ public class PlayState extends State implements ApplicationListener{
         b.setPositionToBody();
         screenPosition = b.getScreenCoordinates();
 
-       if(match.getCurrentState() == Match.matchState.Score) {
-           sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
-           scoreAnimationTime += Gdx.graphics.getDeltaTime();
-       } else{
+        if(match.getCurrentState() == Match.matchState.Score) {
+            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+            scoreAnimationTime += Gdx.graphics.getDeltaTime();
+        } else{
             sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
         }
 
@@ -242,10 +229,10 @@ public class PlayState extends State implements ApplicationListener{
                 sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
                 font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
 
-            /*visitorTeamPlayers.get(i).setPositionToBody();
-            screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
-            sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
-            font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);*/
+                visitorTeamPlayers.get(i).setPositionToBody();
+                screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
+                sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
+                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);
             }
         }
 
@@ -264,6 +251,7 @@ public class PlayState extends State implements ApplicationListener{
         screenPosition = g.getScreenCoordinates();
         sb.draw(goalTexture, screenPosition.x , screenPosition.y, -horLength, vertLength);
 
+
         for(int i = 0; i < rain.getRainSize(); i++)
             sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
 
@@ -274,69 +262,11 @@ public class PlayState extends State implements ApplicationListener{
             stage.draw();
         }
         debugRenderer.render(match.getWorld(), camera.combined);
+
     }
 
-    /*
-    * BEGIN OF ONLINE FUNCTION ONLY
-    * */
+    @Override
+    public void dispose() {
 
-    public PlayState(GameStateManager gsm, final MultiPlayMatch match){
-        super(gsm);
-
-        this.match = match;
-
-        touchpadSkin = new Skin();
-        touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
-        touchpadSkin.add("touchKnob", new Texture("touchKnob.png"));
-        touchpadStyle = new Touchpad.TouchpadStyle();
-        //Create Drawable's from TouchPad skin
-        touchBackground = touchpadSkin.getDrawable("touchBackground");
-        touchKnob = touchpadSkin.getDrawable("touchKnob");
-        //Apply the Drawables to the TouchPad Style
-        touchpadStyle.background = touchBackground;
-        touchpadStyle.knob = touchKnob;
-        //Create new TouchPad with the created style
-        touchpad = new Touchpad(10, touchpadStyle);
-        touchpad.setBounds(15, 15, 200, 200);
-
-        //Create a Stage and add TouchPad
-        stage = new Stage();
-        stage.addActor(touchpad);
-        Gdx.input.setInputProcessor(stage);
-
-        //Textures definition
-        explosionAtlas = new TextureAtlas("Explosion.atlas");
-        explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
-        ballTexture = new TextureAtlas("SoccerBall.atlas");
-        ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
-        fieldTexture = new Texture("Field.jpg");
-        homeTeamTexture = new Texture("Player.png");
-        visitorTeamTexture = new Texture("Player.png");
-        goalTexture = new Texture("FootballGoal.png");
-        rainTexture = new Texture("Rain.png");
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
-
-        //Camera definition
-        camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
-        cam.setToOrtho(false);
-        camera.update();
-        debugRenderer = new Box2DDebugRenderer();
-
-        rain = new Rain(width, height);
-        scoreAnimationTime = 0;
-
-        class MyClient implements Runnable {
-            @Override
-            public void run() {
-                MPClient client = new MPClient("1", 0, match);
-            }
-        }
-        Thread newPlayer = new Thread(new MyClient());
-        newPlayer.start();
     }
-
-    /*
-    * END OF ONLINE FUNCTION ONLY
-    * */
 }

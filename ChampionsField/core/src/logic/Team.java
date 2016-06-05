@@ -29,19 +29,15 @@ public class Team {
         teamState = initialState;
         players = new ArrayList<Player>();
 
-        regions = new Array<Rectangle>(5);
+        regions = new Array<Rectangle>(3);
         if(teamState == TeamState.Attacking){
-            regions.add(Constants.AttackGR);
-            regions.add(Constants.AttackCD);
-            regions.add(Constants.AttackDM);
-            regions.add(Constants.AttackAM);
-            regions.add(Constants.AttackST);
+            regions.add(Constants.AttackCentral);
+            regions.add(Constants.AttackMidfielder);
+            regions.add(Constants.AttackStriker);
         } else{
-            regions.add(Constants.DefendGR);
-            regions.add(Constants.DefendCD);
-            regions.add(Constants.DefendDM);
-            regions.add(Constants.DefendAM);
-            regions.add(Constants.DefendST);
+            regions.add(Constants.DefendCentral);
+            regions.add(Constants.DefendMidfielder);
+            regions.add(Constants.DefendStriker);
         }
 
         for(int i = 0; i < numPlayers; i++){
@@ -49,22 +45,14 @@ public class Team {
             String n = "";
             switch(i){
                 case 0:
-                    position = Constants.Keeper;
-                    n = "GK";
+                    position = Constants.Defender;
+                    n = "DC";
                     break;
                 case 1:
-                    position = Constants.CenterDefender;
-                    n = "CD";
-                    break;
-                case 2:
-                    position = Constants.DefensiveMidfielder;
+                    position = Constants.Midfielder;
                     n = "DM";
                     break;
-                case 3:
-                    position = Constants.AttackingMidfielder;
-                    n = "AM";
-                    break;
-                case 4:
+                case 2:
                     position = Constants.Striker;
                     n = "ST";
                     break;
@@ -128,15 +116,17 @@ public class Team {
     public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
-                players.get(i).getBody().setLinearVelocity(x, y);
+                float xSpeed = x *  players.get(i).speedMultiplier;
+                float ySpeed = y *  players.get(i).speedMultiplier;
+                players.get(i).getBody().setLinearVelocity(xSpeed, ySpeed);
             }
         }
     }
 
-    public void updatePlayers(float dt, Ball ball, Player controlledPlayer){
+    public void updatePlayers(float dt, Ball ball, Team adversaryTeam){
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
-                players.get(i).updateWayPoints(ball, controlledPlayer);
+                players.get(i).updateWayPoints(ball, adversaryTeam);
                 players.get(i).update(dt);
             }
         }
@@ -171,11 +161,9 @@ public class Team {
         }
     }
 
-    public void initWayPoints(Ball ball, Player controlledPlayer) {
+    public void initWayPoints(Ball ball, Team adversaryTeam) {
         for(int i = 0; i < players.size(); i++) {
-            players.get(i).ballWayPoint = new WayPoint(ball.body, ball.radius);
-            if(controlledPlayer != null)
-                players.get(i).controlledPlayerWayPoint = new WayPoint(controlledPlayer.body, controlledPlayer.radius);
+            players.get(i).initWayPoints(ball, adversaryTeam);
         }
     }
 

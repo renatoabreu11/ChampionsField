@@ -20,6 +20,8 @@ import utils.Constants;
 import utils.Statistics;
 
 public abstract class Match{
+    public abstract PowerUp getPowerUp();
+
     public enum matchState{
         KickOff,
         Pause,
@@ -111,8 +113,6 @@ public abstract class Match{
             }
         });
     }
-
-    public abstract void switchPlayer();
 
     public World getWorld() {
         return w;

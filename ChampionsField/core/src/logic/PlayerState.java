@@ -25,10 +25,9 @@ public enum PlayerState implements State<Player>{
                 entity.stateMachine.changeState(PlayerState.toOriginalRegion);
             }
 
-            if(entity.controlledPlayerWayPoint != null){
-                if(entity.region.contains(entity.controlledPlayerWayPoint.getPosition()))
+            for(WayPoint waypoint : entity.adversaryTeamWayPoint)
+                if(entity.region.contains(waypoint.getPosition()))
                     entity.stateMachine.changeState(PlayerState.Block);
-            }
         }
     },
 
@@ -48,10 +47,9 @@ public enum PlayerState implements State<Player>{
                 entity.stateMachine.changeState(PlayerState.Static);
             }
 
-            if(entity.controlledPlayerWayPoint != null){
-                if(entity.region.contains(entity.controlledPlayerWayPoint.getPosition()))
+            for(WayPoint waypoint : entity.adversaryTeamWayPoint)
+                if(entity.region.contains(waypoint.getPosition()))
                     entity.stateMachine.changeState(PlayerState.Block);
-            }
         }
     },
 
@@ -69,15 +67,23 @@ public enum PlayerState implements State<Player>{
     Block(){
         @Override
         public void enter(Player entity) {
-            Pursue<Vector2> pursue = new Pursue<Vector2>(entity, entity.controlledPlayerWayPoint, 0.001f);
+            WayPoint wp = null;
+            for(WayPoint waypoint : entity.adversaryTeamWayPoint)
+                if(entity.region.contains(waypoint.getPosition()))
+                    wp = waypoint;
+            Pursue<Vector2> pursue = new Pursue<Vector2>(entity, wp, 0.001f);
             entity.setSteeringBehavior(pursue);
         }
 
         @Override
         public void update(Player entity) {
-            if(!entity.region.contains(entity.controlledPlayerWayPoint.getPosition())){
+            boolean contains = false;
+            for(WayPoint waypoint : entity.adversaryTeamWayPoint)
+                if(entity.region.contains(waypoint.getPosition()))
+                    contains = true;
+
+            if(contains == false)
                 entity.stateMachine.changeState(PlayerState.toOriginalRegion);
-            }
 
         }
     },

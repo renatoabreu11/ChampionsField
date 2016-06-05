@@ -23,6 +23,8 @@ public class Field {
     Body rightHalfMoon;
     Body leftHalfMoon;
 
+    Body test;
+
     public Field(World w) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;

@@ -16,6 +16,8 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.util.ArrayList;
+
 import utils.Constants;
 
 public class Player implements Coordinates, Steerable<Vector2>{
@@ -36,17 +38,18 @@ public class Player implements Coordinates, Steerable<Vector2>{
     private SteeringBehavior<Vector2> steeringBehavior;
 
     StateMachine<Player, PlayerState> stateMachine;
-    WayPoint controlledPlayerWayPoint;
+    ArrayList<WayPoint> adversaryTeamWayPoint;
     WayPoint ballWayPoint;
     Rectangle region;
 
     //ONLINE VARIABLES ONLY
     boolean isControlledPlayer;
+    float speedMultiplier;
 
     public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         initialPosition = position;
-        controlledPlayerWayPoint = null;
+        adversaryTeamWayPoint = new ArrayList<WayPoint>();
         ballWayPoint = null;
         this.radius = (size/2) * 0.01f;
         this.score = 0;
@@ -139,6 +142,25 @@ public class Player implements Coordinates, Steerable<Vector2>{
         return (float)Math.sqrt(xDiff + yDiff);
     }
 
+    public void addMatchPlayed(){
+        matchesPlayed++;
+    }
+
+    public void initWayPoints(Ball ball, Team adversaryTeam) {
+        adversaryTeamWayPoint.clear();
+        for(int i = 0; i < adversaryTeam.getNumberPlayers(); i++){
+            adversaryTeamWayPoint.add(new WayPoint(adversaryTeam.players.get(i).body, adversaryTeam.players.get(i).radius));
+        }
+        ballWayPoint = new WayPoint(ball.body, ball.radius);
+    }
+
+    public void updateWayPoints(Ball ball, Team adversaryTeam) {
+        for(int i = 0; i < adversaryTeam.getNumberPlayers(); i++){
+            adversaryTeamWayPoint.get(i).setWayPoint(adversaryTeam.players.get(i).body, adversaryTeam.players.get(i).radius);
+        }
+        ballWayPoint.setWayPoint(ball.body, ball.radius);
+    }
+
     public void setPosition(Vector2 pos) {
         position = pos;
     }
@@ -174,6 +196,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.isControlledPlayer = controlledPlayer;
+        speedMultiplier = 1;
     }
 
     public void addPhysics(World w) {
@@ -345,15 +368,5 @@ public class Player implements Coordinates, Steerable<Vector2>{
             return true;
         }
         return false;
-    }
-
-    public void addMatchPlayed(){
-        matchesPlayed++;
-    }
-
-    public void updateWayPoints(Ball ball, Player p) {
-        if(p != null)
-            controlledPlayerWayPoint.setWayPoint(p.body, p.radius);
-        ballWayPoint.setWayPoint(ball.body, ball.radius);
     }
 }

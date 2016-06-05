@@ -59,7 +59,7 @@ public class MultiPlayState extends State implements ApplicationListener {
         Box2DDebugRenderer debugRenderer;
 
         //Match class init
-        public Match match;
+        public MultiPlayMatch match;
 
         //Physics World
         private OrthographicCamera camera;
@@ -72,10 +72,8 @@ public class MultiPlayState extends State implements ApplicationListener {
         private Drawable touchBackground;
         private Drawable touchKnob;
 
-    public MultiPlayState(GameStateManager gsm, final MultiPlayMatch match){
+    public MultiPlayState(GameStateManager gsm){
         super(gsm);
-
-        this.match = match;
 
         touchpadSkin = new Skin();
         touchpadSkin.add("touchBackground", new Texture("touchBackground.png"));
@@ -120,6 +118,8 @@ public class MultiPlayState extends State implements ApplicationListener {
 
         rain = new Rain(width, height);
         scoreAnimationTime = 0;
+
+        match = new MultiPlayMatch();
 
         class MyClient implements Runnable {
             @Override

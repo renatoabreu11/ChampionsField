@@ -62,7 +62,6 @@ public class Options extends State {
         playersPerTeam.setAlignment(1);
         playersPerTeam.setFocusTraversal(true);
 
-
         button = new TextButton("Back", style);
         button.setHeight(Constants.buttonHeight);
         button.setWidth(Constants.buttonWidth);
@@ -115,24 +114,24 @@ public class Options extends State {
                 break;
             case 1:
                 String n = nameField.getText();
-                boolean asf = true;
                 if(n.length() < 3){
-                    //vê isto zé
                     diag = new Dialog("Warning", skin) {
-                        public void result(Object obj) {
-                            System.out.println("result "+ obj);
+                        {
+                            text("The username you choose needs to have 3 letter. Please provide it!");
+                            button("Ok");
                         }
-                    }.text("Are you enjoying this demo?").button("Yes", true).button("No", false).show(stage);
-                    asf = false;
-                }
 
-                if(asf){
-                    dispose();
-                    gsm.set(new MenuState(gsm));
-                }
+                        @Override
+                        public void result(Object obj) {
+                            diag.hide();
+                        }
+                    }.show(stage);
+                    selectedOption = 0;
+                } else
+                    selectedOption = 2;
                 break;
             case 2:
-                gsm.set(new SinglePlayState(gsm));
+                gsm.set(new MenuState(gsm));
         }
     }
 

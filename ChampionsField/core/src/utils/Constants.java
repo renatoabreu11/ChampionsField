@@ -23,6 +23,8 @@ public final class Constants {
     public static final float Switch_Width = 220 * widthScale;
     public static final float leaderboardWidthScale = ScreenWidth / 700;
     public static final float leaderboardHeightScale = ScreenHeight / 1000;
+    public static final float buttonHeight = ScreenHeight/16;
+    public static final float buttonWidth = ScreenWidth/10;
 
     //players positions
     public static final Vector2 Defender = new Vector2(ScreenWidth/2 - 430 * widthScale , 0);
@@ -41,6 +43,7 @@ public final class Constants {
 
     public static long PowerfirstAppear = 2;
     public static long PowerLastAppear = 180;
+    public static final long powerTime = 5;
 
     public enum entityMasks{
         BallMask(1),

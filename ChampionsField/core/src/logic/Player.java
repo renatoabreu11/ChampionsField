@@ -45,6 +45,8 @@ public class Player implements Coordinates, Steerable<Vector2>{
     //ONLINE VARIABLES ONLY
     boolean isControlledPlayer;
     float speedMultiplier;
+    float activeTime;
+    boolean powerActivated;
 
     public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
@@ -197,6 +199,8 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.score = 0;
         this.isControlledPlayer = controlledPlayer;
         speedMultiplier = 1;
+        powerActivated = false;
+        activeTime = 0;
     }
 
     public void addPhysics(World w) {

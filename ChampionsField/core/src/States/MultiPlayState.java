@@ -168,6 +168,7 @@ public class MultiPlayState extends State implements ApplicationListener {
             match.endGame();
         }
 
+
         match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
 
         if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {

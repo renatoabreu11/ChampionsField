@@ -112,14 +112,22 @@ public class MultiPlayMatch extends Match {
                         else homeTeam.applyPowerUp(0.25f);
                         break;
                     case PlayerSpeedInc:
-                        if(team == 0)
+                        if(team == 0){
                             homeTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
-                        else visitorTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
+                            homeTeam.getPlayers().get(playerIndex).powerActivated = true;
+                            homeTeam.getPlayers().get(playerIndex).activeTime = System.currentTimeMillis();
+                        }
+                        else{
+                            visitorTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
+                            visitorTeam.getPlayers().get(playerIndex).powerActivated = true;
+                            visitorTeam.getPlayers().get(playerIndex).activeTime = System.currentTimeMillis();
+                        }
                         break;
                 }
                 powerUp.setActive(false);
             }
         }
+
         homeTeam.updateControlledPlayerOnline(x, y);
 
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);

@@ -46,10 +46,10 @@ public class Leaderboard extends State {
         style.font = font;
 
         button = new TextButton("Back", style);
-        button.setHeight(125 * Constants.leaderboardHeightScale);
-        button.setWidth(100 * Constants.leaderboardWidthScale);
+        button.setHeight(Constants.buttonHeight);
+        button.setWidth(Constants.buttonWidth);
 
-        button.setPosition(300 * Constants.leaderboardWidthScale,  0);
+        button.setPosition(Constants.ScreenWidth/2 - button.getWidth()/2,  button.getHeight()/2);
 
         button.addListener(new InputListener() {
             @Override

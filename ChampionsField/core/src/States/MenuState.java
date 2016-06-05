@@ -21,6 +21,7 @@ import java.util.Random;
 import logic.Ball;
 import logic.Field;
 import logic.MultiPlayMatch;
+import utils.Constants;
 
 public class MenuState extends State  {
     enum CameraState {
@@ -40,7 +41,8 @@ public class MenuState extends State  {
     private BitmapFont font;
     private TextureAtlas buttonsAtlas;
     private Skin buttonSkin;
-    private TextButton playBtn;
+    private TextButton singlePlayBtn;
+    private TextButton multiPlayBtn;
     private TextButton settingsBtn;
     private TextButton exitBtn;
     private TextButton leaderboardBtn;
@@ -88,32 +90,38 @@ public class MenuState extends State  {
         style.font = font;
 
         //Creating buttons
-        playBtn = new TextButton("Play", style);
-        playBtn.setHeight(width / 9.6f);
-        playBtn.setWidth(height / 5.4f);
+        singlePlayBtn = new TextButton("Singleplayer", style);
+        singlePlayBtn.setHeight(Constants.buttonHeight);
+        singlePlayBtn.setWidth(Constants.buttonWidth);
+
+        multiPlayBtn = new TextButton("Multiplayer", style);
+        multiPlayBtn.setHeight(Constants.buttonHeight);
+        multiPlayBtn.setWidth(Constants.buttonWidth);
 
         settingsBtn = new TextButton("Settings", style);
-        settingsBtn.setHeight(width / 9.6f);
-        settingsBtn.setWidth(height / 5.4f);
+        settingsBtn.setHeight(Constants.buttonHeight);
+        settingsBtn.setWidth(Constants.buttonWidth);
 
         exitBtn = new TextButton("Exit", style);
-        exitBtn.setHeight(width / 9.6f);
-        exitBtn.setWidth(height / 5.4f);
+        exitBtn.setHeight(Constants.buttonHeight);
+        exitBtn.setWidth(Constants.buttonWidth);
 
         leaderboardBtn = new TextButton("Leaderboard", style);
-        leaderboardBtn.setHeight(width / 9.6f);
-        leaderboardBtn.setWidth(height / 5.4f);
+        leaderboardBtn.setHeight(Constants.buttonHeight);
+        leaderboardBtn.setWidth(Constants.buttonWidth);
 
         //Setting the buttons position
-        playBtn.setPosition(width / 2 - playBtn.getWidth() / 2, height - height /  4- playBtn.getHeight() / 2);
-        settingsBtn.setPosition(width / 2 - settingsBtn.getWidth() / 2, height / 2 - settingsBtn.getHeight() / 2);
-        exitBtn.setPosition(width / 2 - exitBtn.getWidth() / 2, height / 4 - exitBtn.getHeight() / 2);
-        leaderboardBtn.setPosition(width / 2 - exitBtn.getWidth() / 2, height / 6 - exitBtn.getHeight() / 2);
+        singlePlayBtn.setPosition(width/2 - Constants.buttonWidth/2, height - singlePlayBtn.getHeight() * 3f);
+        multiPlayBtn.setPosition(width/2 - Constants.buttonWidth/2, height - multiPlayBtn.getHeight() * 5.5f);
+        leaderboardBtn.setPosition(width / 2 - Constants.buttonWidth/2, height - leaderboardBtn.getHeight() * 8f);
+        settingsBtn.setPosition(width / 2 - Constants.buttonWidth/2, height - settingsBtn.getHeight() * 10.5f);
+        exitBtn.setPosition(width / 2 - Constants.buttonWidth/2, height - exitBtn.getHeight() * 13f);
 
         addListeners();
 
         //Adding the buttons to the stage
-        stage.addActor(playBtn);
+        stage.addActor(singlePlayBtn);
+        stage.addActor(multiPlayBtn);
         stage.addActor(settingsBtn);
         stage.addActor(exitBtn);
         stage.addActor(leaderboardBtn);
@@ -141,7 +149,7 @@ public class MenuState extends State  {
     }
 
     void addListeners() {
-        playBtn.addListener(new InputListener() {
+        singlePlayBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -153,7 +161,7 @@ public class MenuState extends State  {
             }
         });
 
-        settingsBtn.addListener(new InputListener() {
+        multiPlayBtn.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
@@ -162,6 +170,18 @@ public class MenuState extends State  {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 changeState(1);
+            }
+        });
+
+        settingsBtn.addListener(new InputListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                changeState(3);
             }
         });
 
@@ -186,7 +206,7 @@ public class MenuState extends State  {
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 dispose();
-                changeState(3);
+                changeState(4);
             }
         });
     }
@@ -260,18 +280,13 @@ public class MenuState extends State  {
 
     private void changeState(int state) {
         switch(state) {
-            case 0:
-
-                //gsm.set(new SinglePlayState(gsm));
-
-                //Online match
-
+            case 0: gsm.set(new SinglePlayState(gsm)); break;
+            case 1:
                 MultiPlayMatch match = new MultiPlayMatch();
                 gsm.set(new MultiPlayState(gsm, match));
-                break;
-            case 1: gsm.set(new Options(gsm)); break;
             case 2: gsm.set(new Leaderboard(gsm)); break;
-            case 3: Gdx.app.exit(); break;
+            case 3: gsm.set(new Options(gsm)); break;
+            case 4: Gdx.app.exit(); break;
             default: break;
         }
     }

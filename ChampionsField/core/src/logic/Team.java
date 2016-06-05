@@ -116,9 +116,7 @@ public class Team {
     public void updateControlledPlayer(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
-                float xSpeed = x *  players.get(i).speedMultiplier;
-                float ySpeed = y *  players.get(i).speedMultiplier;
-                players.get(i).getBody().setLinearVelocity(xSpeed, ySpeed);
+                players.get(i).getBody().setLinearVelocity(x, y);
             }
         }
     }
@@ -241,7 +239,15 @@ public class Team {
     public void updateControlledPlayerOnline(float x, float y) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).getControlled()) {
-                players.get(i).getBody().setLinearVelocity(x, y);
+                if(players.get(i).powerActivated == true && (System.currentTimeMillis() - players.get(i).activeTime) / 1000 >= Constants.powerTime){
+                    players.get(i).activeTime = 0;
+                    players.get(i).powerActivated = false;
+                    players.get(i).speedMultiplier = 1;
+                }
+
+                float xSpeed = x *  players.get(i).speedMultiplier;
+                float ySpeed = y *  players.get(i).speedMultiplier;
+                players.get(i).getBody().setLinearVelocity(xSpeed, ySpeed);
             }
         }
     }
@@ -258,6 +264,8 @@ public class Team {
     public void applyPowerUp(float i) {
         for(Player player : players) {
             player.speedMultiplier = i;
+            player.powerActivated = true;
+            player.activeTime = System.currentTimeMillis();
         }
     }
 

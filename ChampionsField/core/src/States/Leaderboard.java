@@ -72,10 +72,10 @@ public class Leaderboard extends State {
         PriorityQueue<Statistics> scores = new PriorityQueue<Statistics>();
         ArrayList<Statistics> stats = new ArrayList<Statistics>();
 
-        FileHandle globalStatistics = Gdx.files.local("Statistics.txt");
+        FileHandle globalStatistics = Gdx.files.internal("Statistics.txt");
         String info;
         boolean exist;
-        exist=Gdx.files.local("Statistics.txt").exists();
+        exist=Gdx.files.internal("Statistics.txt").exists();
         if(!exist){
             System.out.println("Error opening file!");
             return;

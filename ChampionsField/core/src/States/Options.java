@@ -2,6 +2,8 @@ package States;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
+import com.badlogic.gdx.ai.msg.PriorityQueue;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,7 +16,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 
+import java.util.ArrayList;
+
 import utils.Constants;
+import utils.Statistics;
 
 public class Options extends State {
     private Stage stage;
@@ -47,6 +52,7 @@ public class Options extends State {
 
         Preferences prefs = Gdx.app.getPreferences("My Preferences");
         String name = prefs.getString("Name", "Default value");
+        int numOfPlayers =  prefs.getInteger("Number Of Players", 3);
         if(name.equals("Default value"))
             name = "";
 
@@ -55,12 +61,10 @@ public class Options extends State {
         nameField.setPosition(Constants.ScreenWidth/2 + nameField.getWidth()/2, Constants.ScreenHeight/2 + nameField.getHeight()*6);
         nameField.setMaxLength(3);
         nameField.setAlignment(1);
-        nameField.setFocusTraversal(true);
 
-        playersPerTeam = new TextField("3", skin);
+        playersPerTeam = new TextField(Integer.toString(numOfPlayers), skin);
         playersPerTeam.setPosition(Constants.ScreenWidth/2 + playersPerTeam.getWidth()/2, Constants.ScreenHeight/2 + playersPerTeam.getHeight()*3);
         playersPerTeam.setAlignment(1);
-        playersPerTeam.setFocusTraversal(true);
 
         button = new TextButton("Back", style);
         button.setHeight(Constants.buttonHeight);
@@ -114,6 +118,40 @@ public class Options extends State {
                 break;
             case 1:
                 String n = nameField.getText();
+                String numPlayers = playersPerTeam.getText();
+
+                int players = 0;
+                try {
+                    players = Integer.parseInt(numPlayers);
+                    if(players < 1 || players > 3){
+                        diag = new Dialog("Warning", skin) {
+                            {
+                                text("Please provide a valid number of players, between 1 to 3.");
+                                button("Ok");
+                            }
+
+                            @Override
+                            public void result(Object obj) {
+                                diag.hide();
+                            }
+                        }.show(stage);
+                        selectedOption = 0;
+                    }
+                } catch (NumberFormatException e) {
+                    diag = new Dialog("Warning", skin) {
+                        {
+                            text("Please provide a valid number of players, between 1 to 3.");
+                            button("Ok");
+                        }
+
+                        @Override
+                        public void result(Object obj) {
+                            diag.hide();
+                        }
+                    }.show(stage);
+                    selectedOption = 0;
+                }
+
                 if(n.length() < 3){
                     diag = new Dialog("Warning", skin) {
                         {
@@ -127,12 +165,58 @@ public class Options extends State {
                         }
                     }.show(stage);
                     selectedOption = 0;
-                } else
+                }
+
+                if(checkIfExists(n)){
+                    System.out.println(n);
+                        diag = new Dialog("Warning", skin) {
+                            {
+                                text("The username you chosen already exists. Please choose another one!");
+                                button("Ok");
+                            }
+
+                            @Override
+                            public void result(Object obj) {
+                                diag.hide();
+                            }
+                        }.show(stage);
+                        selectedOption = 0;
+                }
+
+                if(selectedOption != 0){
+                    Preferences prefs = Gdx.app.getPreferences("My Preferences");
+                    prefs.putString("Name", n);
+                    prefs.putInteger("Number Of Players", players);
                     selectedOption = 2;
+                }
                 break;
             case 2:
                 gsm.set(new MenuState(gsm));
         }
+    }
+
+    private boolean checkIfExists(String n) {
+        Statistics parser = new Statistics("", 0, 0);
+        ArrayList<Statistics> stats = new ArrayList<Statistics>();
+
+        FileHandle globalStatistics = Gdx.files.internal("Statistics.txt");
+        String info;
+        boolean exist;
+        exist=Gdx.files.internal("Statistics.txt").exists();
+        if(!exist){
+            System.out.println("Error opening file!");
+            return false;
+        } else{
+            info = globalStatistics.readString();
+            stats = parser.parseStatisticsToArray(info);
+        }
+
+        for(Statistics stat : stats){
+            if(stat.getName().equals(n))
+                return true;
+        }
+
+        return false;
     }
 
     @Override

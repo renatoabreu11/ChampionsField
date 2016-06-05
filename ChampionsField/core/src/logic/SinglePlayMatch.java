@@ -1,7 +1,9 @@
 package logic;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import utils.Constants;
@@ -51,22 +53,24 @@ public class SinglePlayMatch extends Match{
 
     @Override
     public void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch){
+        currentState = matchState.Score;
         ArrayList<String> attackingTeamNames = attackingTeam.getPlayerNames();
 
         //auto goal
         if(attackingTeamNames.contains(lastTouch)){
             attackingTeam.autoGoal(lastTouch);
+            defendingTeam.score++;
         } else defendingTeam.goalScored(lastTouch);
 
         defendingTeam.teamState = Team.TeamState.Defending;
         attackingTeam.teamState = Team.TeamState.Attacking;
-        currentState = matchState.Score;
     }
 
     @Override
     public void updateMatch(float x, float y, Rain rain, float dt) {
         switch (currentState) {
             case KickOff: {
+                ball.body.setAwake(true);
                 if(homeTeam.getTeamState() == Team.TeamState.Attacking)
                     field.activateBarriers(true);
                 else field.activateBarriers(false);
@@ -96,9 +100,8 @@ public class SinglePlayMatch extends Match{
 
         rain.update();
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
-        elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
-        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
-        time = timeOfDay.toString();
-    }
 
+        elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
+        time = Constants.formatter.format(new Date(elapsedTime * 1000L));
+    }
 }

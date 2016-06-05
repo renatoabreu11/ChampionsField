@@ -58,9 +58,9 @@ public class Team {
                     break;
             }
             if(teamState == TeamState.Attacking)
-                players.add(new Player(- position.x , position.y, n, size, w, regions.get(i)));
+                players.add(new Player(- position.x , position.y, n + (i + 4), size, w, regions.get(i)));
             else
-                players.add(new Player(position.x, position.y, n+ i, size, w, regions.get(i)));
+                players.add(new Player(position.x, position.y, n + (i + 1), size, w, regions.get(i)));
         }
     }
 
@@ -146,8 +146,9 @@ public class Team {
 
     public void goalScored(String scorer) {
         for(int i = 0; i < players.size(); i++) {
-            if(players.get(i).name == scorer)
+            if(players.get(i).name.equals(scorer)){
                 players.get(i).score++;
+            }
         }
         score++;
     }

@@ -2,6 +2,7 @@ package States;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -47,11 +48,6 @@ public class SinglePlayState extends State implements ApplicationListener {
         private float scoreAnimationTime;
 
         private Vector2 explosionPos;
-        static final float PLAYERS_SPEED = 5;
-        static final float EXPLOSION_SPEED = 5f;
-        static final float EXPLOSION_DURATION = 2.4f;
-        static final float EXPLOSION_WIDTH = 100f;
-        static final float EXPLOSION_HEIGHT = 100f;
         Box2DDebugRenderer debugRenderer;
 
         //Match class init
@@ -128,8 +124,11 @@ public class SinglePlayState extends State implements ApplicationListener {
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
         rain = new Rain(width, height);
-        match = new SinglePlayMatch(3);
         scoreAnimationTime = 0;
+
+        Preferences prefs = Gdx.app.getPreferences("My Preferences");
+        int numberOfPlayers = prefs.getInteger("Number Of Players", 3);
+        match = new SinglePlayMatch(numberOfPlayers);
     }
 
     private void addListeners() {
@@ -181,15 +180,17 @@ public class SinglePlayState extends State implements ApplicationListener {
     public void update(float dt) {
         if(match.getElapsedTime() >= Constants.GAME_TIME){
             match.endGame();
+            dispose();
+            gsm.set(new MenuState(gsm));
         }
 
-        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
+        match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
 
         if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {
             explosionPos = match.getBall().getScreenCoordinates();
         }
 
-        if(scoreAnimationTime >= EXPLOSION_DURATION) {
+        if(scoreAnimationTime >= Constants.EXPLOSION_DURATION) {
             scoreAnimationTime = 0;
             match.endScoreState();
         }
@@ -210,7 +211,7 @@ public class SinglePlayState extends State implements ApplicationListener {
         screenPosition = b.getScreenCoordinates();
 
         if(match.getCurrentState() == Match.matchState.Score) {
-            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH/2, explosionPos.y - Constants.EXPLOSION_HEIGHT/2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
             scoreAnimationTime += Gdx.graphics.getDeltaTime();
         } else{
             sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
@@ -227,12 +228,12 @@ public class SinglePlayState extends State implements ApplicationListener {
                 homeTeamPlayers.get(i).setPositionToBody();
                 screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
                 sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
-                font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+                font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f + radius/5 * 100f);
 
                 visitorTeamPlayers.get(i).setPositionToBody();
                 screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
                 sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
-                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);
+                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f + radius/5 * 100f);
             }
         }
 
@@ -267,6 +268,14 @@ public class SinglePlayState extends State implements ApplicationListener {
 
     @Override
     public void dispose() {
-
+        explosionAtlas.dispose();
+        rainTexture.dispose();
+        ballTexture.dispose();
+        fieldTexture.dispose();
+        homeTeamTexture.dispose();
+        visitorTeamTexture.dispose();
+        goalTexture.dispose();
+        font.dispose();
+        switchTexture.dispose();
     }
 }

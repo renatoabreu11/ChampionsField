@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.text.SimpleDateFormat;
+
 public final class Constants {
     public static final float ScreenWidth = Gdx.graphics.getWidth();
     public static final float ScreenHeight = Gdx.graphics.getHeight();
@@ -25,6 +27,12 @@ public final class Constants {
     public static final float leaderboardHeightScale = ScreenHeight / 1000;
     public static final float buttonHeight = ScreenHeight/16;
     public static final float buttonWidth = ScreenWidth/10;
+    public static final SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+    public static final float PLAYERS_SPEED = 5;
+    public static final float EXPLOSION_SPEED = 5f;
+    public static final float EXPLOSION_DURATION = 2.4f;
+    public static final float EXPLOSION_WIDTH = 100f;
+    public static final float EXPLOSION_HEIGHT = 100f;
 
     //players positions
     public static final Vector2 Defender = new Vector2(ScreenWidth/2 - 430 * widthScale , 0);

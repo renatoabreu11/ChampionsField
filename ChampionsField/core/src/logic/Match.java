@@ -11,8 +11,10 @@ import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import com.badlogic.gdx.physics.box2d.World;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -61,8 +63,7 @@ public abstract class Match{
         currentState = matchState.KickOff;
         startTime = System.currentTimeMillis();
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
-        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
-        time = timeOfDay.toString();
+        time = Constants.formatter.format(new Date(elapsedTime * 1000L));
     }
 
     private void createCollisionListener() {
@@ -74,9 +75,11 @@ public abstract class Match{
 
                 if((f1.getUserData() == "HomeGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "HomeGoal" || f2.getUserData() == "Ball")){
                     teamScored(visitorTeam, homeTeam, ball.lastTouch);
+                    ball.body.setAwake(false);
                 }
                 else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")){
                     teamScored(homeTeam, visitorTeam, ball.lastTouch);
+                    ball.body.setAwake(false);
                 }
                 else{
                     if((f1.getUserData() != "Ball" && f2.getUserData() != "Ball") || (f1.getUserData() == null || f2.getUserData() == null)){

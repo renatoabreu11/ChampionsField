@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.Circle;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Random;
 
 import utils.Constants;
@@ -142,8 +143,7 @@ public class MultiPlayMatch extends Match {
         homeTeam.updateControlledPlayerOnline(x, y);
 
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
-        //LocalTime timeOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
-        time = "0";//timeOfDay.toString();
+        time = Constants.formatter.format(new Date(elapsedTime * 1000L));
 
         if(!powerUp.isActive()){
             powerUp.checkPowerUpAppearance(elapsedTime);

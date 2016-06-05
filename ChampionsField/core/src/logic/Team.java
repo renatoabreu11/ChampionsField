@@ -198,8 +198,6 @@ public class Team {
         return names;
     }
 
-
-
     /*
     * BEGIN OF THE MULTPLAYER FUNCTIONS
     * */
@@ -227,6 +225,16 @@ public class Team {
         players.add(player);
     }
 
+    public void removePlayer(String name) {
+        for(Player player : players) {
+            if(player.name.equals(name)) {
+                player.getBody().getWorld().destroyBody(player.getBody());
+                players.remove(player);
+                break;
+            }
+        }
+    }
+
     private boolean playerAlreadyControlled() {
         for(Player player : players) {
             if(player.getControlled())
@@ -237,17 +245,10 @@ public class Team {
     }
 
     public void updateControlledPlayerOnline(float x, float y) {
-        for(int i = 0; i < players.size(); i++) {
-            if (players.get(i).getControlled()) {
-                if(players.get(i).powerActivated == true && (System.currentTimeMillis() - players.get(i).activeTime) / 1000 >= Constants.powerTime){
-                    players.get(i).activeTime = 0;
-                    players.get(i).powerActivated = false;
-                    players.get(i).speedMultiplier = 1;
-                }
-
-                float xSpeed = x *  players.get(i).speedMultiplier;
-                float ySpeed = y *  players.get(i).speedMultiplier;
-                players.get(i).getBody().setLinearVelocity(xSpeed, ySpeed);
+        for(Player player : players) {
+            if(player.isControlledPlayer) {
+                player.getBody().setLinearVelocity(x, y);
+                break;
             }
         }
     }

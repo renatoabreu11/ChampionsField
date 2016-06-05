@@ -1,6 +1,5 @@
 package server;
 
-import com.badlogic.gdx.utils.Array;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
@@ -9,18 +8,14 @@ import com.esotericsoftware.minlog.Log;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import logic.Match;
-import logic.MultiPlayMatch;
-import logic.Player;
-
 public class MPServer {
     Server server;
-    Array<PlayerInfo> playersInfo;
+    ArrayList<PlayerInfo> playersInfo;
     int numNewPlayers;
 
     public MPServer() throws IOException {
         numNewPlayers = 0;
-        playersInfo = new Array<PlayerInfo>();
+        playersInfo = new ArrayList<PlayerInfo>();
         server = new Server();
 
         Network.registerPackets(server);
@@ -69,6 +64,21 @@ public class MPServer {
                 if(object instanceof Network.UpdatePlayer) {
                     Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
                     server.sendToAllTCP(updatePlayer);
+                }
+
+                if(object instanceof Network.RemovePlayer) {
+                    Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
+
+                    for(PlayerInfo playerInfo : playersInfo) {
+                        if(playerInfo.team == removePlayer.team && playerInfo.name.equals(removePlayer.name)) {
+                            playersInfo.remove(playerInfo);
+                            break;
+                        }
+                    }
+
+                    //Removes the player from the other client's matches
+                    server.sendToAllTCP(removePlayer);
+                    numNewPlayers--;
                 }
             }
         });

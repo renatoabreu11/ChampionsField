@@ -228,7 +228,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
     }
 
     public void updatePlayerPosition(float x, float y) {
-        body.setTransform(x * 0.01f, y * 0.01f, 0);
+        body.setTransform(x, y, 0);
         setPositionToBody();
         body.setLinearVelocity(0, 0);
     }

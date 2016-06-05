@@ -14,7 +14,9 @@ public class MPClient {
     Client client;
     MultiPlayMatch match;
 
-    //0 --> homeTeam, 1 --> visitorTeam
+    /*
+    * A player can have the same name only if in different teams!
+    * */
     public MPClient(String name, int team, MultiPlayMatch match) {
         this.match = match;
         client = new Client();
@@ -24,7 +26,7 @@ public class MPClient {
         addListeners();
 
         try {
-            client.connect(TIME_OUT, "127.0.0.1", Network.PORT);
+            client.connect(TIME_OUT, Network.IPV4, Network.PORT);
         } catch (IOException e) {
             e.printStackTrace();
             client.stop();
@@ -52,6 +54,10 @@ public class MPClient {
             }
         }
 
+        /*Network.RemovePlayer removePlayer = new Network.RemovePlayer();
+        removePlayer.team = team;
+        removePlayer.name = name;
+        client.sendTCP(removePlayer);*/
     }
 
     private void addListeners() {
@@ -77,6 +83,12 @@ public class MPClient {
                     Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
                     match.setPlayerPosition(updatePlayer.x, updatePlayer.y, updatePlayer.name, updatePlayer.team);
                 }
+
+                if(object instanceof Network.RemovePlayer) {
+                    Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
+                    match.removePlayerFromMatch(removePlayer.name, removePlayer.team);
+                }
+
             }
         }));
     }

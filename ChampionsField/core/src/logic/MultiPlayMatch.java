@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Circle;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Random;
 
 import utils.Constants;
@@ -51,6 +52,15 @@ public class MultiPlayMatch extends Match {
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
 
         numberOfPlayers++;
+    }
+
+    public void removePlayerFromMatch(String name, int team) {
+        if(team == 0)
+            homeTeam.removePlayer(name);
+        else
+            visitorTeam.removePlayer(name);
+
+        numberOfPlayers--;
     }
 
     @Override
@@ -132,8 +142,8 @@ public class MultiPlayMatch extends Match {
         homeTeam.updateControlledPlayerOnline(x, y);
 
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
-        LocalTime timeOfDay = LocalTime.ofSecondOfDay(elapsedTime);
-        time = timeOfDay.toString();
+        //LocalTime timeOfDay = Calendar.getInstance().get(Calendar.HOUR_OF_DAY);
+        time = "0";//timeOfDay.toString();
 
         if(!powerUp.isActive()){
             powerUp.checkPowerUpAppearance(elapsedTime);
@@ -143,7 +153,6 @@ public class MultiPlayMatch extends Match {
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
 
         if(x != 0 || y != 0) moved = true;
-        //else moved = false;
     }
 
     @Override

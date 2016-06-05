@@ -1,6 +1,7 @@
 package States;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -8,8 +9,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+
+import utils.Constants;
 
 public class Options extends State {
     private Stage stage;
@@ -19,6 +24,10 @@ public class Options extends State {
     private TextureAtlas buttonsAtlas;
     private Skin buttonSkin;
     private TextButton button;
+    private TextField nameField;
+    private TextField playersPerTeam;
+    private Skin skin;
+    private Dialog diag;
 
     public Options(GameStateManager gsm) {
         super(gsm);
@@ -36,12 +45,40 @@ public class Options extends State {
         style.down = buttonSkin.getDrawable("buttonOn");
         style.font = font;
 
+        Preferences prefs = Gdx.app.getPreferences("My Preferences");
+        String name = prefs.getString("Name", "Default value");
+        if(name.equals("Default value"))
+            name = "";
+
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        nameField = new TextField(name, skin);
+        nameField.setPosition(Constants.ScreenWidth/2 + nameField.getWidth()/2, Constants.ScreenHeight/2 + nameField.getHeight()*6);
+        nameField.setMaxLength(3);
+        nameField.setAlignment(1);
+        nameField.setFocusTraversal(true);
+
+        playersPerTeam = new TextField("3", skin);
+        playersPerTeam.setPosition(Constants.ScreenWidth/2 + playersPerTeam.getWidth()/2, Constants.ScreenHeight/2 + playersPerTeam.getHeight()*3);
+        playersPerTeam.setAlignment(1);
+        playersPerTeam.setFocusTraversal(true);
+
+
         button = new TextButton("Back", style);
-        button.setHeight(width / 9.6f);
-        button.setWidth(height / 5.4f);
+        button.setHeight(Constants.buttonHeight);
+        button.setWidth(Constants.buttonWidth);
 
-        button.setPosition(width / 2 - button.getWidth() / 2, height / 2 - button.getHeight() / 2);
+        button.setPosition(Constants.ScreenWidth/2 - button.getWidth()/2,  button.getHeight()/2);
 
+        addListeners();
+
+        stage.addActor(button);
+        stage.addActor(nameField);
+        stage.addActor(playersPerTeam);
+
+        Gdx.input.setInputProcessor(stage);
+    }
+
+    private void addListeners() {
         button.addListener(new InputListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
@@ -55,9 +92,7 @@ public class Options extends State {
             }
         }) ;
 
-        stage.addActor(button);
 
-        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
@@ -79,8 +114,22 @@ public class Options extends State {
             case 0:
                 break;
             case 1:
-                dispose();
-                gsm.set(new MenuState(gsm));
+                String n = nameField.getText();
+                boolean asf = true;
+                if(n.length() < 3){
+                    //vê isto zé
+                    diag = new Dialog("Warning", skin) {
+                        public void result(Object obj) {
+                            System.out.println("result "+ obj);
+                        }
+                    }.text("Are you enjoying this demo?").button("Yes", true).button("No", false).show(stage);
+                    asf = false;
+                }
+
+                if(asf){
+                    dispose();
+                    gsm.set(new MenuState(gsm));
+                }
                 break;
             case 2:
                 gsm.set(new SinglePlayState(gsm));

@@ -6,7 +6,7 @@ import java.util.Random;
 
 import utils.Constants;
 
-public class PowerUp {
+public class PowerUp implements Coordinates{
 
     Vector2 position;
 
@@ -24,7 +24,7 @@ public class PowerUp {
             active = true;
 
         Random r = new Random();
-        int aux = r.nextInt(5) + 1;
+        int aux = r.nextInt(3) + 1;
         switch (aux){
             case 1:
                 type = Constants.powerUpType.TeamSpeedInc;
@@ -62,5 +62,10 @@ public class PowerUp {
 
     public void setType(Constants.powerUpType type) {
         this.type = type;
+    }
+
+    @Override
+    public Vector2 getScreenCoordinates() {
+        return null;
     }
 }

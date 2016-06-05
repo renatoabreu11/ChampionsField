@@ -255,6 +255,12 @@ public class Team {
         }
     }
 
+    public void applyPowerUp(float i) {
+        for(Player player : players) {
+            player.speedMultiplier = i;
+        }
+    }
+
     /*
     * END OF THE MULTPLAYER FUNCTIONS
     * */

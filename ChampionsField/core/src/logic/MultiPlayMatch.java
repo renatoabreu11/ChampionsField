@@ -76,16 +76,18 @@ public class MultiPlayMatch extends Match {
             Circle c = null;
             int team = -1;
             int playerIndex = -1;
+            boolean caught = false;
             for(int i = 0; i < homeTeam.getNumberPlayers(); i++){
                 Player p = homeTeam.players.get(i);
                 c = new Circle(p.getPosition(), p.radius);
                 if(c.contains(powerUp.getPosition())){
                     playerIndex = i;
                     team = 0;
+                    caught = true;
                 }
             }
 
-            if(team == -1 && playerIndex == -1) {
+            if(!caught) {
                 for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
                     Player p = visitorTeam.players.get(i);
                     c = new Circle(p.getPosition(), p.radius);
@@ -96,18 +98,27 @@ public class MultiPlayMatch extends Match {
                 }
             }
 
-            Constants.powerUpType type = powerUp.getType();
+            if(caught){
+                Constants.powerUpType type = powerUp.getType();
                 switch(type){
                     case TeamSpeedInc:
-
+                        if(team == 0)
+                            homeTeam.applyPowerUp(2);
+                        else visitorTeam.applyPowerUp(2);
                         break;
                     case TeamSpeedDec:
-
+                        if(team == 0)
+                            visitorTeam.applyPowerUp(0.25f);
+                        else homeTeam.applyPowerUp(0.25f);
                         break;
                     case PlayerSpeedInc:
-
+                        if(team == 0)
+                            homeTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
+                        else visitorTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
                         break;
                 }
+                powerUp.setActive(false);
+            }
         }
         homeTeam.updateControlledPlayerOnline(x, y);
 
@@ -150,23 +161,23 @@ public class MultiPlayMatch extends Match {
             stats = parser.parseStatisticsToArray(info);
         }
 
-        for (int i = 0; i < homeTeam.getNumberPlayers(); i++) {
-            homeTeam.players.get(i).addMatchPlayed();
-            name = homeTeam.players.get(i).name;
-            score = homeTeam.players.get(i).score;
-            matches = homeTeam.players.get(i).matchesPlayed;
-            Statistics s = new Statistics(name, score, matches);
-            if(stats.contains(s)){
-                stats.remove(s);
-                stats.add(s);
-            } else stats.add(s);
-        }
+            for (int i = 0; i < homeTeam.getNumberPlayers(); i++) {
+                homeTeam.players.get(i).addMatchPlayed();
+                name = homeTeam.players.get(i).name;
+                score = homeTeam.players.get(i).score;
+                matches = homeTeam.players.get(i).matchesPlayed;
+                Statistics s = new Statistics(name, score, matches);
+                if(stats.contains(s)){
+                    stats.remove(s);
+                    stats.add(s);
+                } else stats.add(s);
+            }
 
-        for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
-            visitorTeam.players.get(i).addMatchPlayed();
-            name = visitorTeam.players.get(i).name;
-            score = visitorTeam.players.get(i).score;
-            matches = visitorTeam.players.get(i).matchesPlayed;
+            for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
+                visitorTeam.players.get(i).addMatchPlayed();
+                name = visitorTeam.players.get(i).name;
+                score = visitorTeam.players.get(i).score;
+                matches = visitorTeam.players.get(i).matchesPlayed;
             Statistics s = new Statistics(name, score, matches);
             if(stats.contains(s)){
                 stats.remove(s);

@@ -284,6 +284,7 @@ public class MenuState extends State  {
             case 1:
                 MultiPlayMatch match = new MultiPlayMatch();
                 gsm.set(new MultiPlayState(gsm, match));
+                break;
             case 2: gsm.set(new Leaderboard(gsm)); break;
             case 3: gsm.set(new Options(gsm)); break;
             case 4: Gdx.app.exit(); break;

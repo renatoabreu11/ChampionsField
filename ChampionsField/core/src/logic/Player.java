@@ -219,6 +219,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         fixtureDef.filter.categoryBits = Constants.entityMasks.PlayerMask.getMask();
         fixtureDef.filter.maskBits = (short)(Constants.entityMasks.PlayerMask.getMask() | Constants.entityMasks.BallMask.getMask() | Constants.entityMasks.ScreenBordersMask.getMask() | Constants.entityMasks.GoalMask.getMask() | Constants.entityMasks.CenterMask.getMask());
         Fixture fixture = body.createFixture(fixtureDef);
+        fixture.setUserData(this.name);
         shape.dispose();
     }
 

@@ -13,7 +13,7 @@ import utils.Statistics;
 
 public class MultiPlayMatch extends Match {
     public volatile boolean controlledPlayerMoved;
-    public volatile boolean ballMoved;
+    public boolean ballMoved;
     public boolean everyPlayersConnected;
     public int controlledPlayerTeam;
     PowerUp powerUp;
@@ -52,7 +52,8 @@ public class MultiPlayMatch extends Match {
         else
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
-        field.activateBarriers(barrierSide);
+        field.deactivateBarriers();
+        //field.activateBarriers(barrierSide);
         numberOfPlayers++;
     }
 

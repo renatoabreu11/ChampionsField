@@ -1,5 +1,6 @@
 package server;
 
+import com.badlogic.gdx.Gdx;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -15,6 +16,8 @@ public class MPClient {
     Client client;
     MultiPlayMatch match;
     private String name;
+    private float INTERVAL_BETWEEN_PACKETS = 5000f;
+    private float dt = INTERVAL_BETWEEN_PACKETS;
 
     /*
     * A player can have the same name only if in different teams!
@@ -29,7 +32,7 @@ public class MPClient {
         addListeners();
 
         try {
-            client.connect(TIME_OUT, Network.IPV4, Network.PORT);
+            client.connect(TIME_OUT, Network.IPV4_PORTO, Network.PORT);
         } catch (IOException e) {
             e.printStackTrace();
             client.stop();
@@ -52,6 +55,18 @@ public class MPClient {
             if(match.getElapsedTime() >= Constants.GAME_TIME)
                 break;
 
+            if(match.ballMoved)
+                dt += Gdx.graphics.getDeltaTime();
+
+            //Updates ball envia a info o ultimo jogador a tocar nela
+            if(match.ballMoved && dt >= INTERVAL_BETWEEN_PACKETS) {
+                updateBall.x = match.getBall().getBody().getPosition().x;
+                updateBall.y = match.getBall().getBody().getPosition().y;
+                updateBall.name = name;
+                dt = 0;
+                client.sendTCP(updateBall);
+            }
+
             //Updates player
             if(match.controlledPlayerMoved) {
                 match.controlledPlayerMoved = false;
@@ -61,13 +76,6 @@ public class MPClient {
                 updatePlayer.x = playerInfo.x;
                 updatePlayer.y = playerInfo.y;
                 client.sendTCP(updatePlayer);
-            }
-
-            //updates ball envia a info o ultimo jogador a tocar nela
-            if(match.ballMoved) {
-                updateBall.x = match.getBall().getBody().getPosition().x;
-                updateBall.y = match.getBall().getBody().getPosition().y;
-                client.sendTCP(updateBall);
             }
         }
 
@@ -110,8 +118,10 @@ public class MPClient {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
 
                     //If it's not the ballUpdate from the same player, that means this player wasn't the last one touching the ball
-                    if(!updateBall.name.equals(name))
+                    if(!updateBall.name.equals(name)) {
                         match.ballTouched = false;
+                        dt = 0;
+                    }
 
                     match.setBallPosition(updateBall.x, updateBall.y);
                 }

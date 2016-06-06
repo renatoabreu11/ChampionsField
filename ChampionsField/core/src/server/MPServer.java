@@ -127,7 +127,6 @@ public class MPServer {
                     ballInfo.x = updateBall.x;
                     ballInfo.y = updateBall.y;
                     server.sendToAllTCP(updateBall);
-                    System.out.println("x = " + ballInfo.x + ", y = " + ballInfo.y);
                 }
             }
         });

@@ -6,14 +6,15 @@ import com.esotericsoftware.kryonet.EndPoint;
 public class Network {
     static public final int PORT = 54555;
     static public final String LOCAL_IP = "127.0.0.1";
-    static public final String IPV4 = "192.168.1.105";
-    static public final String GATEWAY = "192.168.1.254";
+    static public final String IPV4_ALPENDORADA = "192.168.1.105";
+    static public final String IPV4_PORTO = "192.168.0.104";
 
     public static void registerPackets(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
         kryo.register(Login.class);
         kryo.register(AddPlayer.class);
         kryo.register(UpdatePlayer.class);
+        kryo.register(UpdateBall.class);
         kryo.register(RemovePlayer.class);
     }
 
@@ -38,7 +39,6 @@ public class Network {
     static public class UpdateBall {
         float x, y;
         String name;
-        int team;
     }
 
     static public class RemovePlayer {

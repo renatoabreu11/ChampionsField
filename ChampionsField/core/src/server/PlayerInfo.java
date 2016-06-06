@@ -14,12 +14,6 @@ public class PlayerInfo {
         this.name = name;
     }
 
-    public PlayerInfo(float x, float y) {
-        this.x = x;
-        this.y = y;
-        this.team = team;
-    }
-
     public PlayerInfo() {
 
     }

@@ -2,6 +2,7 @@ package States;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -44,14 +45,11 @@ public class MultiPlayState extends State implements ApplicationListener {
     private TextureAtlas teamSpeedIncAtlas;
     private TextureAtlas teamSpeedDecAtlas;
     private TextureAtlas playerSpeedIncAtlas;
-    private Animation powerUpAnimation;
 
     private float deltaTime = 0;
     private float scoreAnimationTime;
-    private float powerUpAnimationTime;
 
     private Vector2 explosionPos;
-    static final float PowerUp_DURATION = 10f;
     Box2DDebugRenderer debugRenderer;
 
     //Match class init
@@ -103,9 +101,6 @@ public class MultiPlayState extends State implements ApplicationListener {
         visitorTeamTexture = new Texture("BluePlayer.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
-        teamSpeedIncAtlas = new TextureAtlas("SpeedInc.atlas");
-        teamSpeedDecAtlas = new TextureAtlas("SpeedDec.atlas");
-        playerSpeedIncAtlas = new TextureAtlas("Density.atlas");
         font = new BitmapFont();
         font.setColor(Color.WHITE);
 
@@ -119,13 +114,19 @@ public class MultiPlayState extends State implements ApplicationListener {
         scoreAnimationTime = 0;
         readyToPlay = false;
 
-        final int clientTeam = 0;
+        final int clientTeam;
+        Preferences prefs = Gdx.app.getPreferences("My Preferences");
+        String team = prefs.getString("Starting Team", "Red");
+        if(team.equals("Red"))
+            clientTeam = 0;
+        else clientTeam = 1;
+        final String name = prefs.getString("Name");
         match = new MultiPlayMatch(clientTeam);
 
         class MyClient implements Runnable {
             @Override
             public void run() {
-                MPClient client = new MPClient("sdew2w", clientTeam, match);
+                MPClient client = new MPClient(name, clientTeam, match);
             }
         }
         Thread newPlayer = new Thread(new MyClient());
@@ -201,34 +202,9 @@ public class MultiPlayState extends State implements ApplicationListener {
             if (scoreAnimationTime >= Constants.EXPLOSION_DURATION) {
                 scoreAnimationTime = 0;
                 match.endScoreState();
-            } else if (powerUpAnimationTime > 0) {
-                if (powerUpAnimationTime >= Constants.powerAnimationDuration) {
-                    match.getPowerUp().setActive(false);
-                    powerUpAnimationTime = 0;
-                }
-
-                if (match.getPowerUp().isActive() && powerUpAnimationTime == 0f) {
-                    Constants.powerUpType type = match.getPowerUp().getType();
-                    switch (type) {
-                        case TeamSpeedInc:
-                            powerUpAnimation = new Animation(1 / 2f, teamSpeedIncAtlas.getRegions());
-                            break;
-                        case TeamSpeedDec:
-                            powerUpAnimation = new Animation(1 / 2f, teamSpeedDecAtlas.getRegions());
-                            break;
-                        case PlayerSpeedInc:
-                            powerUpAnimation = new Animation(1 / 2f, playerSpeedIncAtlas.getRegions());
-                            break;
-                    }
-                } else if (powerUpAnimationTime > 0) {
-                    if (powerUpAnimationTime >= PowerUp_DURATION) {
-                        match.getPowerUp().setActive(false);
-                        powerUpAnimationTime = 0;
-                    }
-                }
-
-                deltaTime += dt;
             }
+
+            deltaTime += dt;
         }
     }
 
@@ -291,19 +267,6 @@ public class MultiPlayState extends State implements ApplicationListener {
             screenPosition = g.getScreenCoordinates();
             sb.draw(goalTexture, screenPosition.x, screenPosition.y, -horLength, vertLength);
 
-           /*if (match.getPowerUp().isActive()) {
-                Vector2 powerUpPos = match.getPowerUp().getPosition();
-                sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * Constants.EXPLOSION_SPEED, true), powerUpPos.x, powerUpPos.y, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
-                powerUpAnimationTime += Gdx.graphics.getDeltaTime();
-            }
-
-            if (match.getPowerUp().isActive()) {
-                Vector2 powerUpPos = match.getPowerUp().getScreenCoordinates();
-                sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * Constants.PowerUpSpeed, true), powerUpPos.x, powerUpPos.y, Constants.PowerUpWidth, Constants.PowerUpHeight);
-                powerUpAnimationTime += Gdx.graphics.getDeltaTime();
-            }*/
-
-
             for (int i = 0; i < rain.getRainSize(); i++)
                 sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
 
@@ -319,8 +282,8 @@ public class MultiPlayState extends State implements ApplicationListener {
 
             sb.draw(lobby, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
             font.draw(sb, "Waiting for more players...", Constants.ScreenWidth / 2, Constants.ScreenHeight - Constants.ScreenHeight / 4);
-            font.draw(sb, "Blue Team", Constants.ScreenWidth / 8, Constants.ScreenHeight / 2);
-            font.draw(sb, "Red Team", Constants.ScreenWidth - Constants.ScreenWidth / 8, Constants.ScreenHeight / 2);
+            font.draw(sb, "Red Team", Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
+            font.draw(sb, "Blue Team", Constants.ScreenWidth  - Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
 
             float radius = 0;
             boolean canDrawHomePlayers = false;

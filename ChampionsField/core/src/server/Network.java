@@ -8,6 +8,7 @@ public class Network {
     static public final String LOCAL_IP = "127.0.0.1";
     static public final String IPV4_ALPENDORADA = "192.168.1.105";
     static public final String IPV4_PORTO = "192.168.0.104";
+    static public final String IPV4_ESPOSENDE = "192.168.56.1";
 
     public static void registerPackets(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
@@ -37,8 +38,8 @@ public class Network {
     }
 
     static public class UpdateBall {
-        float x, y;
-        String name;
+        float x, y, vx, vy;
+        String lastTouch;
     }
 
     static public class RemovePlayer {

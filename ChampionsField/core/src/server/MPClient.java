@@ -32,7 +32,7 @@ public class MPClient {
         addListeners();
 
         try {
-            client.connect(TIME_OUT, Network.IPV4_PORTO, Network.PORT);
+            client.connect(TIME_OUT, Network.IPV4_ESPOSENDE, Network.PORT);
         } catch (IOException e) {
             e.printStackTrace();
             client.stop();
@@ -55,15 +55,14 @@ public class MPClient {
             if(match.getElapsedTime() >= Constants.GAME_TIME)
                 break;
 
-            if(match.ballMoved)
-                dt += Gdx.graphics.getDeltaTime();
-
-            //Updates ball envia a info o ultimo jogador a tocar nela
-            if(match.ballMoved && dt >= INTERVAL_BETWEEN_PACKETS) {
-                updateBall.x = match.getBall().getBody().getPosition().x;
-                updateBall.y = match.getBall().getBody().getPosition().y;
-                updateBall.name = name;
-                dt = 0;
+            //Updates ball
+            if(match.ballMoved) {
+                match.ballMoved = false;
+                updateBall.x = match.getBall().getBody().getTransform().getPosition().x;
+                updateBall.y = match.getBall().getBody().getTransform().getPosition().y;
+                updateBall.vx = match.getBall().getBody().getLinearVelocity().x;
+                updateBall.vy = match.getBall().getBody().getLinearVelocity().y;
+                updateBall.lastTouch = match.getBall().getLastTouch();
                 client.sendTCP(updateBall);
             }
 
@@ -116,14 +115,7 @@ public class MPClient {
 
                 if(object instanceof Network.UpdateBall) {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
-
-                    //If it's not the ballUpdate from the same player, that means this player wasn't the last one touching the ball
-                    if(!updateBall.name.equals(name)) {
-                        match.ballTouched = false;
-                        dt = 0;
-                    }
-
-                    match.setBallPosition(updateBall.x, updateBall.y);
+                    match.setBallPosition(updateBall.x, updateBall.y, updateBall.vx, updateBall.vy, updateBall.lastTouch);
                 }
 
             }

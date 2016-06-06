@@ -129,10 +129,10 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     * BEGIN OF MULTIPLAYER FUNCTIONS
     * */
 
-    public void updatePosition(float x, float y) {
+    public void updatePosition(float x, float y, float vx, float vy) {
         body.setTransform(x, y, 0);
         setPositionToBody();
-        body.setLinearVelocity(0, 0);
+        body.setLinearVelocity(vx, vy);
     }
 
     /*
@@ -263,5 +263,9 @@ public class Ball implements Coordinates, Steerable<Vector2> {
 
     public void setSteeringBehavior(SteeringBehavior<Vector2> behavior){
         steeringBehavior = behavior;
+    }
+
+    public String getLastTouch() {
+        return lastTouch;
     }
 }

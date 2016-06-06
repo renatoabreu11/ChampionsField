@@ -13,18 +13,15 @@ import utils.Statistics;
 
 public class MultiPlayMatch extends Match {
     public volatile boolean controlledPlayerMoved;
-    public boolean ballMoved;
+    public volatile boolean ballMoved;
     public boolean everyPlayersConnected;
     public int controlledPlayerTeam;
-    PowerUp powerUp;
     Player controlledPlayer;
 
     public MultiPlayMatch(int controlledPlayerTeam){
         super(0);
 
-        Random r = new Random();
-        int aux = r.nextInt(2);
-        if(aux == 0){
+        if(controlledPlayerTeam == 0){
             homeTeam = new Team("Benfica", Team.TeamState.Attacking, w);
             visitorTeam = new Team("Porto", Team.TeamState.Defending, w);
         } else{
@@ -37,13 +34,6 @@ public class MultiPlayMatch extends Match {
         controlledPlayerMoved = false;
         ballMoved = false;
         everyPlayersConnected = false;
-        powerUp = new PowerUp();
-
-        aux = r.nextInt(2);
-        if(aux == 0)
-            field.activateBarriers(true);
-        else
-            field.activateBarriers(false);
     }
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
@@ -52,8 +42,6 @@ public class MultiPlayMatch extends Match {
         else
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
-        field.deactivateBarriers();
-        //field.activateBarriers(barrierSide);
         numberOfPlayers++;
     }
 
@@ -66,23 +54,17 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers--;
     }
 
-    public void setBarrierSide(boolean side) {
-        field.activateBarriers(side);
-    }
-
     public boolean everyPlayerConnected() {
-        if(homeTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE && visitorTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE)
+        if(homeTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE && visitorTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE){
+            startTime = System.currentTimeMillis();
             return true;
+        }
 
         return false;
     }
 
     public void setControlledPlayer(Player player) {
         controlledPlayer = player;
-    }
-
-    public PowerUp getPowerUp() {
-        return powerUp;
     }
 
     @Override
@@ -100,78 +82,40 @@ public class MultiPlayMatch extends Match {
 
     @Override
     public void updateMatch(float x, float y, Rain rain, float dt) {
-        if(powerUp.isActive()){
-            Circle c = null;
-            int team = -1;
-            int playerIndex = -1;
-            boolean caught = false;
-            for(int i = 0; i < homeTeam.getNumberPlayers(); i++){
-                Player p = homeTeam.players.get(i);
-                c = new Circle(p.getPosition(), p.radius);
-                if(c.contains(powerUp.getPosition())){
-                    playerIndex = i;
-                    team = 0;
-                    caught = true;
+        switch (currentState) {
+            case KickOff: {
+                ball.body.setAwake(true);
+                if(homeTeam.getTeamState() == Team.TeamState.Attacking)
+                    field.activateBarriers(false);
+                else field.activateBarriers(true);
+                if (ball.body.getPosition().x != 0 || ball.body.getPosition().y != 0) {
+                    field.deactivateBarriers();
+                    homeTeam.teamState = Team.TeamState.Playing;
+                    visitorTeam.teamState = Team.TeamState.Playing;
+                    currentState = matchState.Play;
                 }
+                controlledPlayer.getBody().setLinearVelocity(x, y);
+                break;
             }
-
-            if(!caught) {
-                for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
-                    Player p = visitorTeam.players.get(i);
-                    c = new Circle(p.getPosition(), p.radius);
-                    if (c.contains(powerUp.getPosition())) {
-                        playerIndex = i;
-                        team = 1;
-                    }
-                }
+            case Play: {
+                controlledPlayer.getBody().setLinearVelocity(x, y);
+                break;
             }
-
-            if(caught){
-                Constants.powerUpType type = powerUp.getType();
-                switch(type){
-                    case TeamSpeedInc:
-                        if(team == 0)
-                            homeTeam.applyPowerUp(2);
-                        else visitorTeam.applyPowerUp(2);
-                        break;
-                    case TeamSpeedDec:
-                        if(team == 0)
-                            visitorTeam.applyPowerUp(0.25f);
-                        else homeTeam.applyPowerUp(0.25f);
-                        break;
-                    case PlayerSpeedInc:
-                        if(team == 0){
-                            homeTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
-                            homeTeam.getPlayers().get(playerIndex).powerActivated = true;
-                            homeTeam.getPlayers().get(playerIndex).activeTime = System.currentTimeMillis();
-                        }
-                        else{
-                            visitorTeam.getPlayers().get(playerIndex).speedMultiplier = 2f;
-                            visitorTeam.getPlayers().get(playerIndex).powerActivated = true;
-                            visitorTeam.getPlayers().get(playerIndex).activeTime = System.currentTimeMillis();
-                        }
-                        break;
-                }
-                powerUp.setActive(false);
+            case Score:{
+                break;
             }
         }
-
-        controlledPlayer.getBody().setLinearVelocity(x, y);
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
-
-        if(!powerUp.isActive()){
-            powerUp.checkPowerUpAppearance(elapsedTime);
-        }
 
         rain.update();
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
 
         if(x != 0 || y != 0) controlledPlayerMoved = true;
-        if(ballTouched)
+        if(ballTouched){
             ballMoved = true;
-        else
-            ballMoved = false;
+            ballTouched = false;
+        }
     }
 
     @Override
@@ -286,7 +230,8 @@ public class MultiPlayMatch extends Match {
             visitorTeam.changePlayerPosition(x, y, name);
     }
 
-    public void setBallPosition(float x, float y) {
-        ball.updatePosition(x, y);
+    public void setBallPosition(float x, float y, float vx, float vy, String lastTouch) {
+        ball.updatePosition(x, y, vx, vy);
+        ball.lastTouch = lastTouch;
     }
 }

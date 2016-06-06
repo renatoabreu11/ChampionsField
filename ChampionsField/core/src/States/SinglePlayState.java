@@ -262,6 +262,7 @@ public class SinglePlayState extends State implements ApplicationListener {
             stage.act(Gdx.graphics.getDeltaTime());
             stage.draw();
         }
+
         debugRenderer.render(match.getWorld(), camera.combined);
 
     }

@@ -271,6 +271,16 @@ public class Team {
         }
     }
 
+    public void updatePowerUps(float dt) {
+        for(Player player : players) {
+            if(player.powerActivated && (System.currentTimeMillis() - player.activeTime) / 1000 > Constants.powerTime){
+                player.speedMultiplier = 1;
+                player.powerActivated = false;
+                player.activeTime = 0;
+            }
+        }
+    }
+
     /*
     * END OF THE MULTPLAYER FUNCTIONS
     * */

@@ -1,5 +1,7 @@
 package logic;
 
+import com.badlogic.gdx.math.Circle;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -9,11 +11,6 @@ import java.util.Random;
 import utils.Constants;
 
 public class SinglePlayMatch extends Match{
-
-    @Override
-    public PowerUp getPowerUp() {
-        return null;
-    }
 
     public SinglePlayMatch(int numberOfPlayers) {
         super(numberOfPlayers);

@@ -50,12 +50,6 @@ public class MultiPlayState extends State implements ApplicationListener {
         private float powerUpAnimationTime;
 
         private Vector2 explosionPos;
-        static final float PLAYERS_SPEED = 5;
-        static final float EXPLOSION_SPEED = 5f;
-        static final float EXPLOSION_DURATION = 2.4f;
-        static final float EXPLOSION_WIDTH = 100f;
-        static final float EXPLOSION_HEIGHT = 100f;
-        static final float PowerUp_DURATION = 10f;
         Box2DDebugRenderer debugRenderer;
 
         //Match class init
@@ -166,16 +160,17 @@ public class MultiPlayState extends State implements ApplicationListener {
     public void update(float dt) {
         if(match.getElapsedTime() >= Constants.GAME_TIME){
             match.endGame();
+            dispose();
+            gsm.set(new MenuState(gsm));
         }
 
-
-        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
+        match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
 
         if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {
             explosionPos = match.getBall().getScreenCoordinates();
         }
 
-        if(scoreAnimationTime >= EXPLOSION_DURATION) {
+        if(scoreAnimationTime >= Constants.EXPLOSION_DURATION) {
             scoreAnimationTime = 0;
             match.endScoreState();
         }
@@ -194,7 +189,7 @@ public class MultiPlayState extends State implements ApplicationListener {
                     break;
             }
         } else if(powerUpAnimationTime > 0){
-            if(powerUpAnimationTime >= PowerUp_DURATION){
+            if(powerUpAnimationTime >= Constants.powerAnimationDuration){
                 match.getPowerUp().setActive(false);
                 powerUpAnimationTime = 0;
             }
@@ -217,7 +212,7 @@ public class MultiPlayState extends State implements ApplicationListener {
         screenPosition = b.getScreenCoordinates();
 
         if(match.getCurrentState() == Match.matchState.Score) {
-            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH/2, explosionPos.y - Constants.EXPLOSION_HEIGHT/2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
             scoreAnimationTime += Gdx.graphics.getDeltaTime();
         } else{
             sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
@@ -259,8 +254,8 @@ public class MultiPlayState extends State implements ApplicationListener {
         sb.draw(goalTexture, screenPosition.x , screenPosition.y, -horLength, vertLength);
 
         if(match.getPowerUp().isActive()){
-            Vector2 powerUpPos = match.getPowerUp().getPosition();
-            sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * EXPLOSION_SPEED, true), powerUpPos.x, powerUpPos.y, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
+            Vector2 powerUpPos = match.getPowerUp().getScreenCoordinates();
+            sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * Constants.PowerUpSpeed, true), powerUpPos.x, powerUpPos.y, Constants.PowerUpWidth, Constants.PowerUpHeight);
             powerUpAnimationTime += Gdx.graphics.getDeltaTime();
         }
 
@@ -278,6 +273,13 @@ public class MultiPlayState extends State implements ApplicationListener {
 
     @Override
     public void dispose() {
-
+        explosionAtlas.dispose();
+        rainTexture.dispose();
+        ballTexture.dispose();
+        fieldTexture.dispose();
+        homeTeamTexture.dispose();
+        visitorTeamTexture.dispose();
+        goalTexture.dispose();
+        font.dispose();
     }
 }

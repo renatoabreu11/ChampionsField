@@ -14,6 +14,7 @@ public class MPClient {
     static final int TIME_OUT = 5000;
     Client client;
     MultiPlayMatch match;
+    private String name;
 
     /*
     * A player can have the same name only if in different teams!
@@ -22,6 +23,7 @@ public class MPClient {
         this.match = match;
         client = new Client();
         client.start();
+        this.name = name;
 
         Network.registerPackets(client);
         addListeners();
@@ -61,13 +63,12 @@ public class MPClient {
                 client.sendTCP(updatePlayer);
             }
 
-            //updates ball
-            /*if(match.ballMoved) {
-                match.ballMoved = false;
+            //updates ball envia a info o ultimo jogador a tocar nela
+            if(match.ballMoved) {
                 updateBall.x = match.getBall().getBody().getPosition().x;
                 updateBall.y = match.getBall().getBody().getPosition().y;
                 client.sendTCP(updateBall);
-            }*/
+            }
         }
 
         Network.RemovePlayer removePlayer = new Network.RemovePlayer();
@@ -92,7 +93,7 @@ public class MPClient {
             public void received(Connection connection, Object object) {
                 if(object instanceof Network.AddPlayer) {
                     Network.AddPlayer addPlayer = (Network.AddPlayer) object;
-                    match.addPlayerToMatch(addPlayer.name, addPlayer.team, addPlayer.controlledPlayer);
+                    match.addPlayerToMatch(addPlayer.name, addPlayer.team, addPlayer.controlledPlayer, addPlayer.barrierSide);
                 }
 
                 if(object instanceof Network.UpdatePlayer) {
@@ -103,6 +104,16 @@ public class MPClient {
                 if(object instanceof Network.RemovePlayer) {
                     Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
                     match.removePlayerFromMatch(removePlayer.name, removePlayer.team);
+                }
+
+                if(object instanceof Network.UpdateBall) {
+                    Network.UpdateBall updateBall = (Network.UpdateBall) object;
+
+                    //If it's not the ballUpdate from the same player, that means this player wasn't the last one touching the ball
+                    if(!updateBall.name.equals(name))
+                        match.ballTouched = false;
+
+                    match.setBallPosition(updateBall.x, updateBall.y);
                 }
 
             }

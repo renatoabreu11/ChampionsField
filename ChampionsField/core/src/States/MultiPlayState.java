@@ -117,13 +117,13 @@ public class MultiPlayState extends State implements ApplicationListener {
         scoreAnimationTime = 0;
         readyToPlay = false;
 
-        final int clientTeam = 1;
+        final int clientTeam = 0;
         match = new MultiPlayMatch(clientTeam);
 
         class MyClient implements Runnable {
             @Override
             public void run() {
-                MPClient client = new MPClient("2", clientTeam, match);
+                MPClient client = new MPClient("1", clientTeam, match);
             }
         }
         Thread newPlayer = new Thread(new MyClient());

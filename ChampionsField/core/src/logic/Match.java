@@ -44,6 +44,9 @@ public abstract class Match{
     long startTime;
     String time;
 
+    //Online only
+    public volatile boolean ballTouched;
+
     public Match(int numberOfPlayers){
         Vector2 gravity = new Vector2(0, 0f);
         w = new World(gravity, true);
@@ -62,6 +65,7 @@ public abstract class Match{
         startTime = System.currentTimeMillis();
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
+        ballTouched = false;
     }
 
     private void createCollisionListener() {
@@ -78,8 +82,7 @@ public abstract class Match{
                 else if((f1.getUserData() == "VisitorGoal" || f1.getUserData() == "Ball") && (f2.getUserData() == "VisitorGoal" || f2.getUserData() == "Ball")){
                     teamScored(homeTeam, visitorTeam, ball.lastTouch);
                     ball.body.setAwake(false);
-                }
-                else{
+                } else{
                     if((f1.getUserData() != "Ball" && f2.getUserData() != "Ball") || (f1.getUserData() == null || f2.getUserData() == null)){
                         return;
                     } else{
@@ -94,6 +97,8 @@ public abstract class Match{
                         } else if(homeTeamNames.contains(data2) || visitorTeamNames.contains(data2)){
                             ball.lastTouch = data2;
                         }
+
+                        ballTouched = true;
                     }
                 }
             }

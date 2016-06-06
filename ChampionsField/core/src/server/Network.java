@@ -26,6 +26,7 @@ public class Network {
         String name;
         int team;
         boolean controlledPlayer;
+        boolean barrierSide;
     }
 
     static public class UpdatePlayer {

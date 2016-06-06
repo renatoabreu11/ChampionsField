@@ -125,6 +125,20 @@ public class Ball implements Coordinates, Steerable<Vector2> {
         body.setLinearVelocity(0, 0);
     }
 
+    /*
+    * BEGIN OF MULTIPLAYER FUNCTIONS
+    * */
+
+    public void updatePosition(float x, float y) {
+        body.setTransform(x, y, 0);
+        setPositionToBody();
+        body.setLinearVelocity(0, 0);
+    }
+
+    /*
+    * END OF MULTIPLAYER FUNCTIONS
+    * */
+
     /**
      * Coordinates methods
      */

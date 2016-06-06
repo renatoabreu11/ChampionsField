@@ -13,11 +13,15 @@ import utils.Constants;
 public class MPServer {
     Server server;
     ArrayList<PlayerInfo> playersInfo;
+    BallInfo ballInfo;
     int numPlayers;
+    boolean barrierSide;
 
     public MPServer() throws IOException {
         numPlayers = 0;
         playersInfo = new ArrayList<PlayerInfo>();
+        ballInfo = new BallInfo();
+        barrierSide = true;
         server = new Server();
 
         Network.registerPackets(server);
@@ -64,6 +68,7 @@ public class MPServer {
                             addPlayer.team = playersInfo.get(i).team;
                             addPlayer.name = playersInfo.get(i).name;
                             addPlayer.controlledPlayer = false;
+                            addPlayer.barrierSide = barrierSide;
                             c.sendTCP(addPlayer);
                         }
 
@@ -74,6 +79,7 @@ public class MPServer {
                         addPlayer.name = login.name;
                         addPlayer.team = login.team;
                         addPlayer.controlledPlayer = true;
+                        addPlayer.barrierSide = barrierSide;
                         server.sendToAllTCP(addPlayer);
                     } else {
                         //Match is full!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -98,6 +104,11 @@ public class MPServer {
                     //Removes the player from the other client's matches
                     server.sendToAllTCP(removePlayer);
                     numPlayers--;
+                }
+
+                if(object instanceof Network.UpdateBall) {
+                    Network.UpdateBall updateBall = (Network.UpdateBall) object;
+                    server.sendToAllTCP(updateBall);
                 }
             }
         });

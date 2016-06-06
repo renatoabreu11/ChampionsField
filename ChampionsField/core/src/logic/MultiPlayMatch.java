@@ -46,12 +46,13 @@ public class MultiPlayMatch extends Match {
             field.activateBarriers(false);
     }
 
-    public void addPlayerToMatch(String name, int team, boolean controlledPlayer) {
+    public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
         if(team == 0)
             homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
         else
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
+        field.activateBarriers(barrierSide);
         numberOfPlayers++;
     }
 
@@ -62,6 +63,10 @@ public class MultiPlayMatch extends Match {
             visitorTeam.removePlayer(name);
 
         numberOfPlayers--;
+    }
+
+    public void setBarrierSide(boolean side) {
+        field.activateBarriers(side);
     }
 
     public boolean everyPlayerConnected() {
@@ -162,8 +167,10 @@ public class MultiPlayMatch extends Match {
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
 
         if(x != 0 || y != 0) controlledPlayerMoved = true;
-
-        System.out.println(controlledPlayer.name + ", team: " + controlledPlayer.team);
+        if(ballTouched)
+            ballMoved = true;
+        else
+            ballMoved = false;
     }
 
     @Override
@@ -257,5 +264,9 @@ public class MultiPlayMatch extends Match {
             homeTeam.changePlayerPosition(x, y, name);
         else
             visitorTeam.changePlayerPosition(x, y, name);
+    }
+
+    public void setBallPosition(float x, float y) {
+        ball.updatePosition(x, y);
     }
 }

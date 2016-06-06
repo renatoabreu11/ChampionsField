@@ -112,8 +112,8 @@ public class SinglePlayState extends State implements ApplicationListener {
         ballTexture = new TextureAtlas("SoccerBall.atlas");
         ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
         fieldTexture = new Texture("Field.jpg");
-        homeTeamTexture = new Texture("Player.png");
-        visitorTeamTexture = new Texture("Player.png");
+        homeTeamTexture = new Texture("BluePlayer.png");
+        visitorTeamTexture = new Texture("RedPlayer.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
 

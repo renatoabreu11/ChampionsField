@@ -78,7 +78,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         fixture.setUserData(this.name);
         shape.dispose();
 
-        maxLinearSpeed = 5;
+        maxLinearSpeed = 10;
         maxLinearAcceleration = 50;
         maxAngularSpeed = 3;
         maxAngularAcceleration = 0.5f;
@@ -120,7 +120,6 @@ public class Player implements Coordinates, Steerable<Vector2>{
             if(body.getAngularVelocity() > maxAngularSpeed){
                 body.setAngularVelocity(maxAngularSpeed);
             }
-
         }
     }
 

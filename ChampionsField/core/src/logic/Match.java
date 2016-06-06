@@ -45,7 +45,7 @@ public abstract class Match{
     String time;
 
     //Online only
-    public volatile boolean ballTouched;
+    public boolean ballTouched;
 
     public Match(int numberOfPlayers){
         Vector2 gravity = new Vector2(0, 0f);

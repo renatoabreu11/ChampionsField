@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.steer.behaviors.Arrive;
 import com.badlogic.gdx.ai.steer.behaviors.Flee;
+import com.badlogic.gdx.ai.steer.behaviors.Interpose;
 import com.badlogic.gdx.ai.steer.behaviors.Pursue;
 import com.badlogic.gdx.ai.steer.behaviors.Wander;
 import com.badlogic.gdx.math.Vector2;
@@ -25,9 +26,21 @@ public enum PlayerState implements State<Player>{
                 entity.stateMachine.changeState(PlayerState.toOriginalRegion);
             }
 
+            boolean containsBall = false, containsPlayer = false;
+
             for(WayPoint waypoint : entity.adversaryTeamWayPoint)
-                if(entity.region.contains(waypoint.getPosition()))
-                    entity.stateMachine.changeState(PlayerState.Block);
+                if(entity.region.contains(waypoint.getPosition())) {
+                    containsPlayer = true;
+                }
+
+            if(entity.region.contains(entity.ballWayPoint.getPosition())) {
+                containsBall = true;
+            }
+
+            if(containsBall)
+                entity.stateMachine.changeState(PlayerState.InterceptBall);
+            else if(containsPlayer)
+                entity.stateMachine.changeState(PlayerState.Block);
         }
     },
 
@@ -47,9 +60,22 @@ public enum PlayerState implements State<Player>{
                 entity.stateMachine.changeState(PlayerState.Static);
             }
 
+            boolean containsBall = false, containsPlayer = false;
+
             for(WayPoint waypoint : entity.adversaryTeamWayPoint)
-                if(entity.region.contains(waypoint.getPosition()))
-                    entity.stateMachine.changeState(PlayerState.Block);
+                if(entity.region.contains(waypoint.getPosition())) {
+                    containsPlayer = true;
+                }
+
+            if(entity.region.contains(entity.ballWayPoint.getPosition())) {
+                containsBall = true;
+            }
+
+            if(containsBall)
+                entity.stateMachine.changeState(PlayerState.InterceptBall);
+            else if(containsPlayer)
+                entity.stateMachine.changeState(PlayerState.Block);
+
         }
     },
 
@@ -82,9 +108,15 @@ public enum PlayerState implements State<Player>{
                 if(entity.region.contains(waypoint.getPosition()))
                     contains = true;
 
+            boolean containsBall = false;
+            if(entity.region.contains(entity.ballWayPoint.getPosition())) {
+                containsBall = true;
+            }
+
             if(contains == false)
                 entity.stateMachine.changeState(PlayerState.toOriginalRegion);
-
+            else if(containsBall)
+                entity.stateMachine.changeState(PlayerState.InterceptBall);
         }
     },
 
@@ -97,7 +129,25 @@ public enum PlayerState implements State<Player>{
     },
 
     InterceptBall(){
+        @Override
+        public void enter(Player entity) {
+            WayPoint wp = entity.ballWayPoint;
+            Interpose<Vector2> interpose = new Interpose<Vector2>(entity, wp, entity);
+            entity.setSteeringBehavior(interpose);
+        }
 
+        @Override
+        public void update(Player entity) {
+            if(!entity.region.contains(entity.ballWayPoint.getPosition())) {
+                entity.stateMachine.changeState(PlayerState.toOriginalRegion);
+                return;
+            }
+
+            float distance = distanceBetweenPoints(entity.ballWayPoint.getPosition(), entity.body.getPosition());
+            //completar
+            //if(distance < entity.ballWayPoint.getBoundingRadius() + entity.radius + 0.2f)
+                //entity.stateMachine.changeState(PlayerState.Kick);
+        }
     };
 
     @Override
@@ -112,5 +162,11 @@ public enum PlayerState implements State<Player>{
     @Override
     public boolean onMessage(Player entity, Telegram telegram) {
         return false;
+    }
+
+    public float distanceBetweenPoints(Vector2 p1, Vector2 p2){
+        float xDiff = (float)Math.pow(p1.x - p2.x, 2);
+        float yDiff = (float)Math.pow(p1.y - p2.y, 2);
+        return (float)Math.sqrt(xDiff + yDiff);
     }
 }

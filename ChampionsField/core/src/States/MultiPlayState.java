@@ -99,8 +99,8 @@ public class MultiPlayState extends State implements ApplicationListener {
         ballTexture = new TextureAtlas("SoccerBall.atlas");
         ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
         fieldTexture = new Texture("Field.jpg");
-        homeTeamTexture = new Texture("Player.png");
-        visitorTeamTexture = new Texture("Player.png");
+        homeTeamTexture = new Texture("RedPlayer.png");
+        visitorTeamTexture = new Texture("BluePlayer.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
         teamSpeedIncAtlas = new TextureAtlas("SpeedInc.atlas");

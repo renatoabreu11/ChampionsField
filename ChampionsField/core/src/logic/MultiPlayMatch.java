@@ -185,10 +185,10 @@ public class MultiPlayMatch extends Match {
         int score, matches;
 
         Statistics parser = new Statistics("", 0, 0);
-        FileHandle globalStatistics = Gdx.files.local("Statistics.txt");
+        FileHandle globalStatistics = Gdx.files.internal("Statistics.txt");
         String info;
         boolean exist;
-        exist=Gdx.files.local("Statistics.txt").exists();
+        exist=Gdx.files.internal("Statistics.txt").exists();
         if(!exist){
             System.out.println("Error opening file!");
             return;
@@ -197,16 +197,25 @@ public class MultiPlayMatch extends Match {
             stats = parser.parseStatisticsToArray(info);
         }
 
+        boolean found = false;
         for (int i = 0; i < homeTeam.getNumberPlayers(); i++) {
             homeTeam.players.get(i).addMatchPlayed();
             name = homeTeam.players.get(i).name;
             score = homeTeam.players.get(i).score;
             matches = homeTeam.players.get(i).matchesPlayed;
             Statistics s = new Statistics(name, score, matches);
-            if(stats.contains(s)){
-                stats.remove(s);
+            for(Statistics st : stats){
+                if(st.equals(s)){
+                    found = true;
+                    st.setGoalsScored(s.getGoalsScored() + st.getGoalsScored());
+                    st.setMatchesPlayed(s.getMatchesPlayed() + st.getMatchesPlayed());
+                }
+            }
+
+            if(!found){
                 stats.add(s);
-            } else stats.add(s);
+            }
+            found = false;
         }
 
         for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
@@ -215,19 +224,29 @@ public class MultiPlayMatch extends Match {
             score = visitorTeam.players.get(i).score;
             matches = visitorTeam.players.get(i).matchesPlayed;
             Statistics s = new Statistics(name, score, matches);
-            if(stats.contains(s)){
-                stats.remove(s);
+            for(Statistics st : stats){
+                if(st.equals(s)){
+                    found = true;
+                    st.setGoalsScored(s.getGoalsScored() + st.getGoalsScored());
+                    st.setMatchesPlayed(s.getMatchesPlayed() + st.getMatchesPlayed());
+                }
+            }
+
+            if(!found){
                 stats.add(s);
-            } else stats.add(s);
+            }
+            found = false;
         }
 
-        globalStatistics.writer(false);
+        //Não sei se esta parte funciona devido a ter local. ´É preciso testar. A parte de cima funciona
+        FileHandle statisticsWrite = Gdx.files.local("Statistics.txt");
+        statisticsWrite.writer(false);
         String output = "";
         for(int i = 0; i < stats.size(); i++){
             output = stats.get(i).stringToFile();
-            globalStatistics.writeString(output, true);
+            statisticsWrite.writeString(output, true);
             if(i != stats.size() - 1)
-                globalStatistics.writeString("\n", true);
+                statisticsWrite.writeString("\n", true);
         }
     }
 

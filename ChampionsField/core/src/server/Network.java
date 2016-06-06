@@ -34,6 +34,12 @@ public class Network {
         int team;
     }
 
+    static public class UpdateBall {
+        float x, y;
+        String name;
+        int team;
+    }
+
     static public class RemovePlayer {
         int team;
         String name;

@@ -8,6 +8,7 @@ import com.esotericsoftware.minlog.Log;
 import java.io.IOException;
 
 import logic.*;
+import utils.Constants;
 
 public class MPClient {
     static final int TIME_OUT = 5000;
@@ -41,10 +42,17 @@ public class MPClient {
         Network.UpdatePlayer updatePlayer = new Network.UpdatePlayer();
         updatePlayer.name = name;
         updatePlayer.team = team;
+        Network.UpdateBall updateBall = new Network.UpdateBall();
 
+        //Test when game ends!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         while(true) {
-            if(match.moved) {
-                match.moved = false;
+            //Checks if game ended
+            if(match.getElapsedTime() >= Constants.GAME_TIME)
+                break;
+
+            //Updates player
+            if(match.controlledPlayerMoved) {
+                match.controlledPlayerMoved = false;
                 playerInfo.x = match.getClientPlayerX(team);
                 playerInfo.y = match.getClientPlayerY(team);
 
@@ -52,12 +60,20 @@ public class MPClient {
                 updatePlayer.y = playerInfo.y;
                 client.sendTCP(updatePlayer);
             }
+
+            //updates ball
+            /*if(match.ballMoved) {
+                match.ballMoved = false;
+                updateBall.x = match.getBall().getBody().getPosition().x;
+                updateBall.y = match.getBall().getBody().getPosition().y;
+                client.sendTCP(updateBall);
+            }*/
         }
 
-        /*Network.RemovePlayer removePlayer = new Network.RemovePlayer();
+        Network.RemovePlayer removePlayer = new Network.RemovePlayer();
         removePlayer.team = team;
         removePlayer.name = name;
-        client.sendTCP(removePlayer);*/
+        client.sendTCP(removePlayer);
     }
 
     private void addListeners() {

@@ -211,11 +211,27 @@ public class Team {
         players = new ArrayList<Player>();
     }
 
-    public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w) {
-        float x = 100 + 100 * players.size();
-        float y = 300;
-
+    public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w, int controlledPlayerTeam, MultiPlayMatch match) {
+        float x, y;
+        int teamSide;
         boolean controlled;
+
+        if(team == 0)
+            teamSide = 1;
+        else
+            teamSide = -1;
+
+        if(players.size() == 0) {
+            x = (Constants.ScreenWidth / 4) * teamSide;
+            y = 0;
+        } else {
+            x = ((Constants.ScreenWidth / 4) - (Constants.ScreenWidth / 6)) * teamSide;
+            if(players.size() != 0)
+                y = (Constants.ScreenHeight  / 4) * teamSide;
+            else
+                y = (-Constants.ScreenHeight  / 4) * teamSide;
+        }
+
         if(playerAlreadyControlled() || !controlledPlayer)
             controlled = false;
         else
@@ -224,6 +240,9 @@ public class Team {
         Player player = new Player(x, y, name, team, controlled, size);
         player.addPhysics(w);
         players.add(player);
+
+        if(controlled && player.team == controlledPlayerTeam)
+            match.setControlledPlayer(player);
     }
 
     public void removePlayer(String name) {

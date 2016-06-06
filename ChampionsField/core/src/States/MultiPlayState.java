@@ -28,49 +28,46 @@ import server.MPClient;
 import utils.Constants;
 
 public class MultiPlayState extends State implements ApplicationListener {
-        //Objects textures
-        private TextureAtlas explosionAtlas;
-        private Animation explosionAnimation;
-        private Texture rainTexture;
-        private TextureAtlas ballTexture;
-        private Animation ballAnimation;
-        private Texture fieldTexture;
-        private Texture homeTeamTexture;
-        private Texture visitorTeamTexture;
-        private Texture goalTexture;
-        private BitmapFont font;
-        private Rain rain;
-        private TextureAtlas teamSpeedIncAtlas;
-        private TextureAtlas teamSpeedDecAtlas;
-        private TextureAtlas playerSpeedIncAtlas;
-        private Animation powerUpAnimation;
+    //Objects textures
+    private TextureAtlas explosionAtlas;
+    private Animation explosionAnimation;
+    private Texture rainTexture;
+    private TextureAtlas ballTexture;
+    private Animation ballAnimation;
+    private Texture fieldTexture;
+    private Texture homeTeamTexture;
+    private Texture visitorTeamTexture;
+    private Texture goalTexture;
+    private BitmapFont font;
+    private Rain rain;
+    private TextureAtlas teamSpeedIncAtlas;
+    private TextureAtlas teamSpeedDecAtlas;
+    private TextureAtlas playerSpeedIncAtlas;
+    private Animation powerUpAnimation;
 
-        private float deltaTime = 0;
-        private float scoreAnimationTime;
-        private float powerUpAnimationTime;
+    private float deltaTime = 0;
+    private float scoreAnimationTime;
+    private float powerUpAnimationTime;
 
-        private Vector2 explosionPos;
-        static final float PLAYERS_SPEED = 5;
-        static final float EXPLOSION_SPEED = 5f;
-        static final float EXPLOSION_DURATION = 2.4f;
-        static final float EXPLOSION_WIDTH = 100f;
-        static final float EXPLOSION_HEIGHT = 100f;
-        static final float PowerUp_DURATION = 10f;
-        Box2DDebugRenderer debugRenderer;
+    private Vector2 explosionPos;
+    static final float PowerUp_DURATION = 10f;
+    Box2DDebugRenderer debugRenderer;
 
-        //Match class init
-        public MultiPlayMatch match;
+    //Match class init
+    public MultiPlayMatch match;
 
-        //Physics World
-        private OrthographicCamera camera;
+    //Physics World
+    private OrthographicCamera camera;
 
-        //Touchpad
-        private Stage stage;
-        private Touchpad touchpad;
-        private Touchpad.TouchpadStyle touchpadStyle;
-        private Skin touchpadSkin;
-        private Drawable touchBackground;
-        private Drawable touchKnob;
+    //Touchpad
+    private Stage stage;
+    private Touchpad touchpad;
+    private Touchpad.TouchpadStyle touchpadStyle;
+    private Skin touchpadSkin;
+    private Drawable touchBackground;
+    private Drawable touchKnob;
+
+    private boolean readyToPlay;
 
     public MultiPlayState(GameStateManager gsm){
         super(gsm);
@@ -118,13 +115,13 @@ public class MultiPlayState extends State implements ApplicationListener {
 
         rain = new Rain(width, height);
         scoreAnimationTime = 0;
+        readyToPlay = false;
 
-        match = new MultiPlayMatch();
+        match = new MultiPlayMatch(clientTeam);
 
         class MyClient implements Runnable {
             @Override
             public void run() {
-                MPClient client = new MPClient("1", 0, match);
             }
         }
         Thread newPlayer = new Thread(new MyClient());
@@ -164,116 +161,118 @@ public class MultiPlayState extends State implements ApplicationListener {
 
     @Override
     public void update(float dt) {
-        if(match.getElapsedTime() >= Constants.GAME_TIME){
-            match.endGame();
-        }
+        if(!readyToPlay && match.everyPlayerConnected())
+            readyToPlay = true;
 
-
-        match.updateMatch(touchpad.getKnobPercentX() * PLAYERS_SPEED, touchpad.getKnobPercentY() * PLAYERS_SPEED, rain, dt);
-
-        if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {
-            explosionPos = match.getBall().getScreenCoordinates();
-        }
-
-        if(scoreAnimationTime >= EXPLOSION_DURATION) {
-            scoreAnimationTime = 0;
-            match.endScoreState();
-        }
-
-        if(match.getPowerUp().isActive() && powerUpAnimationTime == 0f){
-            Constants.powerUpType type = match.getPowerUp().getType();
-            switch(type){
-                case TeamSpeedInc:
-                    powerUpAnimation = new Animation(1/2f, teamSpeedIncAtlas.getRegions());
-                    break;
-                case TeamSpeedDec:
-                    powerUpAnimation = new Animation(1/2f, teamSpeedDecAtlas.getRegions());
-                    break;
-                case PlayerSpeedInc:
-                    powerUpAnimation = new Animation(1/2f, playerSpeedIncAtlas.getRegions());
-                    break;
+        if(readyToPlay) {
+            if (match.getElapsedTime() >= Constants.GAME_TIME) {
+                match.endGame();
             }
-        } else if(powerUpAnimationTime > 0){
-            if(powerUpAnimationTime >= PowerUp_DURATION){
-                match.getPowerUp().setActive(false);
-                powerUpAnimationTime = 0;
+
+            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
+
+            if (match.getCurrentState() == Match.matchState.Score && scoreAnimationTime == 0) {
+                explosionPos = match.getBall().getScreenCoordinates();
             }
+
+            if (scoreAnimationTime >= Constants.EXPLOSION_DURATION) {
+                scoreAnimationTime = 0;
+                match.endScoreState();
+            }
+
+            if (match.getPowerUp().isActive() && powerUpAnimationTime == 0f) {
+                Constants.powerUpType type = match.getPowerUp().getType();
+                switch (type) {
+                    case TeamSpeedInc:
+                        powerUpAnimation = new Animation(1 / 2f, teamSpeedIncAtlas.getRegions());
+                        break;
+                    case TeamSpeedDec:
+                        powerUpAnimation = new Animation(1 / 2f, teamSpeedDecAtlas.getRegions());
+                        break;
+                    case PlayerSpeedInc:
+                        powerUpAnimation = new Animation(1 / 2f, playerSpeedIncAtlas.getRegions());
+                        break;
+                }
+            } else if (powerUpAnimationTime > 0) {
+                if (powerUpAnimationTime >= PowerUp_DURATION) {
+                    match.getPowerUp().setActive(false);
+                    powerUpAnimationTime = 0;
+                }
+            }
+
+            deltaTime += dt;
         }
-
-        deltaTime += dt;
-
     }
 
     @Override
     public void render(SpriteBatch sb) {
-        sb.begin();
+        if(readyToPlay) {
+            sb.begin();
 
-        //Field draw
-        sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        Vector2 screenPosition;
-        Ball b = match.getBall();
-        b.setPositionToBody();
-        screenPosition = b.getScreenCoordinates();
+            Vector2 screenPosition;
+            Ball b = match.getBall();
+            b.setPositionToBody();
+            screenPosition = b.getScreenCoordinates();
 
-        if(match.getCurrentState() == Match.matchState.Score) {
-            sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * EXPLOSION_SPEED, true), explosionPos.x - EXPLOSION_WIDTH/2, explosionPos.y - EXPLOSION_HEIGHT/2, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
-            scoreAnimationTime += Gdx.graphics.getDeltaTime();
-        } else{
-            sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
-        }
+            if (match.getCurrentState() == Match.matchState.Score) {
+                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH / 2, explosionPos.y - Constants.EXPLOSION_HEIGHT / 2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
+                scoreAnimationTime += Gdx.graphics.getDeltaTime();
+            } else {
+                sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius() * 2 * 100f, b.getRadius() * 2 * 100f);
+            }
 
-        //Teams
-        ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
-        ArrayList<Player> visitorTeamPlayers = match.getVisitorTeam().getPlayers();
+            //Teams
+            ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
+            ArrayList<Player> visitorTeamPlayers = match.getVisitorTeam().getPlayers();
 
-        if(homeTeamPlayers.size() != 0) {
             float radius = homeTeamPlayers.get(0).getBoundingRadius();
 
-            for (int i = 0; i < match.getNumberOfPlayers(); i++) {
+            for (int i = 0; i < Constants.NUMBER_PLAYER_ONLINE; i++) {
                 homeTeamPlayers.get(i).setPositionToBody();
                 screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
                 sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
                 font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
 
-               /* visitorTeamPlayers.get(i).setPositionToBody();
+                visitorTeamPlayers.get(i).setPositionToBody();
                 screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
-                sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f, visitorTeamPlayers.get(i).getBoundingRadius()*2* 100f);
-                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y  + radius * 100f);*/
+                sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
+                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
             }
+
+            font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
+            font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
+
+            font.draw(sb, match.getTime(), width / 2 - 28, height - height / 6);
+
+            Goal g = match.getHomeTeamGoal();
+            screenPosition = g.getScreenCoordinates();
+            float vertLength = match.getHomeTeamGoal().getVerticalLength() * Constants.BOX_TO_WORLD;
+            float horLength = match.getHomeTeamGoal().getHorizontalLength() * Constants.BOX_TO_WORLD;
+            sb.draw(goalTexture, screenPosition.x, screenPosition.y, horLength, vertLength);
+
+            g = match.getVisitorTeamGoal();
+            screenPosition = g.getScreenCoordinates();
+            sb.draw(goalTexture, screenPosition.x, screenPosition.y, -horLength, vertLength);
+
+            if (match.getPowerUp().isActive()) {
+                Vector2 powerUpPos = match.getPowerUp().getPosition();
+                sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * Constants.EXPLOSION_SPEED, true), powerUpPos.x, powerUpPos.y, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
+                powerUpAnimationTime += Gdx.graphics.getDeltaTime();
+            }
+
+            for (int i = 0; i < rain.getRainSize(); i++)
+                sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
+
+            sb.end();
+
+            if (gameplayController == 2) {
+                stage.act(Gdx.graphics.getDeltaTime());
+                stage.draw();
+            }
+            debugRenderer.render(match.getWorld(), camera.combined);
         }
-
-        font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);
-        font.draw(sb, Integer.toString(match.getScoreVisitorTeam()), width - width / 4, height - height / 6);
-
-        font.draw(sb, match.getTime(), width / 2  - 28, height - height / 6);
-
-        Goal g = match.getHomeTeamGoal();
-        screenPosition = g.getScreenCoordinates();
-        float vertLength = match.getHomeTeamGoal().getVerticalLength() * Constants.BOX_TO_WORLD;
-        float horLength = match.getHomeTeamGoal().getHorizontalLength() * Constants.BOX_TO_WORLD;
-        sb.draw(goalTexture, screenPosition.x, screenPosition.y, horLength, vertLength);
-
-        g = match.getVisitorTeamGoal();
-        screenPosition = g.getScreenCoordinates();
-        sb.draw(goalTexture, screenPosition.x , screenPosition.y, -horLength, vertLength);
-
-        if(match.getPowerUp().isActive()){
-            Vector2 powerUpPos = match.getPowerUp().getPosition();
-            sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * EXPLOSION_SPEED, true), powerUpPos.x, powerUpPos.y, EXPLOSION_WIDTH, EXPLOSION_HEIGHT);
-            powerUpAnimationTime += Gdx.graphics.getDeltaTime();
-        }
-
-        for(int i = 0; i < rain.getRainSize(); i++)
-            sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
-
-        sb.end();
-
-        if(gameplayController == 2) {
-            stage.act(Gdx.graphics.getDeltaTime());
-            stage.draw();
-        }
-        debugRenderer.render(match.getWorld(), camera.combined);
     }
 
     @Override

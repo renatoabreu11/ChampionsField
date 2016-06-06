@@ -42,7 +42,7 @@ public abstract class Match{
     int numberOfPlayers;
     float playerSize;
     matchState currentState;
-    long elapsedTime;
+    volatile long elapsedTime;      //see if this does not blow it all up!!!!!!!!!!!!!!!!!!!
     long startTime;
     String time;
 
@@ -135,16 +135,8 @@ public abstract class Match{
         return currentState;
     }
 
-    public void erasePlayers() {
-        homeTeam.erasePlayers();
-    }
-
     public Ball getBall(){
         return this.ball;
-    }
-
-    public Field getField() {
-        return field;
     }
 
     public Team getHomeTeam(){
@@ -159,10 +151,6 @@ public abstract class Match{
         return numberOfPlayers;
     }
 
-    public void setNumberOfPlayers(int numberOfPlayers) {
-        this.numberOfPlayers = numberOfPlayers;
-    }
-
     public int getScoreHomeTeam() {
         return homeTeam.score;
     }
@@ -175,16 +163,8 @@ public abstract class Match{
         return homeTeamGoal;
     }
 
-    public void setHomeTeamGoal(Goal homeTeamGoal) {
-        this.homeTeamGoal = homeTeamGoal;
-    }
-
     public Goal getVisitorTeamGoal() {
         return visitorTeamGoal;
-    }
-
-    public void setVisitorTeamGoal(Goal visitorTeamGoal) {
-        this.visitorTeamGoal = visitorTeamGoal;
     }
 
     public abstract void endGame();

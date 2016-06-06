@@ -21,6 +21,7 @@ public final class Constants {
     public static final float regionWidth = 380 * widthScale * WORLD_TO_BOX;
     public static final float regionHeight = 1535 * heightScale * WORLD_TO_BOX;
     public static final long  GAME_TIME = 300;
+    public static final int NUMBER_PLAYER_ONLINE = 1;
     public static final float Switch_Height = 220 * heightScale;
     public static final float Switch_Width = 220 * widthScale;
     public static final float leaderboardWidthScale = ScreenWidth / 700;
@@ -28,11 +29,11 @@ public final class Constants {
     public static final float buttonHeight = ScreenHeight/16;
     public static final float buttonWidth = ScreenWidth/10;
     public static final SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
-    public static final float PLAYERS_SPEED = 5;
+    public static final float PLAYERS_SPEED = 3;
     public static final float EXPLOSION_SPEED = 5f;
     public static final float EXPLOSION_DURATION = 2.4f;
-    public static final float EXPLOSION_WIDTH = 100f;
-    public static final float EXPLOSION_HEIGHT = 100f;
+    public static final float EXPLOSION_WIDTH = ScreenWidth / 5;
+    public static final float EXPLOSION_HEIGHT = ScreenHeight / 3;
 
     //players positions
     public static final Vector2 Defender = new Vector2(ScreenWidth/2 - 430 * widthScale , 0);

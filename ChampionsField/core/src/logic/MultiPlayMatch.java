@@ -1,14 +1,10 @@
 package logic;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.math.Circle;
 
-import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
@@ -16,22 +12,18 @@ import utils.Constants;
 import utils.Statistics;
 
 public class MultiPlayMatch extends Match {
-    public enum matchState {
-        KickOff,
-        Pause,
-        Score,
-        Play;
-    }
-
-    public volatile boolean moved;
+    public volatile boolean controlledPlayerMoved;
+    public volatile boolean ballMoved;
+    public boolean everyPlayersConnected;
+    public int controlledPlayerTeam;
     PowerUp powerUp;
+    Player controlledPlayer;
 
-    public MultiPlayMatch(){
+    public MultiPlayMatch(int controlledPlayerTeam){
         super(0);
 
         Random r = new Random();
-        int aux = r.nextInt(2);     //MUDAR AQUI, SO PARA QUESTOES DE DEBUG! :D
-        aux = 0;
+        int aux = r.nextInt(2);
         if(aux == 0){
             homeTeam = new Team("Benfica", Team.TeamState.Attacking, w);
             visitorTeam = new Team("Porto", Team.TeamState.Defending, w);
@@ -39,18 +31,26 @@ public class MultiPlayMatch extends Match {
             homeTeam = new Team("Benfica", Team.TeamState.Defending, w);
             visitorTeam = new Team("Porto", Team.TeamState.Attacking, w);
         }
-        //homeTeam.controlPlayer(0);
 
+        this.controlledPlayerTeam = controlledPlayerTeam;
         numberOfPlayers = 0;
-        moved = false;
+        controlledPlayerMoved = false;
+        ballMoved = false;
+        everyPlayersConnected = false;
         powerUp = new PowerUp();
+
+        aux = r.nextInt(2);
+        if(aux == 0)
+            field.activateBarriers(true);
+        else
+            field.activateBarriers(false);
     }
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer) {
         if(team == 0)
-            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
+            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
         else
-            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w);
+            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
         numberOfPlayers++;
     }
@@ -62,6 +62,17 @@ public class MultiPlayMatch extends Match {
             visitorTeam.removePlayer(name);
 
         numberOfPlayers--;
+    }
+
+    public boolean everyPlayerConnected() {
+        if(homeTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE && visitorTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE)
+            return true;
+
+        return false;
+    }
+
+    public void setControlledPlayer(Player player) {
+        controlledPlayer = player;
     }
 
     @Override
@@ -140,8 +151,7 @@ public class MultiPlayMatch extends Match {
             }
         }
 
-        homeTeam.updateControlledPlayerOnline(x, y);
-
+        controlledPlayer.getBody().setLinearVelocity(x, y);
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
 
@@ -152,7 +162,9 @@ public class MultiPlayMatch extends Match {
         rain.update();
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
 
-        if(x != 0 || y != 0) moved = true;
+        if(x != 0 || y != 0) controlledPlayerMoved = true;
+
+        System.out.println(controlledPlayer.name + ", team: " + controlledPlayer.team);
     }
 
     @Override

@@ -22,8 +22,6 @@ import utils.Constants;
 import utils.Statistics;
 
 public abstract class Match{
-    public abstract PowerUp getPowerUp();
-
     public enum matchState{
         KickOff,
         Pause,

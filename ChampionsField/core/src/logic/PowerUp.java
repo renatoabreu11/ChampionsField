@@ -1,5 +1,6 @@
 package logic;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.Random;
@@ -37,7 +38,13 @@ public class PowerUp implements Coordinates{
                 break;
         }
 
-        position = new Vector2(0, 0);
+        float fieldWidth = Constants.ScreenWidth - 260*Constants.widthScale;
+        float fieldHeight = Constants.ScreenHeight - 60*Constants.heightScale;
+        float x = r.nextInt((int)(fieldWidth));
+        float y = r.nextInt((int)(fieldHeight));
+        x -= fieldWidth/2;
+        y -= fieldHeight/2;
+        position = new Vector2(x * Constants.WORLD_TO_BOX, y * Constants.WORLD_TO_BOX);
     }
 
     public boolean isActive() {
@@ -66,6 +73,8 @@ public class PowerUp implements Coordinates{
 
     @Override
     public Vector2 getScreenCoordinates() {
-        return null;
+        float x = getPosition().x * Constants.BOX_TO_WORLD + Constants.ScreenWidth/2;
+        float y = getPosition().y * Constants.BOX_TO_WORLD + Constants.ScreenHeight/2;
+        return new Vector2(x, y);
     }
 }

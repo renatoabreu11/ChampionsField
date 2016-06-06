@@ -12,9 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.utils.Array;
 
 import java.util.ArrayList;
 
@@ -31,6 +34,11 @@ public class Options extends State {
     private TextButton button;
     private TextField nameField;
     private TextField playersPerTeam;
+    private SelectBox<String> initialTeam;
+
+    private Label nameLabel;
+    private Label playersPerTeamLabel;
+    private Label startingTeamLabel;
     private Skin skin;
     private Dialog diag;
 
@@ -72,11 +80,39 @@ public class Options extends State {
 
         button.setPosition(Constants.ScreenWidth/2 - button.getWidth()/2,  button.getHeight()/2);
 
+        nameLabel = new Label("Username", skin);
+        nameLabel.setAlignment(1);
+        nameLabel.setPosition(Constants.ScreenWidth/2 - nameField.getWidth(), Constants.ScreenHeight/2 + nameField.getHeight()*6 + nameLabel.getHeight()/4);
+
+        playersPerTeamLabel = new Label("Players per Team", skin);
+        playersPerTeamLabel.setAlignment(1);
+        playersPerTeamLabel.setPosition(Constants.ScreenWidth/2 - playersPerTeam.getWidth(), Constants.ScreenHeight/2 + playersPerTeamLabel.getHeight()*4);
+
+        initialTeam = new SelectBox<String>(skin);
+        String[] choices ={
+            "Blue", "Red"
+        };
+        initialTeam.setItems(choices);
+        String selectedTeam = prefs.getString("Starting Team", "Red");
+        initialTeam.setSelected(selectedTeam);
+        initialTeam.setWidth(nameField.getWidth());
+        initialTeam.setHeight(nameField.getHeight());
+        initialTeam.setPosition(Constants.ScreenWidth/2 + initialTeam.getWidth()/2, Constants.ScreenHeight/2 - initialTeam.getHeight());
+
+        startingTeamLabel = new Label("Multiplayer Initial Team", skin);
+        startingTeamLabel.setAlignment(1);
+        startingTeamLabel.setPosition(Constants.ScreenWidth/2 - startingTeamLabel.getWidth(), Constants.ScreenHeight/2 - startingTeamLabel.getHeight());
+
+
         addListeners();
 
         stage.addActor(button);
         stage.addActor(nameField);
         stage.addActor(playersPerTeam);
+        stage.addActor(nameLabel);
+        stage.addActor(playersPerTeamLabel);
+        stage.addActor(initialTeam);
+        stage.addActor(startingTeamLabel);
 
         Gdx.input.setInputProcessor(stage);
     }
@@ -187,6 +223,7 @@ public class Options extends State {
                     Preferences prefs = Gdx.app.getPreferences("My Preferences");
                     prefs.putString("Name", n);
                     prefs.putInteger("Number Of Players", players);
+                    prefs.putString("Starting Team", initialTeam.getSelected());
                     selectedOption = 2;
                 }
                 break;

@@ -1,12 +1,5 @@
 package logic;
 
-<<<<<<< HEAD
-=======
-import com.badlogic.gdx.math.Circle;
-
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
->>>>>>> origin/master
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;

@@ -64,7 +64,6 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers--;
     }
 
-<<<<<<< HEAD
     public boolean everyPlayerConnected() {
         if(homeTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE && visitorTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE)
             return true;
@@ -76,9 +75,6 @@ public class MultiPlayMatch extends Match {
         controlledPlayer = player;
     }
 
-    @Override
-=======
->>>>>>> origin/master
     public PowerUp getPowerUp() {
         return powerUp;
     }
@@ -154,14 +150,7 @@ public class MultiPlayMatch extends Match {
             }
         }
 
-<<<<<<< HEAD
         controlledPlayer.getBody().setLinearVelocity(x, y);
-=======
-        homeTeam.updateControlledPlayerOnline(x, y);
-        homeTeam.updatePowerUps(dt);
-        visitorTeam.updatePowerUps(dt);
-
->>>>>>> origin/master
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
 
@@ -201,25 +190,16 @@ public class MultiPlayMatch extends Match {
             stats = parser.parseStatisticsToArray(info);
         }
 
-        Preferences prefs = Gdx.app.getPreferences("My Preferences");
-
         for (int i = 0; i < homeTeam.getNumberPlayers(); i++) {
             homeTeam.players.get(i).addMatchPlayed();
             name = homeTeam.players.get(i).name;
             score = homeTeam.players.get(i).score;
             matches = homeTeam.players.get(i).matchesPlayed;
             Statistics s = new Statistics(name, score, matches);
-            //é preciso completar isto, não está 100% correto
             if(stats.contains(s)){
                 stats.remove(s);
                 stats.add(s);
             } else stats.add(s);
-
-            if( homeTeam.players.get(i).isControlledPlayer){
-                int goals = prefs.getInteger("Goals", 0);
-                prefs.putInteger("Goals", goals + s.getGoalsScored());
-                prefs.putInteger("Matches",s.getMatchesPlayed());
-            }
         }
 
         for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
@@ -232,12 +212,6 @@ public class MultiPlayMatch extends Match {
                 stats.remove(s);
                 stats.add(s);
             } else stats.add(s);
-
-            if( visitorTeam.players.get(i).isControlledPlayer){
-                int goals = prefs.getInteger("Goals", 0);
-                prefs.putInteger("Goals", goals + s.getGoalsScored());
-                prefs.putInteger("Matches",s.getMatchesPlayed());
-            }
         }
 
         globalStatistics.writer(false);

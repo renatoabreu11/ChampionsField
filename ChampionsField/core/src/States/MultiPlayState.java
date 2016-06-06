@@ -29,6 +29,7 @@ import utils.Constants;
 
 public class MultiPlayState extends State implements ApplicationListener {
     //Objects textures
+    private Texture lobby;
     private TextureAtlas explosionAtlas;
     private Animation explosionAnimation;
     private Texture rainTexture;
@@ -92,6 +93,7 @@ public class MultiPlayState extends State implements ApplicationListener {
         Gdx.input.setInputProcessor(stage);
 
         //Textures definition
+        lobby = new Texture("Connecting.png");
         explosionAtlas = new TextureAtlas("Explosion.atlas");
         explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
         ballTexture = new TextureAtlas("SoccerBall.atlas");
@@ -123,7 +125,7 @@ public class MultiPlayState extends State implements ApplicationListener {
         class MyClient implements Runnable {
             @Override
             public void run() {
-                MPClient client = new MPClient("1", clientTeam, match);
+                MPClient client = new MPClient("sdew2w", clientTeam, match);
             }
         }
         Thread newPlayer = new Thread(new MyClient());
@@ -163,8 +165,10 @@ public class MultiPlayState extends State implements ApplicationListener {
 
     @Override
     public void update(float dt) {
-        if (!readyToPlay && match.everyPlayerConnected())
+        if (!readyToPlay && match.everyPlayerConnected()) {
+            lobby.dispose();
             readyToPlay = true;
+        }
 
         if (readyToPlay) {
             if (match.getElapsedTime() >= Constants.GAME_TIME) {
@@ -310,6 +314,40 @@ public class MultiPlayState extends State implements ApplicationListener {
                 stage.draw();
             }
             debugRenderer.render(match.getWorld(), camera.combined);
+        } else {
+            sb.begin();
+
+            sb.draw(lobby, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
+            font.draw(sb, "Waiting for more players...", Constants.ScreenWidth / 2, Constants.ScreenHeight - Constants.ScreenHeight / 4);
+            font.draw(sb, "Blue Team", Constants.ScreenWidth / 8, Constants.ScreenHeight / 2);
+            font.draw(sb, "Red Team", Constants.ScreenWidth - Constants.ScreenWidth / 8, Constants.ScreenHeight / 2);
+
+            float radius = 0;
+            boolean canDrawHomePlayers = false;
+            boolean canDrawVisitorPlayers = false;
+            if(match.getHomeTeam().getPlayers().size() > 0) {
+                radius = match.getHomeTeam().getPlayers().get(0).getBoundingRadius() * 100f;
+                canDrawHomePlayers = true;
+            }
+
+            if(match.getVisitorTeam().getPlayers().size() > 0 && radius == 0) {
+                radius = match.getVisitorTeam().getPlayers().get(0).getBoundingRadius() * 100f;
+                canDrawVisitorPlayers = true;
+            }
+
+            if(canDrawHomePlayers)
+                for(int i = 0; i < match.getHomeTeam().getPlayers().size(); i++) {
+                    sb.draw(homeTeamTexture, Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
+                    font.draw(sb, match.getHomeTeam().getPlayers().get(i).getName(), Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
+                }
+
+            if(canDrawVisitorPlayers)
+                for(int i = 0; i < match.getVisitorTeam().getPlayers().size(); i++) {
+                    sb.draw(visitorTeamTexture, Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
+                    font.draw(sb, match.getVisitorTeam().getPlayers().get(i).getName(), Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
+                }
+
+            sb.end();
         }
     }
 

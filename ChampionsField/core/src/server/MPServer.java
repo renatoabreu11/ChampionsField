@@ -21,6 +21,8 @@ public class MPServer {
         numPlayers = 0;
         playersInfo = new ArrayList<PlayerInfo>();
         ballInfo = new BallInfo();
+        ballInfo.x = 0;
+        ballInfo.y = 0;
         barrierSide = true;
         server = new Server();
 
@@ -108,7 +110,24 @@ public class MPServer {
 
                 if(object instanceof Network.UpdateBall) {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
+
+                    //Only the first time
+                    if (ballInfo.lastTouchedPlayer.equals(""))
+                        ballInfo.lastTouchedPlayer = updateBall.name;
+
+                    //If the object is from the first player that touched the ball, but the ball has already be touched by another player
+                    if(ballInfo.semiLastTouchedPlayer.equals(updateBall.name))
+                        return;
+
+                    if(!ballInfo.lastTouchedPlayer.equals(updateBall.name)) {
+                        ballInfo.semiLastTouchedPlayer = ballInfo.lastTouchedPlayer;
+                        ballInfo.lastTouchedPlayer = updateBall.name;
+                    }
+
+                    ballInfo.x = updateBall.x;
+                    ballInfo.y = updateBall.y;
                     server.sendToAllTCP(updateBall);
+                    System.out.println("x = " + ballInfo.x + ", y = " + ballInfo.y);
                 }
             }
         });

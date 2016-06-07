@@ -282,18 +282,18 @@ public class SinglePlayState extends State {
 
             for(int i = 0; i < match.rain.getRainSize(); i++)
                 sb.draw(rainTexture, match.rain.getPosition(i).x, match.rain.getPosition(i).y, width / 3, height / 3);
-
-            if(gameplayController == 2) {
-                stage.act(Gdx.graphics.getDeltaTime());
-                stage.draw();
-            }
         } else{
             sb.draw(loadingBackground, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
-            sb.draw(loadingAnimation.getKeyFrame(loadingAnimationTime * 5f, true), Constants.ScreenWidth/2 - Constants.loadingWidth/2, Constants.ScreenHeight/2 - Constants.loadingHeight/2, Constants.loadingWidth, Constants.loadingHeight);
+            sb.draw(loadingAnimation.getKeyFrame(loadingAnimationTime * 10f, true), Constants.ScreenWidth/2 - Constants.loadingWidth/2, Constants.ScreenHeight/2 - Constants.loadingHeight/2, Constants.loadingWidth, Constants.loadingHeight);
             loadingAnimationTime += Gdx.graphics.getDeltaTime();
         }
 
         sb.end();
+
+        if(gameplayController == 2) {
+            stage.act(Gdx.graphics.getDeltaTime());
+            stage.draw();
+        }
     }
 
     @Override

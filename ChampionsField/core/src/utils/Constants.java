@@ -20,7 +20,7 @@ public final class Constants {
     public static final float heightScale = ScreenHeight / FIELD_TEXTURE_HEIGHT;
     public static final float regionWidth = 380 * widthScale * WORLD_TO_BOX;
     public static final float regionHeight = 1535 * heightScale * WORLD_TO_BOX;
-    public static final long  GAME_TIME = 300;
+    public static final long GAME_TIME = 15;
     public static final int NUMBER_PLAYER_ONLINE = 1;
     public static final int NUMBER_MATCHES_HOST_BY_SERVER = 2;
     public static final float Switch_Height = 220 * heightScale;
@@ -38,8 +38,8 @@ public final class Constants {
     public static final float loadingHeight = ScreenHeight/8;
     public static final float loadingWidth = ScreenWidth/8;
 
-    public static long PowerfirstAppear = 70;
-    public static long PowerLastAppear = 215;
+    public static long PowerfirstAppear = 2;
+    public static long PowerLastAppear = 10;
     public static final float powerAnimationDuration = 10f;
     public static final float powerTime = 10f;
     public static final float PowerUpSpeed = 5.1f;
@@ -60,7 +60,7 @@ public final class Constants {
     public static final Rectangle DefendCentral = new Rectangle(760 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendMidfielder = new Rectangle(380 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendStriker =  new Rectangle(0, - regionHeight/2, regionWidth, regionHeight);
-    public static float LoadingTime = 0f;
+    public static float LoadingTime = 7.5f;
 
     public enum entityMasks{
         BallMask(1),

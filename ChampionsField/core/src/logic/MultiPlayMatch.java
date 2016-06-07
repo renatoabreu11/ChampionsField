@@ -81,6 +81,10 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers--;
     }
 
+    /**
+     * Returns the initial position of the client's player
+     * @return the initial position to return
+     */
     public Vector2 getControlledPlayerInitialPosition() {
         return controlledPlayer.initialPosition;
     }
@@ -98,6 +102,9 @@ public class MultiPlayMatch extends Match {
         return false;
     }
 
+    /**
+     * Sets a flag to true when the match is full and can't accept more players
+     */
     public void matchFull() {
         isFull = true;
     }

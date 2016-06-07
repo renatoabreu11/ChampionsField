@@ -189,18 +189,26 @@ public class MultiPlayState extends State  {
             ArrayList<Player> homeTeamPlayers = match.getHomeTeam().getPlayers();
             ArrayList<Player> visitorTeamPlayers = match.getVisitorTeam().getPlayers();
 
-            float radius = homeTeamPlayers.get(0).getBoundingRadius();
+            float radius;
+            if (!homeTeamPlayers.isEmpty()) {
+                radius = homeTeamPlayers.get(0).getBoundingRadius();
 
-            for (int i = 0; i < Constants.NUMBER_PLAYER_ONLINE; i++) {
-                homeTeamPlayers.get(i).setPositionToBody();
-                screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
-                sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
-                font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+                for (int i = 0; i < Constants.NUMBER_PLAYER_ONLINE; i++) {
+                    homeTeamPlayers.get(i).setPositionToBody();
+                    screenPosition = homeTeamPlayers.get(i).getScreenCoordinates();
+                    sb.draw(homeTeamTexture, screenPosition.x, screenPosition.y, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, homeTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
+                    font.draw(sb, homeTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+                }
+            }
+            if (!visitorTeamPlayers.isEmpty()) {
+                radius = visitorTeamPlayers.get(0).getBoundingRadius();
 
-                visitorTeamPlayers.get(i).setPositionToBody();
-                screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
-                sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
-                font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+                for (int i = 0; i < Constants.NUMBER_PLAYER_ONLINE; i++) {
+                    visitorTeamPlayers.get(i).setPositionToBody();
+                    screenPosition = visitorTeamPlayers.get(i).getScreenCoordinates();
+                    sb.draw(visitorTeamTexture, screenPosition.x, screenPosition.y, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f, visitorTeamPlayers.get(i).getBoundingRadius() * 2 * 100f);
+                    font.draw(sb, visitorTeamPlayers.get(i).getName(), screenPosition.x + radius * 100f / 2, screenPosition.y + radius * 100f);
+                }
             }
 
             font.draw(sb, Integer.toString(match.getScoreHomeTeam()), width / 4, height - height / 6);

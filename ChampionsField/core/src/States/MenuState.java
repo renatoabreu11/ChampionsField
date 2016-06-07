@@ -1,7 +1,6 @@
 package States;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -21,7 +20,6 @@ import java.util.Random;
 
 import logic.Ball;
 import logic.Field;
-import logic.MultiPlayMatch;
 import utils.Constants;
 
 public class MenuState extends State  {
@@ -282,7 +280,7 @@ public class MenuState extends State  {
     private void changeState(int state) {
         switch(state) {
             case 0: gsm.set(new SinglePlayState(gsm)); break;
-            case 1: gsm.set(new MultiPlayState(gsm)); break;
+            case 1: gsm.set(new Lobby(gsm)); break;
             case 2: gsm.set(new Leaderboard(gsm)); break;
             case 3: gsm.set(new Options(gsm)); break;
             case 4: Gdx.app.exit(); break;

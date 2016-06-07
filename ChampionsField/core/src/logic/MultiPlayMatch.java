@@ -3,6 +3,7 @@ package logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,8 @@ public class MultiPlayMatch extends Match {
         controlledPlayerMoved = false;
         ballMoved = false;
         everyPlayersConnected = false;
+
+        field.deactivateBarriers();
     }
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
@@ -61,6 +64,10 @@ public class MultiPlayMatch extends Match {
         }
 
         return false;
+    }
+
+    public void matchFull() {
+        //FAZER ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
     public void setControlledPlayer(Player player) {
@@ -183,7 +190,7 @@ public class MultiPlayMatch extends Match {
             found = false;
         }
 
-        //Não sei se esta parte funciona devido a ter local. ´É preciso testar. A parte de cima funciona
+        //Não sei se esta parte funciona devido a ter local. ´É preciso testar. A parte de cima funciona!!!!!!!!!!!!!!!!!!!
         FileHandle statisticsWrite = Gdx.files.local("Statistics.txt");
         statisticsWrite.writer(false);
         String output = "";

@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import logic.Ball;
 import logic.Goal;
@@ -30,7 +31,6 @@ import utils.Constants;
 
 public class MultiPlayState extends State implements ApplicationListener {
     //Objects textures
-    private Texture lobby;
     private TextureAtlas explosionAtlas;
     private Animation explosionAnimation;
     private Texture rainTexture;
@@ -42,9 +42,6 @@ public class MultiPlayState extends State implements ApplicationListener {
     private Texture goalTexture;
     private BitmapFont font;
     private Rain rain;
-    private TextureAtlas teamSpeedIncAtlas;
-    private TextureAtlas teamSpeedDecAtlas;
-    private TextureAtlas playerSpeedIncAtlas;
 
     private float deltaTime = 0;
     private float scoreAnimationTime;
@@ -58,6 +55,8 @@ public class MultiPlayState extends State implements ApplicationListener {
     //Physics World
     private OrthographicCamera camera;
 
+    private boolean readyToPlay;
+
     //Touchpad
     private Stage stage;
     private Touchpad touchpad;
@@ -66,9 +65,7 @@ public class MultiPlayState extends State implements ApplicationListener {
     private Drawable touchBackground;
     private Drawable touchKnob;
 
-    private boolean readyToPlay;
-
-    public MultiPlayState(GameStateManager gsm) {
+    public MultiPlayState(GameStateManager gsm, MultiPlayMatch match) {
         super(gsm);
 
         touchpadSkin = new Skin();
@@ -91,12 +88,17 @@ public class MultiPlayState extends State implements ApplicationListener {
         Gdx.input.setInputProcessor(stage);
 
         //Textures definition
-        lobby = new Texture("Connecting.png");
         explosionAtlas = new TextureAtlas("Explosion.atlas");
         explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
         ballTexture = new TextureAtlas("SoccerBall.atlas");
         ballAnimation = new Animation(1 / 15f, ballTexture.getRegions());
-        fieldTexture = new Texture("Field.jpg");
+
+        Random r = new Random();
+        if(r.nextInt(2) == 0)
+            fieldTexture = new Texture("Field.jpg");
+        else
+            fieldTexture = new Texture("FieldGalaxy.jpg");
+
         homeTeamTexture = new Texture("RedPlayer.png");
         visitorTeamTexture = new Texture("BluePlayer.png");
         goalTexture = new Texture("FootballGoal.png");
@@ -112,25 +114,9 @@ public class MultiPlayState extends State implements ApplicationListener {
 
         rain = new Rain(width, height);
         scoreAnimationTime = 0;
+
+        this.match = match;
         readyToPlay = false;
-
-        final int clientTeam;
-        Preferences prefs = Gdx.app.getPreferences("My Preferences");
-        String team = prefs.getString("Starting Team", "Red");
-        if(team.equals("Red"))
-            clientTeam = 0;
-        else clientTeam = 1;
-        final String name = prefs.getString("Name");
-        match = new MultiPlayMatch(clientTeam);
-
-        class MyClient implements Runnable {
-            @Override
-            public void run() {
-                MPClient client = new MPClient(name, clientTeam, match);
-            }
-        }
-        Thread newPlayer = new Thread(new MyClient());
-        newPlayer.start();
     }
 
 
@@ -167,22 +153,17 @@ public class MultiPlayState extends State implements ApplicationListener {
     @Override
     public void update(float dt) {
         if (!readyToPlay && match.everyPlayerConnected()) {
-            lobby.dispose();
             readyToPlay = true;
         }
 
-        if (readyToPlay) {
-            if (match.getElapsedTime() >= Constants.GAME_TIME) {
-                match.endGame();
-            }
-
-            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
-
+        if(readyToPlay) {
             if (match.getElapsedTime() >= Constants.GAME_TIME) {
                 match.endGame();
                 dispose();
                 gsm.set(new MenuState(gsm));
             }
+
+            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
 
             match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
 
@@ -210,10 +191,10 @@ public class MultiPlayState extends State implements ApplicationListener {
 
     @Override
     public void render (SpriteBatch sb){
-        if (readyToPlay) {
+        if(readyToPlay) {
             sb.begin();
 
-            sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            sb.draw(fieldTexture, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
 
             Vector2 screenPosition;
             Ball b = match.getBall();
@@ -277,40 +258,6 @@ public class MultiPlayState extends State implements ApplicationListener {
                 stage.draw();
             }
             debugRenderer.render(match.getWorld(), camera.combined);
-        } else {
-            sb.begin();
-
-            sb.draw(lobby, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
-            font.draw(sb, "Waiting for more players...", Constants.ScreenWidth / 2, Constants.ScreenHeight - Constants.ScreenHeight / 4);
-            font.draw(sb, "Red Team", Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
-            font.draw(sb, "Blue Team", Constants.ScreenWidth  - Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
-
-            float radius = 0;
-            boolean canDrawHomePlayers = false;
-            boolean canDrawVisitorPlayers = false;
-            if(match.getHomeTeam().getPlayers().size() > 0) {
-                radius = match.getHomeTeam().getPlayers().get(0).getBoundingRadius() * 100f;
-                canDrawHomePlayers = true;
-            }
-
-            if(match.getVisitorTeam().getPlayers().size() > 0 && radius == 0) {
-                radius = match.getVisitorTeam().getPlayers().get(0).getBoundingRadius() * 100f;
-                canDrawVisitorPlayers = true;
-            }
-
-            if(canDrawHomePlayers)
-                for(int i = 0; i < match.getHomeTeam().getPlayers().size(); i++) {
-                    sb.draw(homeTeamTexture, Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
-                    font.draw(sb, match.getHomeTeam().getPlayers().get(i).getName(), Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
-                }
-
-            if(canDrawVisitorPlayers)
-                for(int i = 0; i < match.getVisitorTeam().getPlayers().size(); i++) {
-                    sb.draw(visitorTeamTexture, Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
-                    font.draw(sb, match.getVisitorTeam().getPlayers().get(i).getName(), Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
-                }
-
-            sb.end();
         }
     }
 

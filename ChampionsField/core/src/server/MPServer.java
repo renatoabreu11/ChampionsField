@@ -4,6 +4,7 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,18 +13,12 @@ import utils.Constants;
 
 public class MPServer {
     Server server;
-    ArrayList<PlayerInfo> playersInfo;
-    BallInfo ballInfo;
-    int numPlayers;
-    boolean barrierSide;
+    ArrayList<MatchInfo> matches;
 
     public MPServer() throws IOException {
-        numPlayers = 0;
-        playersInfo = new ArrayList<PlayerInfo>();
-        ballInfo = new BallInfo();
-        ballInfo.x = 0;
-        ballInfo.y = 0;
-        barrierSide = true;
+        matches = new ArrayList<MatchInfo>();
+        for(int i = 0; i < Constants.NUMBER_MATCHES_HOST_BY_SERVER; i++)
+            matches.add(new MatchInfo());
         server = new Server();
 
         Network.registerPackets(server);
@@ -48,11 +43,12 @@ public class MPServer {
             public void received(Connection c, Object object) {
                 if (object instanceof Network.Login) {
                     Network.Login login = (Network.Login) object;
+                    MatchInfo match = matches.get(0);
 
                     //Checks to see if every team has the right number of players
                     int numPlayerHome = 0;
                     int numPlayersVisitor = 0;
-                    for(PlayerInfo playerInfo : playersInfo) {
+                    for(PlayerInfo playerInfo : match.playersInfo) {
                         if(playerInfo.team == 0)
                             numPlayerHome++;
                         else
@@ -62,60 +58,67 @@ public class MPServer {
                     if((login.team == 0 && numPlayerHome < Constants.NUMBER_PLAYER_ONLINE)
                             || (login.team == 1 && numPlayersVisitor < Constants.NUMBER_PLAYER_ONLINE)) {
 
-                        playersInfo.add(new PlayerInfo(login.team, login.name));
+                        match.playersInfo.add(new PlayerInfo(login.team, login.name));
+                        match.connections.add(c);
 
                         //Sends the player's info to the new created match, so that match will have the existing players already
-                        for (int i = 0; i < numPlayers; i++) {
+                        for (int i = 0; i < match.numPlayers; i++) {
                             Network.AddPlayer addPlayer = new Network.AddPlayer();
-                            addPlayer.team = playersInfo.get(i).team;
-                            addPlayer.name = playersInfo.get(i).name;
+                            addPlayer.team = match.playersInfo.get(i).team;
+                            addPlayer.name = match.playersInfo.get(i).name;
                             addPlayer.controlledPlayer = false;
-                            addPlayer.barrierSide = barrierSide;
+                            addPlayer.barrierSide = match.barrierSide;
+                            addPlayer.room = login.room;
                             c.sendTCP(addPlayer);
                         }
 
-                        numPlayers++;
+                        match.numPlayers++;
 
                         //Adds the new player to the match in all devices
                         Network.AddPlayer addPlayer = new Network.AddPlayer();
                         addPlayer.name = login.name;
                         addPlayer.team = login.team;
                         addPlayer.controlledPlayer = true;
-                        addPlayer.barrierSide = barrierSide;
-                        server.sendToAllTCP(addPlayer);
+                        addPlayer.barrierSide = match.barrierSide;
+                        addPlayer.room = login.room;
+                        for(Connection connection : match.connections)
+                            connection.sendTCP(addPlayer);
                     } else {
-                        //Match is full!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        c.sendTCP(new Network.MatchFull());
                     }
                 }
 
                 if(object instanceof Network.UpdatePlayer) {
                     Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
-                    server.sendToAllTCP(updatePlayer);
+                    MatchInfo match = matches.get(0);
+
+                    for(Connection connection : match.connections)
+                        connection.sendTCP(updatePlayer);
                 }
 
                 if(object instanceof Network.RemovePlayer) {
                     Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
+                    MatchInfo match = matches.get(removePlayer.room - 1);
 
-                    for(PlayerInfo playerInfo : playersInfo) {
+                    for(PlayerInfo playerInfo : match.playersInfo) {
                         if(playerInfo.team == removePlayer.team && playerInfo.name.equals(removePlayer.name)) {
-                            playersInfo.remove(playerInfo);
+                            match.playersInfo.remove(playerInfo);
                             break;
                         }
                     }
 
                     //Removes the player from the other client's matches
-                    server.sendToAllTCP(removePlayer);
-                    numPlayers--;
+                    for(Connection connection : match.connections)
+                        connection.sendTCP(removePlayer);
+                    match.numPlayers--;
                 }
 
                 if(object instanceof Network.UpdateBall) {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
-                    ballInfo.x = updateBall.x;
-                    ballInfo.y = updateBall.y;
-                    ballInfo.vx = updateBall.vx;
-                    ballInfo.vy = updateBall.vy;
-                    ballInfo.lastTouch = updateBall.lastTouch;
-                    server.sendToAllTCP(updateBall);
+                    MatchInfo match = matches.get(updateBall.room - 1);
+
+                    for(Connection connection : match.connections)
+                        connection.sendTCP(updateBall);
                 }
             }
         });

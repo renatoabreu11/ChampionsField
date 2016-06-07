@@ -50,9 +50,6 @@ public class Network {
     }
 
     static public class ResetPositions {
-        float x, y;
-        String name;
-        int team;
         int room;
     }
 

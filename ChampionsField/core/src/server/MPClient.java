@@ -51,15 +51,15 @@ public class MPClient {
             if (match.canRepositionAfterScore) {
                 match.canRepositionAfterScore = false;
 
-                playerInfo.x = match.getControlledPlayerInitialPosition().x;
-                playerInfo.y = match.getControlledPlayerInitialPosition().y;
-
                 Network.ResetPositions resetPositions = new Network.ResetPositions();
-                resetPositions.x = playerInfo.x;
-                resetPositions.y = playerInfo.y;
-                resetPositions.team = match.controlledPlayerTeam;
                 resetPositions.room = room;
                 client.sendTCP(resetPositions);
+
+                playerInfo.x = match.getControlledPlayerInitialPosition().x;
+                playerInfo.y = match.getControlledPlayerInitialPosition().y;
+                updatePlayer.x = playerInfo.x;
+                updatePlayer.y = playerInfo.y;
+                client.sendTCP(updatePlayer);
             } else {
                 //Updates ball
                 if (match.ballMoved) {
@@ -132,9 +132,7 @@ public class MPClient {
                 }
 
                 if(object instanceof Network.ResetPositions) {
-                    Network.ResetPositions resetPositions = (Network.ResetPositions) object;
                     match.setBallPosition(0, 0, 0, 0, "");
-                    match.setPlayerPosition(resetPositions.x, resetPositions.y, resetPositions.name, resetPositions.team);
                 }
 
             }

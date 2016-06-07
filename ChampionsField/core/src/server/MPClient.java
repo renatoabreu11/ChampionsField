@@ -114,16 +114,28 @@ public class MPClient {
 
                 if(object instanceof Network.UpdatePlayer) {
                     Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
+
+                    while(!match.canStepWorld) {
+
+                    }
                     match.setPlayerPosition(updatePlayer.x, updatePlayer.y, updatePlayer.name, updatePlayer.team);
                 }
 
                 if(object instanceof Network.RemovePlayer) {
                     Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
+
+                    while(!match.canStepWorld) {
+
+                    }
                     match.removePlayerFromMatch(removePlayer.name, removePlayer.team);
                 }
 
                 if(object instanceof Network.UpdateBall) {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
+
+                    while(!match.canStepWorld) {
+
+                    }
                     match.setBallPosition(updateBall.x, updateBall.y, updateBall.vx, updateBall.vy, updateBall.lastTouch);
                 }
 
@@ -132,6 +144,9 @@ public class MPClient {
                 }
 
                 if(object instanceof Network.ResetPositions) {
+                    while(!match.canStepWorld) {
+
+                    }
                     match.setBallPosition(0, 0, 0, 0, "");
                 }
 

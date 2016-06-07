@@ -268,6 +268,14 @@ public abstract class Match{
     }
 
     /**
+     * Returns the world
+     * @return world to return
+     */
+    public World getWorld() {
+        return w;
+    }
+
+    /**
      * OVERRIDEABLE FUNCTION
      * Disposes of all the objects
      */

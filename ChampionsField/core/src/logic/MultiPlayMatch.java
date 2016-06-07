@@ -15,9 +15,12 @@ public class MultiPlayMatch extends Match {
     public volatile boolean ballMoved;
     public volatile boolean canRepositionAfterScore;
     public volatile Vector2 controlledPlayerInitialPosition;
+    public volatile boolean canStepWorld;
     public boolean everyPlayersConnected;
     public int controlledPlayerTeam;
     Player controlledPlayer;
+    private boolean barrierSide;
+
 
     /**
      * Constructor for the multiplayer match
@@ -40,8 +43,8 @@ public class MultiPlayMatch extends Match {
         ballMoved = false;
         everyPlayersConnected = false;
         canRepositionAfterScore = false;
+        canStepWorld = true;
         controlledPlayerInitialPosition = new Vector2();
-
         field.deactivateBarriers();
     }
 
@@ -58,6 +61,8 @@ public class MultiPlayMatch extends Match {
         else
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
+        field.activateBarriers(barrierSide);
+        this.barrierSide = barrierSide;
         numberOfPlayers++;
     }
 
@@ -159,7 +164,10 @@ public class MultiPlayMatch extends Match {
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
 
         rain.update();
+
+        canStepWorld = false;
         w.step(Constants.GAME_SIMULATION_SPEED, 6, 2);
+        canStepWorld = true;
 
         if(x != 0 || y != 0) controlledPlayerMoved = true;
         if(ballTouched){
@@ -175,6 +183,8 @@ public class MultiPlayMatch extends Match {
     @Override
     public void endScoreState() {
         currentState = matchState.KickOff;
+        barrierSide = !barrierSide;
+        field.activateBarriers(barrierSide);
         canRepositionAfterScore = true;
     }
 

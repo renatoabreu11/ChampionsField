@@ -20,7 +20,6 @@ public final class Constants {
     public static final float heightScale = ScreenHeight / FIELD_TEXTURE_HEIGHT;
     public static final float regionWidth = 380 * widthScale * WORLD_TO_BOX;
     public static final float regionHeight = 1535 * heightScale * WORLD_TO_BOX;
-    public static final long GAME_TIME = 15;
     public static final int NUMBER_PLAYER_ONLINE = 1;
     public static final int NUMBER_MATCHES_HOST_BY_SERVER = 2;
     public static final float Switch_Height = 220 * heightScale;

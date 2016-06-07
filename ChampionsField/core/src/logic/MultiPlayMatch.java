@@ -75,6 +75,10 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers--;
     }
 
+    public Vector2 getControlledPlayerInitialPosition() {
+        return controlledPlayer.initialPosition;
+    }
+
     /**
      * Checks if every player is connected / the teams are filled
      * @return returns true if the game is ready to start, and false otherwise
@@ -95,11 +99,9 @@ public class MultiPlayMatch extends Match {
     /**
      * Sets the client's controlled player
      * @param player controlled player
-     * @param initialPosition controlled player's initial position
      */
-    public void setControlledPlayer(Player player, Vector2 initialPosition) {
+    public void setControlledPlayer(Player player) {
         controlledPlayer = player;
-        controlledPlayerInitialPosition = initialPosition;
     }
 
     /**

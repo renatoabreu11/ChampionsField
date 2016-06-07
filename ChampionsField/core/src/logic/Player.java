@@ -271,6 +271,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.isControlledPlayer = controlledPlayer;
+        this.initialPosition = position;
     }
 
     /**
@@ -323,10 +324,6 @@ public class Player implements Coordinates, Steerable<Vector2>{
     /*
     * END OF THE MULTIPLAYER FUNCTIONS
     * */
-
-    /*
-     * Coordinates methods
-     */
 
     /**
      * Calculates the "draw world" position based on the "physics world" ones

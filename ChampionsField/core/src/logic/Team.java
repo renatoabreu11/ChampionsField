@@ -367,7 +367,7 @@ public class Team {
         players.add(player);
 
         if(controlled && player.team == controlledPlayerTeam)
-            match.setControlledPlayer(player, player.body.getTransform().getPosition());
+            match.setControlledPlayer(player);
     }
 
     /**

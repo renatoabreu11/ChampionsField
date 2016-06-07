@@ -51,12 +51,12 @@ public class MPClient {
             if (match.canRepositionAfterScore) {
                 match.canRepositionAfterScore = false;
 
-                playerInfo.x = match.controlledPlayerInitialPosition.x;
-                playerInfo.y = match.controlledPlayerInitialPosition.y;
+                playerInfo.x = match.getControlledPlayerInitialPosition().x;
+                playerInfo.y = match.getControlledPlayerInitialPosition().y;
 
-                Network.ResetPositiotions.x = playerInfo.x;
-                resetPositions.y = playerInfo.y;ns resetPositions = new Network.ResetPositions();
-                resetPosi
+                Network.ResetPositions resetPositions = new Network.ResetPositions();
+                resetPositions.x = playerInfo.x;
+                resetPositions.y = playerInfo.y;
                 resetPositions.team = match.controlledPlayerTeam;
                 resetPositions.room = room;
                 client.sendTCP(resetPositions);

@@ -1,6 +1,5 @@
 package States;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -24,10 +23,9 @@ import logic.Goal;
 import logic.Match;
 import logic.MultiPlayMatch;
 import logic.Player;
-import logic.Rain;
 import utils.Constants;
 
-public class MultiPlayState extends State implements ApplicationListener {
+public class MultiPlayState extends State  {
     //Objects textures
     private Texture connecting;
     private TextureAtlas loadingAtlas;
@@ -123,32 +121,6 @@ public class MultiPlayState extends State implements ApplicationListener {
         readyToPlay = false;
     }
 
-
-    @Override
-    public void create() {
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void render() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
     @Override
     protected void handleInput() {
 
@@ -207,10 +179,7 @@ public class MultiPlayState extends State implements ApplicationListener {
             b.setPositionToBody();
             screenPosition = b.getScreenCoordinates();
 
-            if (match.getCurrentState() == Match.matchState.Score) {
-                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH / 2, explosionPos.y - Constants.EXPLOSION_HEIGHT / 2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
-                scoreAnimationTime += Gdx.graphics.getDeltaTime();
-            } else {
+            if (match.getCurrentState() != Match.matchState.Score) {
                 sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius() * 2 * 100f, b.getRadius() * 2 * 100f);
             }
 
@@ -253,6 +222,11 @@ public class MultiPlayState extends State implements ApplicationListener {
             g = match.getVisitorTeamGoal();
             screenPosition = g.getScreenCoordinates();
             sb.draw(goalTexture, screenPosition.x, screenPosition.y, -horLength, vertLength);
+
+            if (match.getCurrentState() == Match.matchState.Score) {
+                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH / 2, explosionPos.y - Constants.EXPLOSION_HEIGHT / 2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
+                scoreAnimationTime += Gdx.graphics.getDeltaTime();
+            }
 
             for (int i = 0; i < match.rain.getRainSize(); i++)
                 sb.draw(rainTexture, match.rain.getPosition(i).x, match.rain.getPosition(i).y, width / 3, height / 3);

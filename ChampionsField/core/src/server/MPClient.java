@@ -48,6 +48,7 @@ public class MPClient {
             if (match.getElapsedTime() >= Constants.GAME_TIME)
                 break;
 
+            //If someone scored
             if (match.canRepositionAfterScore) {
                 match.canRepositionAfterScore = false;
 

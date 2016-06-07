@@ -252,7 +252,6 @@ public class SinglePlayState extends State implements ApplicationListener {
     public void render(SpriteBatch sb) {
         sb.begin();
 
-        //Field draw
         if(readyToPlay){
             sb.draw(fieldTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
             Vector2 screenPosition;
@@ -260,10 +259,7 @@ public class SinglePlayState extends State implements ApplicationListener {
             b.setPositionToBody();
             screenPosition = b.getScreenCoordinates();
 
-            if(match.getCurrentState() == Match.matchState.Score) {
-                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH/2, explosionPos.y - Constants.EXPLOSION_HEIGHT/2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
-                scoreAnimationTime += Gdx.graphics.getDeltaTime();
-            } else{
+            if(match.getCurrentState() != Match.matchState.Score) {
                 sb.draw(ballAnimation.getKeyFrame(deltaTime, true), screenPosition.x, screenPosition.y, b.getRadius()*2 * 100f, b.getRadius()*2* 100f);
             }
 
@@ -306,6 +302,11 @@ public class SinglePlayState extends State implements ApplicationListener {
                 Vector2 powerUpPos = match.getPowerUp().getScreenCoordinates();
                 sb.draw(powerUpAnimation.getKeyFrame(powerUpAnimationTime * Constants.PowerUpSpeed, true), powerUpPos.x, powerUpPos.y, Constants.PowerUpWidth, Constants.PowerUpHeight);
                 powerUpAnimationTime += Gdx.graphics.getDeltaTime();
+            }
+
+            if(match.getCurrentState() == Match.matchState.Score) {
+                sb.draw(explosionAnimation.getKeyFrame(scoreAnimationTime * Constants.EXPLOSION_SPEED, true), explosionPos.x - Constants.EXPLOSION_WIDTH/2, explosionPos.y - Constants.EXPLOSION_HEIGHT/2, Constants.EXPLOSION_WIDTH, Constants.EXPLOSION_HEIGHT);
+                scoreAnimationTime += Gdx.graphics.getDeltaTime();
             }
 
             for(int i = 0; i < match.rain.getRainSize(); i++)

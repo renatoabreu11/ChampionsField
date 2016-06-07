@@ -117,15 +117,17 @@ public class MultiPlayMatch extends Match {
      */
     @Override
     public void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch) {
+        currentState = Match.matchState.Score;
         ArrayList<String> attackingTeamNames = attackingTeam.getPlayerNames();
 
         //auto goal
         if (attackingTeamNames.contains(lastTouch)) {
             attackingTeam.autoGoal(lastTouch);
+            defendingTeam.score++;
         } else defendingTeam.goalScored(lastTouch);
+
         defendingTeam.teamState = Team.TeamState.Defending;
         attackingTeam.teamState = Team.TeamState.Attacking;
-        currentState = Match.matchState.Score;
     }
 
     /**

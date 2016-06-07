@@ -171,6 +171,11 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     /*
      * Coordinates methods
      */
+
+    /**
+     * Calculates the "draw world" position based on the "physics world" ones
+     * @return the "draw world" position
+     */
     @Override
     public Vector2 getScreenCoordinates() {
         float x = getPosition().x * 100f + Gdx.graphics.getWidth() / 2 - radius * 100f;

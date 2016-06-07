@@ -22,6 +22,10 @@ public class MultiPlayMatch extends Match {
     public int controlledPlayerTeam;
     Player controlledPlayer;
 
+    /**
+     * Constructor for the multiplayer match
+     * @param controlledPlayerTeam team the client's player is controlling
+     */
     public MultiPlayMatch(int controlledPlayerTeam){
         super(0);
 
@@ -44,6 +48,13 @@ public class MultiPlayMatch extends Match {
         field.deactivateBarriers();
     }
 
+    /**
+     * Adds a player to the client's match
+     * @param name player's name
+     * @param team player's team
+     * @param controlledPlayer is the controlled player?
+     * @param barrierSide match's initial barrier side
+     */
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
         if(team == 0)
             homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
@@ -53,6 +64,11 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers++;
     }
 
+    /**
+     * Removes a player from the cient's match
+     * @param name player's name
+     * @param team player's team
+     */
     public void removePlayerFromMatch(String name, int team) {
         if(team == 0)
             homeTeam.removePlayer(name);
@@ -62,6 +78,10 @@ public class MultiPlayMatch extends Match {
         numberOfPlayers--;
     }
 
+    /**
+     * Checks if every player is connected / the teams are filled
+     * @return returns true if the game is ready to start, and false otherwise
+     */
     public boolean everyPlayerConnected() {
         if(homeTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE && visitorTeam.getPlayers().size() == Constants.NUMBER_PLAYER_ONLINE){
             startTime = System.currentTimeMillis();
@@ -72,14 +92,25 @@ public class MultiPlayMatch extends Match {
     }
 
     public void matchFull() {
-        //FAZER ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
     }
 
+    /**
+     * Sets the client's controlled player
+     * @param player controlled player
+     * @param initialPosition controlled player's initial position
+     */
     public void setControlledPlayer(Player player, Vector2 initialPosition) {
         controlledPlayer = player;
         controlledPlayerInitialPosition = initialPosition;
     }
 
+    /**
+     * Changes the team's states and sets the information about the goal scored
+     * @param defendingTeam the defending team
+     * @param attackingTeam the attacking team
+     * @param lastTouch the last player who touched the ball
+     */
     @Override
     public void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch) {
         ArrayList<String> attackingTeamNames = attackingTeam.getPlayerNames();
@@ -93,6 +124,13 @@ public class MultiPlayMatch extends Match {
         currentState = Match.matchState.Score;
     }
 
+    /**
+     * Updates the multiplayer match, such as the state, time elapsed, rain and the world's
+     * physics
+     * @param x the new client's player x position
+     * @param y the new client's player y position
+     * @param dt the delta time
+     */
     @Override
     public void updateMatch(float x, float y, float dt) {
         switch (currentState) {
@@ -131,12 +169,20 @@ public class MultiPlayMatch extends Match {
         }
     }
 
+    /**
+     * Called after a goal is scored
+     * Repositions the players and the ball
+     */
     @Override
     public void endScoreState() {
         currentState = matchState.KickOff;
         canRepositionAfterScore = true;
     }
 
+    /**
+     * Updates the highscores
+     * If a player doesn't exist, adds it
+     */
     @Override
     public void endGame() {
         ArrayList<Statistics> stats = new ArrayList<Statistics>();
@@ -209,6 +255,11 @@ public class MultiPlayMatch extends Match {
         }
     }
 
+    /**
+     * Returns the client's player x position
+     * @param team client's player team
+     * @return client's player x position to return
+     */
     public float getClientPlayerX(int team) {
         if(team == 0) {
             for(Player player : homeTeam.getPlayers())
@@ -223,6 +274,11 @@ public class MultiPlayMatch extends Match {
         return -1;
     }
 
+    /**
+     * Returns the client's player y position
+     * @param team client's player team
+     * @return client's player y position to return
+     */
     public float getClientPlayerY(int team) {
         if(team == 0) {
             for(Player player : homeTeam.getPlayers())
@@ -237,6 +293,13 @@ public class MultiPlayMatch extends Match {
         return -1;
     }
 
+    /**
+     * Updates the player position
+     * @param x the new x position
+     * @param y the new y position
+     * @param name player's name
+     * @param team player's team
+     */
     public void setPlayerPosition(float x, float y, String name, int team) {
         if(team == 0)
             homeTeam.changePlayerPosition(x, y, name);
@@ -244,6 +307,14 @@ public class MultiPlayMatch extends Match {
             visitorTeam.changePlayerPosition(x, y, name);
     }
 
+    /**
+     * Updates the ball position and velocity
+     * @param x the new x position
+     * @param y the new y position
+     * @param vx the new x velocity position
+     * @param vy the new y velocity position
+     * @param lastTouch the last player's name who touched the ball
+     */
     public void setBallPosition(float x, float y, float vx, float vy, String lastTouch) {
         ball.updatePosition(x, y, vx, vy);
         ball.lastTouch = lastTouch;

@@ -23,8 +23,6 @@ public class Field {
     Body rightHalfMoon;
     Body leftHalfMoon;
 
-    Body test;
-
     /**
      * Constructor for the Field.
      * Initializes bodies and creates the borders.

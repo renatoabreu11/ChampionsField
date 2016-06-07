@@ -16,6 +16,12 @@ public class Rain {
     int nextRainingPeriod;
     Random random;
 
+    /**
+     * Constructor for the rain
+     * Adds all the textures needed to fill the screen
+     * @param width the screen width
+     * @param height the screen height
+     */
     public Rain(float width, float height) {
         this.width = width;
         this.height = height;
@@ -56,6 +62,10 @@ public class Rain {
         nextRainingPeriod = random.nextInt(50) + 1;
     }
 
+    /**
+     * Returns the number of texture instances that should be draw on screen based on the elapsed time
+     * @return number of textures to be draw
+     */
     public int getRainSize() {
         if(isRaining) {
             if(deltaTime >= 10)  return position.size();
@@ -66,10 +76,18 @@ public class Rain {
         }
     }
 
+    /**
+     * Returns the position of the rain
+     * @param index index of the rain position
+     * @return position to return
+     */
     public Vector2 getPosition(int index) {
         return position.get(index);
     }
 
+    /**
+     * Updates the rain
+     */
     public void update() {
         if(deltaTime >= nextRainingPeriod) {
             if(isRaining) isRaining = false;
@@ -87,5 +105,12 @@ public class Rain {
             }
         }
         deltaTime += Gdx.graphics.getDeltaTime();
+    }
+
+    /**
+     * Disposes of the objects
+     */
+    public void dispose() {
+        position.clear();
     }
 }

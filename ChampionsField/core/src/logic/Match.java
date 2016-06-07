@@ -24,9 +24,8 @@ import utils.Statistics;
 public abstract class Match{
     public enum matchState{
         KickOff,
-        Pause,
         Score,
-        Play;
+        Play
     }
 
     Field field;
@@ -176,11 +175,13 @@ public abstract class Match{
     public abstract void updateMatch(float x, float y, float dt);
 
     /**
-     *
-     */
+     * OVERRIDEABLE FUNCTION
+     * Called after a goal is scored
+     * */
     public abstract void endScoreState();
 
     /**
+     * OVERRIDEABLE FUNCTION
      * Returns the current state of the match
      * @return state to return
      */
@@ -265,5 +266,11 @@ public abstract class Match{
     public long getElapsedTime() {
         return elapsedTime;
     }
+
+    /**
+     * OVERRIDEABLE FUNCTION
+     * Disposes of all the objects
+     */
+    public abstract void dispose();
 
 }

@@ -24,6 +24,14 @@ public class Team {
     //ONLINE VARIABLES
     World world;
 
+    /**
+     * Constructor for the team
+     * @param numPlayers team's number of player
+     * @param size the size of the players in the physics world
+     * @param name team's name
+     * @param initialState team's initial state
+     * @param w the world the team is added
+     */
     public Team(int numPlayers, float size, String name, TeamState initialState, World w) {
         score = 0;
         teamState = initialState;
@@ -64,6 +72,9 @@ public class Team {
         }
     }
 
+    /**
+     * Removes the power ups for all the team's players
+     */
     public void removePowerUps() {
         for(Player player : players) {
             player.speedMultiplier = 1;
@@ -72,6 +83,11 @@ public class Team {
         }
     }
 
+    /**
+     * Switches to the player that is closer to the ball
+     * @param ballPosition the ball position
+     * @return true if the controlled player is the team, false otherwise
+     */
     public boolean switchPlayer(Vector2 ballPosition) {
         int playerIndex = -1;
         float minDistance = Integer.MAX_VALUE;
@@ -96,22 +112,37 @@ public class Team {
         return false;
     }
 
+    /**
+     * Repositions the whole team
+     */
     public void repositionTeam() {
         for(int i = 0; i < players.size(); i++) {
             players.get(i).reposition();
         }
     }
 
+    /**
+     * Erase of all the player's bodies
+     */
     public void erasePlayers() {
         for(int i = 0; i < players.size(); i++)
             players.get(i).getBody().getWorld().destroyBody(players.get(i).getBody());
     }
 
+    /**
+     * Sets the controlled player
+     * @param index index of the players ArrayList
+     */
     public void controlPlayer(int index){
         if(index >= 0 && index <= players.size() - 1)
             players.get(index).setControlled(true);
     }
 
+    /**
+     * Updates the controlled player
+     * @param x controlled player's new x position
+     * @param y controlled player's new y position
+     */
     public void updateControlledPlayer(float x, float y) {
         for(Player player : players) {
             if (player.stateMachine.getCurrentState() == PlayerState.Controlled) {
@@ -146,7 +177,10 @@ public class Team {
         }
     }
 
-
+    /**
+     * Applies the power up to all the team's players
+     * @param i speed modifier
+     */
     public void applyPowerUp(float i) {
         for(Player player : players) {
             player.speedMultiplier = i;
@@ -161,6 +195,10 @@ public class Team {
         return (float)Math.sqrt(xDiff + yDiff);
     }
 
+    /**
+     * Updates the scoring information
+     * @param scorer the name of the player who scored
+     */
     public void goalScored(String scorer) {
         for(int i = 0; i < players.size(); i++) {
             if(players.get(i).name.equals(scorer)){
@@ -170,6 +208,10 @@ public class Team {
         score++;
     }
 
+    /**
+     * Updates the scoring information if there's an auto goal
+     * @param scorer
+     */
     public void autoGoal(String scorer) {
         for(int i = 0; i < players.size(); i++) {
             if(players.get(i).name == scorer)
@@ -183,30 +225,50 @@ public class Team {
         }
     }
 
+    /**
+     * Returns the team's players
+     * @return team's players to return
+     */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * Returns the number of player in the team
+     * @return number of players to return
+     */
     public int getNumberPlayers() {
         return players.size();
     }
 
+    /**
+     * Returns the team state
+     * @return team state to return
+     */
     public TeamState getTeamState() {
         return teamState;
     }
 
-    public void setTeamState(TeamState team) {
-        this.teamState = team;
-    }
-
+    /**
+     * Returns the team's name
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Sets the team's name
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Return an ArrayList with all the player's names
+     * @return
+     */
     public ArrayList<String> getPlayerNames(){
         ArrayList<String> names;
         names = new ArrayList<String>();
@@ -216,10 +278,24 @@ public class Team {
         return names;
     }
 
+    /**
+     * Dispose of all the objects
+     */
+    public void dispose() {
+        erasePlayers();
+    }
+
     /*
     * BEGIN OF THE MULTPLAYER FUNCTIONS
     * */
 
+    /**
+     * ONLINE ONLY
+     * Constructor for the team
+     * @param name
+     * @param initialState
+     * @param w
+     */
     public Team(String name, TeamState initialState, World w) {
         this.name = name;
         world = w;
@@ -228,6 +304,17 @@ public class Team {
         players = new ArrayList<Player>();
     }
 
+    /**
+     * ONLINE ONLY
+     * Adds a new player to the team, and if that player is the controlled one, sets it
+     * @param name player's name
+     * @param team player's team
+     * @param size the size of the player in the physics world
+     * @param controlledPlayer is controlled player?
+     * @param w the world the player is added
+     * @param controlledPlayerTeam the team the controlled player belongs to
+     * @param match the client's match
+     */
     public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w, int controlledPlayerTeam, MultiPlayMatch match) {
         float x, y;
         int teamSide;
@@ -262,6 +349,11 @@ public class Team {
             match.setControlledPlayer(player, player.body.getTransform().getPosition());
     }
 
+    /**
+     * ONLINE ONLY
+     * Removes a player from the client's match
+     * @param name player's name
+     */
     public void removePlayer(String name) {
         for(Player player : players) {
             if(player.name.equals(name)) {
@@ -272,6 +364,11 @@ public class Team {
         }
     }
 
+    /**
+     * ONLINE ONLY
+     * Returns true if there's already a controlled player in the client's match
+     * @return true if already a controlled player, false otherwise
+     */
     private boolean playerAlreadyControlled() {
         for(Player player : players) {
             if(player.getControlled())
@@ -281,18 +378,16 @@ public class Team {
         return false;
     }
 
+    /**
+     * ONLINE ONLY
+     * Updates a player position
+     * @param x player's new x position
+     * @param y player's new y position
+     * @param name player's name
+     */
     public void changePlayerPosition(float x, float y, String name) {
         for(Player player : players) {
             if(player.name.equals(name)) {
-                player.updatePlayerPosition(x, y);
-                break;
-            }
-        }
-    }
-
-    public void resetPlayerControlledPosition(float x, float y) {
-        for(Player player : players) {
-            if(player.isControlledPlayer) {
                 player.updatePlayerPosition(x, y);
                 break;
             }

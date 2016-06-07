@@ -48,7 +48,17 @@ public class Player implements Coordinates, Steerable<Vector2>{
     //ONLINE VARIABLES ONLY
     boolean isControlledPlayer;
 
-    public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
+    /**
+     * Constructor for the player
+     * Initializes his position, bodies, speed...
+     * @param xPosition the initial x position
+     * @param yPosition the initial y position
+     * @param name the player's name
+     * @param size the player's size in the physics world
+     * @param w the world the player is added
+     * @param rectangle AI playable region
+     */
+    public Player(float xPosition, float yPosition, String name, float size, World w, Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
         initialPosition = position;
         adversaryTeamWayPoint = new ArrayList<WayPoint>();
@@ -127,6 +137,9 @@ public class Player implements Coordinates, Steerable<Vector2>{
         }
     }
 
+    /**
+     * Reposition the player at the initial position
+     */
     public void reposition() {
         body.setTransform(initialPosition.x, initialPosition.y, 0);
         setPositionToBody();
@@ -147,6 +160,9 @@ public class Player implements Coordinates, Steerable<Vector2>{
         return (float)Math.sqrt(xDiff + yDiff);
     }
 
+    /**
+     * Adds 1 to the matches played
+     */
     public void addMatchPlayed(){
         matchesPlayed++;
     }
@@ -166,32 +182,57 @@ public class Player implements Coordinates, Steerable<Vector2>{
         ballWayPoint.setWayPoint(ball.body, ball.radius);
     }
 
+    /**
+     * Updates the player's position
+     * @param pos the new position
+     */
     public void setPosition(Vector2 pos) {
         position = pos;
     }
 
+    /**
+     * Returns the player's body
+     * @return body to return
+     */
     public Body getBody() {
         return body;
     }
 
+    /**
+     * Sets the 'Vector2 position' to the same position as the player's body
+     */
     public void setPositionToBody(){
         setPosition(body.getPosition());
     }
 
+    /**
+     * Return player's name
+     * @return name to return
+     */
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /*
     * BEGIN OF THE MULTIPLAYER FUNCTIONS
     * */
 
+    /**
+     * ONLINE ONLY
+     * Default player constructor
+     */
     public Player() {}
 
+    /**
+     * ONLINE ONLY
+     * Constructor for the player
+     * @param xPosition the x initial position
+     * @param yPosition the y initial position
+     * @param name the player's name
+     * @param team the player's team
+     * @param controlledPlayer is the client's controlled player?
+     * @param size the player's size in the physics world
+     */
     public Player(float xPosition, float yPosition, String name, int team, boolean controlledPlayer, float size) {
         this.position = new Vector2();
         this.position.x = xPosition * 0.01f;
@@ -203,6 +244,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.isControlledPlayer = controlledPlayer;
     }
 
+    /**
+     * ONLINE ONLY
+     * Adds physics to the player
+     * @param w the world the player is added
+     */
     public void addPhysics(World w) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -224,10 +270,21 @@ public class Player implements Coordinates, Steerable<Vector2>{
         shape.dispose();
     }
 
+    /**
+     * ONLINE ONLY
+     * Return true if the player is the client's controlled player
+     * @return value to return
+     */
     public boolean getControlled() {
         return isControlledPlayer;
     }
 
+    /**
+     * ONLINE ONLY
+     * Updates player's position
+     * @param x the new x position
+     * @param y the new y position
+     */
     public void updatePlayerPosition(float x, float y) {
         body.setTransform(x, y, 0);
         setPositionToBody();
@@ -238,10 +295,14 @@ public class Player implements Coordinates, Steerable<Vector2>{
     * END OF THE MULTIPLAYER FUNCTIONS
     * */
 
-    /**
+    /*
      * Coordinates methods
      */
 
+    /**
+     * Calculates the "draw world" position based on the "physics world" ones
+     * @return the "draw world" position
+     */
     @Override
     public Vector2 getScreenCoordinates() {
         float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2 - radius*100f;
@@ -249,7 +310,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
         return new Vector2(x, y);
     }
 
-    /**
+    /*
      * Steerable methods
      */
 
@@ -366,6 +427,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
         steeringBehavior = behavior;
     }
 
+    /**
+     * Checks if a player is the same as obj
+     * @param obj the other player to test
+     * @return returns true if it's the same, false otherwise
+     */
     @Override
     public boolean equals(Object obj) {
         Player p = (Player) obj;

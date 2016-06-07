@@ -335,5 +335,6 @@ public class SinglePlayState extends State implements ApplicationListener {
         goalTexture.dispose();
         font.dispose();
         switchTexture.dispose();
+        match.dispose();
     }
 }

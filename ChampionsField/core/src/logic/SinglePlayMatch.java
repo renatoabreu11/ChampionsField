@@ -12,6 +12,10 @@ public class SinglePlayMatch extends Match{
 
     PowerUp powerUp;
 
+    /**
+     * Constructor for the match
+     * @param numberOfPlayers number of players in each team
+     */
     public SinglePlayMatch(int numberOfPlayers) {
         super(numberOfPlayers);
 
@@ -30,6 +34,10 @@ public class SinglePlayMatch extends Match{
         powerUp = new PowerUp();
     }
 
+    /**
+     * Called after a goal is scored
+     * Repositions the players, the ball and switches the controlled player
+     */
     @Override
     public void endScoreState() {
         currentState = matchState.KickOff;
@@ -39,21 +47,38 @@ public class SinglePlayMatch extends Match{
         switchPlayer();
     }
 
+    /**
+     * Updates the highscores
+     * If a player doesn't exist, adds it
+     * */
     @Override
     public void endGame() {
 
     }
 
+    /**
+     * Returns the power up in the match
+     * @return power up to return
+     */
     public PowerUp getPowerUp() {
         return powerUp;
     }
 
+    /**
+     * Switches the controlled player
+     */
     public void switchPlayer(){
         if(homeTeam.switchPlayer(ball.position))
             return;
         else visitorTeam.switchPlayer(ball.position);
     }
 
+    /**
+     * Changes the team's states and sets the information about the goal scored
+     * @param defendingTeam the defending team
+     * @param attackingTeam the attacking team
+     * @param lastTouch the last player's name who touched the ball
+     */
     @Override
     public void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch){
         currentState = matchState.Score;
@@ -69,6 +94,12 @@ public class SinglePlayMatch extends Match{
         attackingTeam.teamState = Team.TeamState.Attacking;
     }
 
+    /**
+     * Updates the match
+     * @param x controlled player new x position
+     * @param y controlled player new y position
+     * @param dt the delta time
+     */
     @Override
     public void updateMatch(float x, float y, float dt) {
         if(powerUp.isActive()){
@@ -166,5 +197,16 @@ public class SinglePlayMatch extends Match{
 
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
+    }
+
+    /**
+     * Disposes of all the objects
+     */
+    @Override
+    public void dispose() {
+        homeTeam.dispose();
+        visitorTeam.dispose();
+        w.dispose();
+        rain.dispose();
     }
 }

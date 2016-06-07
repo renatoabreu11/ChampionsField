@@ -64,6 +64,14 @@ public class Team {
         }
     }
 
+    public void removePowerUps() {
+        for(Player player : players) {
+            player.speedMultiplier = 1;
+            player.powerActivated = false;
+            player.activeTime = 0;
+        }
+    }
+
     public boolean switchPlayer(Vector2 ballPosition) {
         int playerIndex = -1;
         float minDistance = Integer.MAX_VALUE;
@@ -94,15 +102,6 @@ public class Team {
         }
     }
 
-    public Player getControlledPlayer() {
-        for(int i = 0; i < players.size(); i++) {
-            if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
-                return players.get(i);
-            }
-        }
-        return null;
-    }
-
     public void erasePlayers() {
         for(int i = 0; i < players.size(); i++)
             players.get(i).getBody().getWorld().destroyBody(players.get(i).getBody());
@@ -114,9 +113,9 @@ public class Team {
     }
 
     public void updateControlledPlayer(float x, float y) {
-        for(int i = 0; i < players.size(); i++) {
-            if (players.get(i).stateMachine.getCurrentState() == PlayerState.Controlled) {
-                players.get(i).getBody().setLinearVelocity(x, y);
+        for(Player player : players) {
+            if (player.stateMachine.getCurrentState() == PlayerState.Controlled) {
+                player.getBody().setLinearVelocity(x * player.speedMultiplier, y * player.speedMultiplier);
             }
         }
     }
@@ -127,6 +126,15 @@ public class Team {
                 players.get(i).updateWayPoints(ball, adversaryTeam);
                 players.get(i).update(dt);
             }
+
+            if(players.get(i).powerActivated ){
+                players.get(i).activeTime += dt;
+                if(players.get(i).activeTime > Constants.powerTime){
+                    players.get(i).speedMultiplier = 1;
+                    players.get(i).powerActivated = false;
+                    players.get(i).activeTime = 0;
+                }
+            }
         }
     }
 
@@ -135,6 +143,15 @@ public class Team {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
                 players.get(i).update(dt);
             }
+        }
+    }
+
+
+    public void applyPowerUp(float i) {
+        for(Player player : players) {
+            player.speedMultiplier = i;
+            player.powerActivated = true;
+            player.activeTime = 0;
         }
     }
 
@@ -278,24 +295,6 @@ public class Team {
             if(player.name.equals(name)) {
                 player.updatePlayerPosition(x, y);
                 break;
-            }
-        }
-    }
-
-    public void applyPowerUp(float i) {
-        for(Player player : players) {
-            player.speedMultiplier = i;
-            player.powerActivated = true;
-            player.activeTime = System.currentTimeMillis();
-        }
-    }
-
-    public void updatePowerUps(float dt) {
-        for(Player player : players) {
-            if(player.powerActivated && (System.currentTimeMillis() - player.activeTime) / 1000 > Constants.powerTime){
-                player.speedMultiplier = 1;
-                player.powerActivated = false;
-                player.activeTime = 0;
             }
         }
     }

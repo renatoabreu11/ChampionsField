@@ -34,11 +34,13 @@ public final class Constants {
     public static final float EXPLOSION_DURATION = 2.4f;
     public static final float EXPLOSION_WIDTH = ScreenWidth / 5;
     public static final float EXPLOSION_HEIGHT = ScreenHeight / 3;
+    public static final float loadingHeight = ScreenHeight/8;
+    public static final float loadingWidth = ScreenWidth/8;
 
-    public static long PowerfirstAppear = 2;
-    public static long PowerLastAppear = 180;
+    public static long PowerfirstAppear = 70;
+    public static long PowerLastAppear = 215;
     public static final float powerAnimationDuration = 10f;
-    public static final long powerTime = 5;
+    public static final float powerTime = 10f;
     public static final float PowerUpSpeed = 5.1f;
     public static final float PowerUpWidth = 50f * widthScale;
     public static final float PowerUpHeight = 50f * heightScale;
@@ -57,6 +59,7 @@ public final class Constants {
     public static final Rectangle DefendCentral = new Rectangle(760 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendMidfielder = new Rectangle(380 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendStriker =  new Rectangle(0, - regionHeight/2, regionWidth, regionHeight);
+    public static float LoadingTime = 7.5f;
 
     public enum entityMasks{
         BallMask(1),

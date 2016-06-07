@@ -41,12 +41,12 @@ public class Player implements Coordinates, Steerable<Vector2>{
     ArrayList<WayPoint> adversaryTeamWayPoint;
     WayPoint ballWayPoint;
     Rectangle region;
-
-    //ONLINE VARIABLES ONLY
-    boolean isControlledPlayer;
     float speedMultiplier;
     float activeTime;
     boolean powerActivated;
+
+    //ONLINE VARIABLES ONLY
+    boolean isControlledPlayer;
 
     public Player(float xPosition, float yPosition, String name, float size, World w,  Rectangle rectangle) {
         position = new Vector2(xPosition * 0.01f, yPosition* 0.01f);
@@ -83,6 +83,9 @@ public class Player implements Coordinates, Steerable<Vector2>{
         maxAngularSpeed = 3;
         maxAngularAcceleration = 0.5f;
         tagged = false;
+        speedMultiplier = 1;
+        powerActivated = false;
+        activeTime = 0;
 
         stateMachine = new DefaultStateMachine<Player, PlayerState>(this, PlayerState.Static);
         region = rectangle;
@@ -94,6 +97,7 @@ public class Player implements Coordinates, Steerable<Vector2>{
             steeringBehavior.calculateSteering(steeringOutput);
             applySteering(dt);
         }
+        body.setLinearVelocity(body.getLinearVelocity().x * speedMultiplier, body.getLinearVelocity().y * speedMultiplier);
     }
 
     private void applySteering(float dt){
@@ -197,9 +201,6 @@ public class Player implements Coordinates, Steerable<Vector2>{
         this.radius = (size/2) * 0.01f;
         this.score = 0;
         this.isControlledPlayer = controlledPlayer;
-        speedMultiplier = 1;
-        powerActivated = false;
-        activeTime = 0;
     }
 
     public void addPhysics(World w) {

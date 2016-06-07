@@ -1,0 +1,234 @@
+
+LoadingAtlas.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image005
+  rotate: false
+  xy: 321, 637
+  size: 318, 315
+  orig: 318, 315
+  offset: 0, 0
+  index: -1
+image006
+  rotate: false
+  xy: 321, 320
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image007
+  rotate: false
+  xy: 2, 319
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image008
+  rotate: false
+  xy: 640, 320
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image009
+  rotate: false
+  xy: 321, 3
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image011
+  rotate: false
+  xy: 2, 2
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image012
+  rotate: false
+  xy: 2, 636
+  size: 317, 316
+  orig: 317, 316
+  offset: 0, 0
+  index: -1
+image013
+  rotate: false
+  xy: 641, 637
+  size: 318, 315
+  orig: 318, 315
+  offset: 0, 0
+  index: -1
+image014
+  rotate: false
+  xy: 640, 3
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+
+LoadingAtlas2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image001
+  rotate: false
+  xy: 2, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image002
+  rotate: false
+  xy: 321, 3
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image003
+  rotate: false
+  xy: 640, 3
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image004
+  rotate: false
+  xy: 2, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+image015
+  rotate: false
+  xy: 2, 318
+  size: 317, 315
+  orig: 317, 315
+  offset: 0, 0
+  index: -1
+image019
+  rotate: false
+  xy: 322, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+image020
+  rotate: false
+  xy: 321, 319
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+image022
+  rotate: false
+  xy: 642, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+image028
+  rotate: false
+  xy: 641, 319
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+
+LoadingAtlas3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image010
+  rotate: false
+  xy: 2, 634
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image016
+  rotate: false
+  xy: 2, 318
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image017
+  rotate: false
+  xy: 321, 634
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image018
+  rotate: false
+  xy: 2, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image021
+  rotate: false
+  xy: 321, 318
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image023
+  rotate: false
+  xy: 640, 634
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image024
+  rotate: false
+  xy: 321, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image025
+  rotate: false
+  xy: 640, 318
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image026
+  rotate: false
+  xy: 640, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+
+LoadingAtlas4.png
+size: 1024,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image027
+  rotate: false
+  xy: 2, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image029
+  rotate: false
+  xy: 321, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image030
+  rotate: false
+  xy: 640, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1

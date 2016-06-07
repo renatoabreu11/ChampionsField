@@ -120,14 +120,6 @@ public enum PlayerState implements State<Player>{
         }
     },
 
-    Kick(){
-        @Override
-        public void enter(Player entity) {}
-
-        @Override
-        public void update(Player entity) {}
-    },
-
     InterceptBall(){
         @Override
         public void enter(Player entity) {
@@ -142,11 +134,6 @@ public enum PlayerState implements State<Player>{
                 entity.stateMachine.changeState(PlayerState.toOriginalRegion);
                 return;
             }
-
-            float distance = distanceBetweenPoints(entity.ballWayPoint.getPosition(), entity.body.getPosition());
-            //completar
-            //if(distance < entity.ballWayPoint.getBoundingRadius() + entity.radius + 0.2f)
-                //entity.stateMachine.changeState(PlayerState.Kick);
         }
     };
 

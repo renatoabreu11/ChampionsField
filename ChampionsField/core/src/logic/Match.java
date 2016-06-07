@@ -68,6 +68,10 @@ public abstract class Match{
         ballTouched = false;
     }
 
+    public void startTimer(){
+        startTime = System.currentTimeMillis();
+    }
+
     private void createCollisionListener() {
         w.setContactListener(new ContactListener() {
             @Override

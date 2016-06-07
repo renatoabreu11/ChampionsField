@@ -130,7 +130,6 @@ public class MultiPlayState extends State  {
     @Override
     public void update(float dt) {
         if(match.isFull) {
-            match.dispose();
             dispose();
             gsm.set(new MenuState(gsm));
         }

@@ -1,6 +1,5 @@
 package States;
 
-import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
@@ -10,7 +9,6 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g3d.particles.influencers.ColorInfluencer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -28,11 +26,10 @@ import logic.Ball;
 import logic.Goal;
 import logic.Match;
 import logic.Player;
-import logic.Rain;
 import logic.SinglePlayMatch;
 import utils.Constants;
 
-public class SinglePlayState extends State implements ApplicationListener {
+public class SinglePlayState extends State {
         //Objects textures
         private Texture loadingBackground;
         private TextureAtlas explosionAtlas;
@@ -171,31 +168,6 @@ public class SinglePlayState extends State implements ApplicationListener {
     }
 
     @Override
-    public void create() {
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void render() {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
     protected void handleInput() {
 
     }
@@ -236,7 +208,6 @@ public class SinglePlayState extends State implements ApplicationListener {
 
             if(match.getElapsedTime() >= Constants.GAME_TIME){
                 match.endGame();
-                dispose();
                 gsm.set(new MenuState(gsm));
             }
         } else {
@@ -336,6 +307,5 @@ public class SinglePlayState extends State implements ApplicationListener {
         goalTexture.dispose();
         font.dispose();
         switchTexture.dispose();
-        match.dispose();
     }
 }

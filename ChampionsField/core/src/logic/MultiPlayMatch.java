@@ -265,17 +265,6 @@ public class MultiPlayMatch extends Match {
     }
 
     /**
-     * Disposes of all the objects
-     */
-    @Override
-    public void dispose() {
-        homeTeam.dispose();
-        visitorTeam.dispose();
-        w.dispose();
-        rain.dispose();
-    }
-
-    /**
      * Returns the client's player x position
      * @param team client's player team
      * @return client's player x position to return

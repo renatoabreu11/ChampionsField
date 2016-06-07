@@ -274,11 +274,4 @@ public abstract class Match{
     public World getWorld() {
         return w;
     }
-
-    /**
-     * OVERRIDEABLE FUNCTION
-     * Disposes of all the objects
-     */
-    public abstract void dispose();
-
 }

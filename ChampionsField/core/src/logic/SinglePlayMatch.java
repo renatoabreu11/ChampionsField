@@ -197,15 +197,4 @@ public class SinglePlayMatch extends Match{
         elapsedTime = ((System.currentTimeMillis() - startTime) / 1000);
         time = Constants.formatter.format(new Date(elapsedTime * 1000L));
     }
-
-    /**
-     * Disposes of all the objects
-     */
-    @Override
-    public void dispose() {
-        homeTeam.dispose();
-        visitorTeam.dispose();
-        w.dispose();
-        rain.dispose();
-    }
 }

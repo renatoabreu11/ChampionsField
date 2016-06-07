@@ -21,7 +21,6 @@ public class SinglePlayMatch extends Match{
 
         Random r = new Random();
         int aux = r.nextInt(2);
-        aux = 0;
         if(aux == 0){
             homeTeam = new Team(numberOfPlayers, playerSize, "Benfica", Team.TeamState.Attacking, w);
             visitorTeam = new Team(numberOfPlayers, playerSize, "Porto", Team.TeamState.Defending, w);

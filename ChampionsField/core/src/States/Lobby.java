@@ -67,7 +67,7 @@ public class Lobby extends State{
                     if(team.equals("Red"))
                         clientTeam = 0;
                     else clientTeam = 1;
-                    final String name = prefs.getString("Name");
+                    final String name = prefs.getString("Name", "AAA");
                     match = new MultiPlayMatch(clientTeam);
 
                     class MyClient implements Runnable {

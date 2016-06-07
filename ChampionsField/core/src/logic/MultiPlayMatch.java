@@ -20,6 +20,7 @@ public class MultiPlayMatch extends Match {
     public int controlledPlayerTeam;
     Player controlledPlayer;
     private boolean barrierSide;
+    public boolean isFull;
 
 
     /**
@@ -44,8 +45,8 @@ public class MultiPlayMatch extends Match {
         everyPlayersConnected = false;
         canRepositionAfterScore = false;
         canStepWorld = true;
+        isFull = false;
         controlledPlayerInitialPosition = new Vector2();
-        field.deactivateBarriers();
     }
 
     /**
@@ -61,8 +62,8 @@ public class MultiPlayMatch extends Match {
         else
             visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
-        field.activateBarriers(barrierSide);
         this.barrierSide = barrierSide;
+        field.activateBarriers(this.barrierSide);
         numberOfPlayers++;
     }
 
@@ -98,7 +99,7 @@ public class MultiPlayMatch extends Match {
     }
 
     public void matchFull() {
-
+        isFull = true;
     }
 
     /**
@@ -142,9 +143,6 @@ public class MultiPlayMatch extends Match {
         switch (currentState) {
             case KickOff: {
                 ball.body.setAwake(true);
-                if(homeTeam.getTeamState() == Team.TeamState.Attacking)
-                    field.activateBarriers(false);
-                else field.activateBarriers(true);
                 if (ball.body.getPosition().x != 0 || ball.body.getPosition().y != 0) {
                     field.deactivateBarriers();
                     homeTeam.teamState = Team.TeamState.Playing;

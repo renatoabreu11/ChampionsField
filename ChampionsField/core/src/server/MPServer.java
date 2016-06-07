@@ -47,15 +47,21 @@ public class MPServer {
                     //Checks to see if every team has the right number of players
                     int numPlayerHome = 0;
                     int numPlayersVisitor = 0;
+                    boolean sameName = false;
                     for(PlayerInfo playerInfo : match.playersInfo) {
                         if(playerInfo.team == 0)
                             numPlayerHome++;
                         else
                             numPlayersVisitor++;
+
+                        if(playerInfo.name.equals(login.name)) {
+                            sameName = true;
+                            break;
+                        }
                     }
 
-                    if((login.team == 0 && numPlayerHome < Constants.NUMBER_PLAYER_ONLINE)
-                            || (login.team == 1 && numPlayersVisitor < Constants.NUMBER_PLAYER_ONLINE)) {
+                    if((login.team == 0 && numPlayerHome < Constants.NUMBER_PLAYER_ONLINE && !sameName)
+                            || (login.team == 1 && numPlayersVisitor < Constants.NUMBER_PLAYER_ONLINE &&!sameName)) {
 
                         match.playersInfo.add(new PlayerInfo(login.team, login.name));
                         match.connections.add(c);

@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Touchpad;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -128,6 +129,12 @@ public class MultiPlayState extends State  {
 
     @Override
     public void update(float dt) {
+        if(match.isFull) {
+            match.dispose();
+            dispose();
+            gsm.set(new MenuState(gsm));
+        }
+
         if (!readyToPlay && match.everyPlayerConnected()) {
             loadingAtlas.dispose();
             connecting.dispose();
@@ -142,17 +149,6 @@ public class MultiPlayState extends State  {
             }
 
             match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, dt);
-
-            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, dt);
-
-            if (match.getCurrentState() == Match.matchState.Score && scoreAnimationTime == 0) {
-                explosionPos = match.getBall().getScreenCoordinates();
-            }
-
-            if (scoreAnimationTime >= Constants.EXPLOSION_DURATION) {
-                scoreAnimationTime = 0;
-                match.endScoreState();
-            }
 
             if (match.getCurrentState() == Match.matchState.Score && scoreAnimationTime == 0) {
                 explosionPos = match.getBall().getScreenCoordinates();

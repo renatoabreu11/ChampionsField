@@ -36,11 +36,12 @@ public abstract class Match{
     Goal visitorTeamGoal;
     Ball ball;
     World w;
+    public Rain rain;
 
     int numberOfPlayers;
     float playerSize;
     matchState currentState;
-    volatile long elapsedTime;      //see if this does not blow it all up!!!!!!!!!!!!!!!!!!!
+    volatile long elapsedTime;
     long startTime;
     String time;
 
@@ -60,6 +61,7 @@ public abstract class Match{
         homeTeamGoal = new Goal(-Gdx.graphics.getWidth()/2 + 30f * Constants.widthScale, 0, 500f * Constants.heightScale, 100f * Constants.widthScale,  w, "HomeGoal");
         visitorTeamGoal = new Goal(Gdx.graphics.getWidth()/2 - 30f * Constants.widthScale, 0, 500f * Constants.heightScale, 100f * Constants.widthScale,  w, "VisitorGoal");
         ball = new Ball(0, 0, (Constants.BALL_SIZE * 100 / 1920) * Gdx.graphics.getWidth() / 100, w);
+        rain = new Rain(Constants.ScreenWidth, Constants.ScreenHeight);
 
         currentState = matchState.KickOff;
         startTime = System.currentTimeMillis();
@@ -134,7 +136,7 @@ public abstract class Match{
 
     public abstract void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch);
 
-    public abstract void updateMatch(float x, float y, Rain rain, float dt);
+    public abstract void updateMatch(float x, float y, float dt);
 
     public abstract void endScoreState();
 

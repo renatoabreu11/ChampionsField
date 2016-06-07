@@ -42,7 +42,6 @@ public class MultiPlayState extends State implements ApplicationListener {
     private Texture visitorTeamTexture;
     private Texture goalTexture;
     private BitmapFont font;
-    private Rain rain;
 
     private float deltaTime = 0;
     private float scoreAnimationTime;
@@ -117,7 +116,6 @@ public class MultiPlayState extends State implements ApplicationListener {
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
 
-        rain = new Rain(width, height);
         scoreAnimationTime = 0;
         loadingAnimationTime = 0;
 
@@ -171,9 +169,9 @@ public class MultiPlayState extends State implements ApplicationListener {
                 gsm.set(new MenuState(gsm));
             }
 
-            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
+            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, dt);
 
-            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
+            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, dt);
 
             if (match.getCurrentState() == Match.matchState.Score && scoreAnimationTime == 0) {
                 explosionPos = match.getBall().getScreenCoordinates();
@@ -256,8 +254,8 @@ public class MultiPlayState extends State implements ApplicationListener {
             screenPosition = g.getScreenCoordinates();
             sb.draw(goalTexture, screenPosition.x, screenPosition.y, -horLength, vertLength);
 
-            for (int i = 0; i < rain.getRainSize(); i++)
-                sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
+            for (int i = 0; i < match.rain.getRainSize(); i++)
+                sb.draw(rainTexture, match.rain.getPosition(i).x, match.rain.getPosition(i).y, width / 3, height / 3);
 
             sb.end();
 

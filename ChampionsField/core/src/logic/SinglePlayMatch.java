@@ -70,7 +70,7 @@ public class SinglePlayMatch extends Match{
     }
 
     @Override
-    public void updateMatch(float x, float y, Rain rain, float dt) {
+    public void updateMatch(float x, float y, float dt) {
         if(powerUp.isActive()){
             Circle c = null;
             int team = -1;

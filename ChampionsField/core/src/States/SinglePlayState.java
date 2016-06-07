@@ -44,7 +44,6 @@ public class SinglePlayState extends State implements ApplicationListener {
         private Texture visitorTeamTexture;
         private Texture goalTexture;
         private BitmapFont font;
-        private Rain rain;
         private Animation powerUpAnimation;
         private TextureAtlas teamSpeedIncAtlas;
         private TextureAtlas teamSpeedDecAtlas;
@@ -146,7 +145,6 @@ public class SinglePlayState extends State implements ApplicationListener {
         camera = new OrthographicCamera(Gdx.graphics.getWidth() * 0.01f, Gdx.graphics.getHeight() * 0.01f);
         camera.update();
         debugRenderer = new Box2DDebugRenderer();
-        rain = new Rain(width, height);
         scoreAnimationTime = 0;
 
         Preferences prefs = Gdx.app.getPreferences("My Preferences");
@@ -203,7 +201,7 @@ public class SinglePlayState extends State implements ApplicationListener {
     @Override
     public void update(float dt) {
         if(readyToPlay){
-            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, rain, dt);
+            match.updateMatch(touchpad.getKnobPercentX() * Constants.PLAYERS_SPEED, touchpad.getKnobPercentY() * Constants.PLAYERS_SPEED, dt);
 
             if(match.getCurrentState() == Match.matchState.Score  && scoreAnimationTime == 0) {
                 explosionPos = match.getBall().getScreenCoordinates();
@@ -308,8 +306,8 @@ public class SinglePlayState extends State implements ApplicationListener {
                 powerUpAnimationTime += Gdx.graphics.getDeltaTime();
             }
 
-            for(int i = 0; i < rain.getRainSize(); i++)
-                sb.draw(rainTexture, rain.getPosition(i).x, rain.getPosition(i).y, width / 3, height / 3);
+            for(int i = 0; i < match.rain.getRainSize(); i++)
+                sb.draw(rainTexture, match.rain.getPosition(i).x, match.rain.getPosition(i).y, width / 3, height / 3);
 
             if(gameplayController == 2) {
                 stage.act(Gdx.graphics.getDeltaTime());

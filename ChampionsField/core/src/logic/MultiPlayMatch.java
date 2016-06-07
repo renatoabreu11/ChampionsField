@@ -93,7 +93,7 @@ public class MultiPlayMatch extends Match {
     }
 
     @Override
-    public void updateMatch(float x, float y, Rain rain, float dt) {
+    public void updateMatch(float x, float y, float dt) {
         switch (currentState) {
             case KickOff: {
                 ball.body.setAwake(true);

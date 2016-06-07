@@ -2,7 +2,6 @@ package States;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -26,11 +25,13 @@ import logic.Match;
 import logic.MultiPlayMatch;
 import logic.Player;
 import logic.Rain;
-import server.MPClient;
 import utils.Constants;
 
 public class MultiPlayState extends State implements ApplicationListener {
     //Objects textures
+    private Texture connecting;
+    private TextureAtlas loadingAtlas;
+    private Animation loadingAnimation;
     private TextureAtlas explosionAtlas;
     private Animation explosionAnimation;
     private Texture rainTexture;
@@ -45,6 +46,7 @@ public class MultiPlayState extends State implements ApplicationListener {
 
     private float deltaTime = 0;
     private float scoreAnimationTime;
+    private float loadingAnimationTime;
 
     private Vector2 explosionPos;
     Box2DDebugRenderer debugRenderer;
@@ -88,6 +90,9 @@ public class MultiPlayState extends State implements ApplicationListener {
         Gdx.input.setInputProcessor(stage);
 
         //Textures definition
+        connecting = new Texture("Connecting.jpg");
+        loadingAtlas = new TextureAtlas("Loading.atlas");
+        loadingAnimation = new Animation(1 / 4f, loadingAtlas.getRegions());
         explosionAtlas = new TextureAtlas("Explosion.atlas");
         explosionAnimation = new Animation(1 / 4f, explosionAtlas.getRegions());
         ballTexture = new TextureAtlas("SoccerBall.atlas");
@@ -114,6 +119,7 @@ public class MultiPlayState extends State implements ApplicationListener {
 
         rain = new Rain(width, height);
         scoreAnimationTime = 0;
+        loadingAnimationTime = 0;
 
         this.match = match;
         readyToPlay = false;
@@ -153,6 +159,8 @@ public class MultiPlayState extends State implements ApplicationListener {
     @Override
     public void update(float dt) {
         if (!readyToPlay && match.everyPlayerConnected()) {
+            loadingAtlas.dispose();
+            connecting.dispose();
             readyToPlay = true;
         }
 
@@ -258,6 +266,13 @@ public class MultiPlayState extends State implements ApplicationListener {
                 stage.draw();
             }
             debugRenderer.render(match.getWorld(), camera.combined);
+        } else {
+            sb.begin();
+            sb.draw(connecting, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
+            sb.draw(loadingAnimation.getKeyFrame(loadingAnimationTime * 5f, true), Constants.ScreenWidth/2 - Constants.loadingWidth/2, Constants.ScreenHeight/2 - Constants.loadingHeight/2, Constants.loadingWidth, Constants.loadingHeight);
+            loadingAnimationTime += Gdx.graphics.getDeltaTime();
+            sb.end();
+
         }
     }
 

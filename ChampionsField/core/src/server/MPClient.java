@@ -44,24 +44,12 @@ public class MPClient {
 
         while(true) {
             //Checks if game ended
-            if(match.getElapsedTime() >= Constants.GAME_TIME)
+            if (match.getElapsedTime() >= Constants.GAME_TIME)
                 break;
 
-            //Updates ball
-            if(match.ballMoved) {
-                match.ballMoved = false;
-                updateBall.x = match.getBall().getBody().getTransform().getPosition().x;
-                updateBall.y = match.getBall().getBody().getTransform().getPosition().y;
-                updateBall.vx = match.getBall().getBody().getLinearVelocity().x;
-                updateBall.vy = match.getBall().getBody().getLinearVelocity().y;
-                updateBall.lastTouch = match.getBall().getLastTouch();
-                updateBall.room = room;
-                client.sendTCP(updateBall);
-            }
+            if (match.canRepositionAfterScore) {
+                match.canRepositionAfterScore = false;
 
-            //Updates player
-            if(match.controlledPlayerMoved) {
-                match.controlledPlayerMoved = false;
                 playerInfo.x = match.getClientPlayerX(team);
                 playerInfo.y = match.getClientPlayerY(team);
 
@@ -69,6 +57,30 @@ public class MPClient {
                 updatePlayer.y = playerInfo.y;
                 updateBall.room = room;
                 client.sendTCP(updatePlayer);
+            } else {
+                //Updates ball
+                if (match.ballMoved) {
+                    match.ballMoved = false;
+                    updateBall.x = match.getBall().getBody().getTransform().getPosition().x;
+                    updateBall.y = match.getBall().getBody().getTransform().getPosition().y;
+                    updateBall.vx = match.getBall().getBody().getLinearVelocity().x;
+                    updateBall.vy = match.getBall().getBody().getLinearVelocity().y;
+                    updateBall.lastTouch = match.getBall().getLastTouch();
+                    updateBall.room = room;
+                    client.sendTCP(updateBall);
+                }
+
+                //Updates player
+                if (match.controlledPlayerMoved) {
+                    match.controlledPlayerMoved = false;
+                    playerInfo.x = match.getClientPlayerX(team);
+                    playerInfo.y = match.getClientPlayerY(team);
+
+                    updatePlayer.x = playerInfo.x;
+                    updatePlayer.y = playerInfo.y;
+                    updateBall.room = room;
+                    client.sendTCP(updatePlayer);
+                }
             }
         }
 

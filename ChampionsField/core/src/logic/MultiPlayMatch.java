@@ -3,6 +3,7 @@ package logic;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 
 import java.util.ArrayList;
@@ -15,9 +16,11 @@ import utils.Statistics;
 public class MultiPlayMatch extends Match {
     public volatile boolean controlledPlayerMoved;
     public volatile boolean ballMoved;
+    public volatile boolean canRepositionAfterScore;
     public boolean everyPlayersConnected;
     public int controlledPlayerTeam;
     Player controlledPlayer;
+    Vector2 controlledPlayerInitialPosition;
 
     public MultiPlayMatch(int controlledPlayerTeam){
         super(0);
@@ -35,15 +38,17 @@ public class MultiPlayMatch extends Match {
         controlledPlayerMoved = false;
         ballMoved = false;
         everyPlayersConnected = false;
+        canRepositionAfterScore = false;
+        controlledPlayerInitialPosition = new Vector2();
 
         field.deactivateBarriers();
     }
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
         if(team == 0)
-            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
+            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this, controlledPlayerInitialPosition);
         else
-            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
+            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this, controlledPlayerInitialPosition);
 
         numberOfPlayers++;
     }
@@ -127,7 +132,9 @@ public class MultiPlayMatch extends Match {
 
     @Override
     public void endScoreState() {
-
+        currentState = matchState.KickOff;
+        controlledPlayer.updatePlayerPosition(controlledPlayerInitialPosition.x, controlledPlayerInitialPosition.y);
+        canRepositionAfterScore = true;
     }
 
     @Override

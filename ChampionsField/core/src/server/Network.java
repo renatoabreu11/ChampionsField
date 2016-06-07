@@ -9,6 +9,7 @@ public class Network {
     static public final String IPV4_ALPENDORADA = "192.168.1.105";
     static public final String IPV4_PORTO = "192.168.0.106";
     static public final String IPV4_ESPOSENDE = "192.168.56.1";
+    static public final String IPV4_FEUP = "172.30.25.153";
 
     public static void registerPackets(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
@@ -18,6 +19,7 @@ public class Network {
         kryo.register(UpdateBall.class);
         kryo.register(RemovePlayer.class);
         kryo.register(MatchFull.class);
+        kryo.register(ResetPositions.class);
     }
 
     static public class Login {
@@ -44,6 +46,13 @@ public class Network {
     static public class UpdateBall {
         float x, y, vx, vy;
         String lastTouch;
+        int room;
+    }
+
+    static public class ResetPositions {
+        float x, y;
+        String name;
+        int team;
         int room;
     }
 

@@ -25,6 +25,11 @@ public class Field {
 
     Body test;
 
+    /**
+     * Constructor for the Field.
+     * Initializes bodies and creates the borders.
+     * @param w the world the field is added
+     */
     public Field(World w) {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -44,6 +49,11 @@ public class Field {
         createBorders(w);
     }
 
+    /**
+     * Creates 4 borders for the screen to stop the player from stepping out of the visible screen.
+     * Creates another 4 borders, but this time for the ball, to allow players to still move the ball without it being stuck.
+     * @param w the world the borders are added
+     */
     private void createBorders(World w) {
         float width =  Gdx.graphics.getWidth() * 0.01f;
         float height = Gdx.graphics.getHeight() * 0.01f;
@@ -153,11 +163,18 @@ public class Field {
         rightMoon.dispose();
     }
 
+    /**
+     * Deactivates the barriers surrounding the field's center to stop the opponent team to interfere during the match kickoff.
+     */
     public void deactivateBarriers() {
         rightHalfMoon.setActive(false);
         leftHalfMoon.setActive(false);
     }
 
+    /**
+     * Activates one of the field's center barriers
+     * @param teamFlag flag that decides which barrier is activated
+     */
     public void activateBarriers(boolean teamFlag) {
         rightHalfMoon.setActive(teamFlag);
         leftHalfMoon.setActive(!teamFlag);

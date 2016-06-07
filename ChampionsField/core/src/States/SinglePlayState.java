@@ -34,6 +34,7 @@ import utils.Constants;
 
 public class SinglePlayState extends State implements ApplicationListener {
         //Objects textures
+        private Texture loadingBackground;
         private TextureAtlas explosionAtlas;
         private Animation explosionAnimation;
         private Texture rainTexture;
@@ -131,6 +132,7 @@ public class SinglePlayState extends State implements ApplicationListener {
         visitorTeamTexture = new Texture("RedPlayer.png");
         goalTexture = new Texture("FootballGoal.png");
         rainTexture = new Texture("Rain.png");
+        loadingBackground = new Texture("Connecting.jpg");
 
         teamSpeedIncAtlas = new TextureAtlas("SpeedInc.atlas");
         teamSpeedDecAtlas = new TextureAtlas("SpeedDec.atlas");
@@ -314,6 +316,7 @@ public class SinglePlayState extends State implements ApplicationListener {
                 stage.draw();
             }
         } else{
+            sb.draw(loadingBackground, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
             sb.draw(loadingAnimation.getKeyFrame(loadingAnimationTime * 5f, true), Constants.ScreenWidth/2 - Constants.loadingWidth/2, Constants.ScreenHeight/2 - Constants.loadingHeight/2, Constants.loadingWidth, Constants.loadingHeight);
             loadingAnimationTime += Gdx.graphics.getDeltaTime();
         }

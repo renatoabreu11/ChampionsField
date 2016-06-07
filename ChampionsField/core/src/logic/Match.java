@@ -48,6 +48,12 @@ public abstract class Match{
     //Online only
     public boolean ballTouched;
 
+    /**
+     * Constructor for the match
+     * Creates the "physics world" and his listener, and everything related to the match logic,
+     * such as the goals, the field, the rain...
+     * @param numberOfPlayers number of player to participate in the match
+     */
     public Match(int numberOfPlayers){
         Vector2 gravity = new Vector2(0, 0f);
         w = new World(gravity, true);
@@ -70,12 +76,25 @@ public abstract class Match{
         ballTouched = false;
     }
 
+    /**
+     * Starts the match's time
+     */
     public void startTimer(){
         startTime = System.currentTimeMillis();
     }
 
+    /**
+     * Creates the "physics world" collision listener, which is used to detect collision between
+     * physic's objects
+     */
     private void createCollisionListener() {
         w.setContactListener(new ContactListener() {
+            /**
+             * Runs every time a collision is detected
+             * When that happens, it verifies the objects that collided and handles each one
+             * differently
+             * @param contact the "shock" between 2 physic's objects
+             */
             @Override
             public void beginContact(Contact contact) {
                 Fixture f1 = contact.getFixtureA();
@@ -109,6 +128,10 @@ public abstract class Match{
                 }
             }
 
+            /**
+             * Runs every time 2 object that collided are no longer colliding
+             * @param contact the "shock" between 2 physic's objects
+             */
             @Override
             public void endContact(Contact contact) {
 
@@ -126,58 +149,119 @@ public abstract class Match{
         });
     }
 
-    public World getWorld() {
-        return w;
-    }
-
+    /**
+     * Returns the time elapsed as a String
+     * @return time elapsed
+     */
     public String getTime() {
         return time;
     }
 
+    /**
+     * OVERRIDEABLE FUNCTION
+     *
+     * @param defendingTeam
+     * @param attackingTeam
+     * @param lastTouch
+     */
     public abstract void teamScored(Team defendingTeam, Team attackingTeam, String lastTouch);
 
+    /**
+     * OVERRIDEABLE FUNCTION
+     * Updates the match
+     * @param x
+     * @param y
+     * @param dt
+     */
     public abstract void updateMatch(float x, float y, float dt);
 
+    /**
+     *
+     */
     public abstract void endScoreState();
 
+    /**
+     * Returns the current state of the match
+     * @return state to return
+     */
     public matchState getCurrentState() {
         return currentState;
     }
 
+    /**
+     * Returns the match's ball
+     * @return ball to return
+     */
     public Ball getBall(){
         return this.ball;
     }
 
+    /**
+     * Returns the home team
+     * @return team to return
+     */
     public Team getHomeTeam(){
         return this.homeTeam;
     }
 
+    /**
+     * Returns the visitor team
+     * @return team to return
+     */
     public Team getVisitorTeam(){
         return this.visitorTeam;
     }
 
+    /**
+     * Returns the number of player in the match
+     * @return number of player to return
+     */
     public int getNumberOfPlayers() {
         return numberOfPlayers;
     }
 
+    /**
+     * Returns the home team's score
+     * @return score to return
+     */
     public int getScoreHomeTeam() {
         return homeTeam.score;
     }
 
+    /**
+     * Return the visitor team's score
+     * @return score to return
+     */
     public int getScoreVisitorTeam() {
         return visitorTeam.score;
     }
 
+    /**
+     * Returns the home team's goal
+     * @return goal to return
+     */
     public Goal getHomeTeamGoal() {
         return homeTeamGoal;
     }
 
+    /**
+     * Return the visitor team's goal
+     * @return goal to return
+     */
     public Goal getVisitorTeamGoal() {
         return visitorTeamGoal;
     }
 
+    /**
+     * OVERRIDEABLE FUNCTION
+     *
+     */
     public abstract void endGame();
 
+    /**
+     * Returns the elapsed time as a long
+     * @return time to return
+     */
     public long getElapsedTime() {
         return elapsedTime;
     }

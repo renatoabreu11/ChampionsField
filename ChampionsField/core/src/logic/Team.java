@@ -228,7 +228,7 @@ public class Team {
         players = new ArrayList<Player>();
     }
 
-    public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w, int controlledPlayerTeam, MultiPlayMatch match, Vector2 initialPosition) {
+    public void addPlayer(String name, int team, float size, boolean controlledPlayer, World w, int controlledPlayerTeam, MultiPlayMatch match) {
         float x, y;
         int teamSide;
         boolean controlled;
@@ -258,10 +258,8 @@ public class Team {
         player.addPhysics(w);
         players.add(player);
 
-        if(controlled && player.team == controlledPlayerTeam) {
-            match.setControlledPlayer(player);
-            initialPosition = player.getBody().getPosition();
-        }
+        if(controlled && player.team == controlledPlayerTeam)
+            match.setControlledPlayer(player, player.body.getTransform().getPosition());
     }
 
     public void removePlayer(String name) {
@@ -283,18 +281,18 @@ public class Team {
         return false;
     }
 
-    public void updateControlledPlayerOnline(float x, float y) {
+    public void changePlayerPosition(float x, float y, String name) {
         for(Player player : players) {
-            if(player.isControlledPlayer) {
-                player.getBody().setLinearVelocity(x, y);
+            if(player.name.equals(name)) {
+                player.updatePlayerPosition(x, y);
                 break;
             }
         }
     }
 
-    public void changePlayerPosition(float x, float y, String name) {
+    public void resetPlayerControlledPosition(float x, float y) {
         for(Player player : players) {
-            if(player.name.equals(name)) {
+            if(player.isControlledPlayer) {
                 player.updatePlayerPosition(x, y);
                 break;
             }

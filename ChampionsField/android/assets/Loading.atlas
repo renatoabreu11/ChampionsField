@@ -1,3 +1,36 @@
+Loading2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image001
+  rotate: false
+  xy: 2, 2
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image002
+  rotate: false
+  xy: 321, 3
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image003
+  rotate: false
+  xy: 640, 3
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+image004
+  rotate: false
+  xy: 2, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
 
 Loading.png
 size: 1024,1024
@@ -39,6 +72,25 @@ image009
   orig: 317, 315
   offset: 0, 0
   index: -1
+
+Loading3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image010
+  rotate: false
+  xy: 2, 634
+  size: 317, 314
+  orig: 317, 314
+  offset: 0, 0
+  index: -1
+
+Loading.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 image011
   rotate: false
   xy: 2, 2
@@ -73,67 +125,11 @@ size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-image001
-  rotate: false
-  xy: 2, 2
-  size: 317, 314
-  orig: 317, 314
-  offset: 0, 0
-  index: -1
-image002
-  rotate: false
-  xy: 321, 3
-  size: 317, 314
-  orig: 317, 314
-  offset: 0, 0
-  index: -1
-image003
-  rotate: false
-  xy: 640, 3
-  size: 317, 314
-  orig: 317, 314
-  offset: 0, 0
-  index: -1
-image004
-  rotate: false
-  xy: 2, 635
-  size: 318, 314
-  orig: 318, 314
-  offset: 0, 0
-  index: -1
 image015
   rotate: false
   xy: 2, 318
   size: 317, 315
   orig: 317, 315
-  offset: 0, 0
-  index: -1
-image019
-  rotate: false
-  xy: 322, 635
-  size: 318, 314
-  orig: 318, 314
-  offset: 0, 0
-  index: -1
-image020
-  rotate: false
-  xy: 321, 319
-  size: 318, 314
-  orig: 318, 314
-  offset: 0, 0
-  index: -1
-image022
-  rotate: false
-  xy: 642, 635
-  size: 318, 314
-  orig: 318, 314
-  offset: 0, 0
-  index: -1
-image028
-  rotate: false
-  xy: 641, 319
-  size: 318, 314
-  orig: 318, 314
   offset: 0, 0
   index: -1
 
@@ -142,13 +138,6 @@ size: 1024,1024
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
-image010
-  rotate: false
-  xy: 2, 634
-  size: 317, 314
-  orig: 317, 314
-  offset: 0, 0
-  index: -1
 image016
   rotate: false
   xy: 2, 318
@@ -170,6 +159,32 @@ image018
   orig: 317, 314
   offset: 0, 0
   index: -1
+
+Loading2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image019
+  rotate: false
+  xy: 322, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+image020
+  rotate: false
+  xy: 321, 319
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+
+Loading3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 image021
   rotate: false
   xy: 321, 318
@@ -177,6 +192,25 @@ image021
   orig: 317, 314
   offset: 0, 0
   index: -1
+
+Loading2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image022
+  rotate: false
+  xy: 642, 635
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+
+Loading3.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 image023
   rotate: false
   xy: 640, 634
@@ -218,6 +252,25 @@ image027
   orig: 317, 314
   offset: 0, 0
   index: -1
+
+Loading2.png
+size: 1024,1024
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+image028
+  rotate: false
+  xy: 641, 319
+  size: 318, 314
+  orig: 318, 314
+  offset: 0, 0
+  index: -1
+
+Loading4.png
+size: 1024,512
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
 image029
   rotate: false
   xy: 321, 2

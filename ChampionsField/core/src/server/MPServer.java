@@ -4,7 +4,6 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.minlog.Log;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -94,6 +93,14 @@ public class MPServer {
 
                     for(Connection connection : match.connections)
                         connection.sendTCP(updatePlayer);
+                }
+
+                if(object instanceof Network.ResetPositions) {
+                    Network.ResetPositions resetPositions = (Network.ResetPositions) object;
+                    MatchInfo match = matches.get(resetPositions.room);
+
+                    for(Connection connection : match.connections)
+                        connection.sendTCP(resetPositions);
                 }
 
                 if(object instanceof Network.RemovePlayer) {

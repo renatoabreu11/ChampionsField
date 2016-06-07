@@ -17,6 +17,15 @@ public class Goal implements Coordinates{
     float horizontalLength;
     Body body;
 
+    /**
+     * Constructor for the Goal
+     * @param xPosition the x position
+     * @param yPosition the y position
+     * @param verticalLength the vertical length of the goal
+     * @param horizontalLength the horizontal length of the goal
+     * @param w the world the goal is added
+     * @param whichTeam the team this goal belongs to (basically to select a side)
+     */
     public Goal(float xPosition, float yPosition, float verticalLength, float horizontalLength, World w, String whichTeam) {
         position = new Vector2(xPosition * 0.01f , yPosition * 0.01f );
         this.verticalLength = verticalLength * 0.01f;
@@ -72,26 +81,42 @@ public class Goal implements Coordinates{
         goalTrigger.dispose();
     }
 
-    public Body getBody() {
-        return body;
-    }
-
+    /**
+     * Return the goal's vertical length
+     * @return vertical length to be returned
+     */
     public float getVerticalLength() {
         return verticalLength;
     }
 
+    /**
+     * Return the goal's horizontal length
+     * @return horizontal length to be returned
+     */
     public float getHorizontalLength() {
         return horizontalLength;
     }
 
+    /**
+     * Return the goal's position
+     * @return position to be returned
+     */
     public Vector2 getPosition() {
         return position;
     }
 
+    /**
+     * Sets the goal's position
+     * @param position new goal's position
+     */
     public void setPosition(Vector2 position) {
         this.position = position;
     }
 
+    /**
+     * Calculates the "draw world" position based on the "physics world" ones
+     * @return the "draw world" position
+     */
     @Override
     public Vector2 getScreenCoordinates() {
         float x = getPosition().x * 100f + Gdx.graphics.getWidth()/2;

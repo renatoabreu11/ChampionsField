@@ -24,7 +24,7 @@ public class MPClient {
         addListeners();
 
         try {
-            client.connect(TIME_OUT, Network.IPV4_PORTO, Network.PORT);
+            client.connect(TIME_OUT, Network.IPV4_FEUP, Network.PORT);
         } catch (IOException e) {
             e.printStackTrace();
             client.stop();
@@ -40,6 +40,7 @@ public class MPClient {
         Network.UpdatePlayer updatePlayer = new Network.UpdatePlayer();
         updatePlayer.name = name;
         updatePlayer.team = team;
+        updatePlayer.room = room;
         Network.UpdateBall updateBall = new Network.UpdateBall();
 
         while(true) {
@@ -50,13 +51,15 @@ public class MPClient {
             if (match.canRepositionAfterScore) {
                 match.canRepositionAfterScore = false;
 
-                playerInfo.x = match.getClientPlayerX(team);
-                playerInfo.y = match.getClientPlayerY(team);
+                playerInfo.x = match.controlledPlayerInitialPosition.x;
+                playerInfo.y = match.controlledPlayerInitialPosition.y;
 
-                updatePlayer.x = playerInfo.x;
-                updatePlayer.y = playerInfo.y;
-                updateBall.room = room;
-                client.sendTCP(updatePlayer);
+                Network.ResetPositiotions.x = playerInfo.x;
+                resetPositions.y = playerInfo.y;ns resetPositions = new Network.ResetPositions();
+                resetPosi
+                resetPositions.team = match.controlledPlayerTeam;
+                resetPositions.room = room;
+                client.sendTCP(resetPositions);
             } else {
                 //Updates ball
                 if (match.ballMoved) {
@@ -78,7 +81,6 @@ public class MPClient {
 
                     updatePlayer.x = playerInfo.x;
                     updatePlayer.y = playerInfo.y;
-                    updateBall.room = room;
                     client.sendTCP(updatePlayer);
                 }
             }
@@ -127,6 +129,12 @@ public class MPClient {
 
                 if(object instanceof Network.MatchFull) {
                     match.matchFull();
+                }
+
+                if(object instanceof Network.ResetPositions) {
+                    Network.ResetPositions resetPositions = (Network.ResetPositions) object;
+                    match.setBallPosition(0, 0, 0, 0, "");
+                    match.setPlayerPosition(resetPositions.x, resetPositions.y, resetPositions.name, resetPositions.team);
                 }
 
             }

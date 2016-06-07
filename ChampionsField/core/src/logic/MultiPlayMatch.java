@@ -17,10 +17,10 @@ public class MultiPlayMatch extends Match {
     public volatile boolean controlledPlayerMoved;
     public volatile boolean ballMoved;
     public volatile boolean canRepositionAfterScore;
+    public volatile Vector2 controlledPlayerInitialPosition;
     public boolean everyPlayersConnected;
     public int controlledPlayerTeam;
     Player controlledPlayer;
-    Vector2 controlledPlayerInitialPosition;
 
     public MultiPlayMatch(int controlledPlayerTeam){
         super(0);
@@ -46,9 +46,9 @@ public class MultiPlayMatch extends Match {
 
     public void addPlayerToMatch(String name, int team, boolean controlledPlayer, boolean barrierSide) {
         if(team == 0)
-            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this, controlledPlayerInitialPosition);
+            homeTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
         else
-            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this, controlledPlayerInitialPosition);
+            visitorTeam.addPlayer(name, team, playerSize, controlledPlayer, w, controlledPlayerTeam, this);
 
         numberOfPlayers++;
     }
@@ -75,8 +75,9 @@ public class MultiPlayMatch extends Match {
         //FAZER ISTO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     }
 
-    public void setControlledPlayer(Player player) {
+    public void setControlledPlayer(Player player, Vector2 initialPosition) {
         controlledPlayer = player;
+        controlledPlayerInitialPosition = initialPosition;
     }
 
     @Override
@@ -133,7 +134,6 @@ public class MultiPlayMatch extends Match {
     @Override
     public void endScoreState() {
         currentState = matchState.KickOff;
-        controlledPlayer.updatePlayerPosition(controlledPlayerInitialPosition.x, controlledPlayerInitialPosition.y);
         canRepositionAfterScore = true;
     }
 

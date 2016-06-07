@@ -60,7 +60,7 @@ public final class Constants {
     public static final Rectangle DefendCentral = new Rectangle(760 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendMidfielder = new Rectangle(380 * widthScale * WORLD_TO_BOX, - regionHeight/2, regionWidth, regionHeight);
     public static final Rectangle DefendStriker =  new Rectangle(0, - regionHeight/2, regionWidth, regionHeight);
-    public static float LoadingTime = 7.5f;
+    public static float LoadingTime = 0f;
 
     public enum entityMasks{
         BallMask(1),

@@ -263,7 +263,7 @@ public class MultiPlayState extends State implements ApplicationListener {
                 stage.act(Gdx.graphics.getDeltaTime());
                 stage.draw();
             }
-            debugRenderer.render(match.getWorld(), camera.combined);
+            //debugRenderer.render(match.getWorld(), camera.combined);
         } else {
             sb.begin();
             sb.draw(connecting, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);

@@ -30,7 +30,7 @@ public final class Constants {
     public static final float buttonHeight = ScreenHeight/16;
     public static final float buttonWidth = ScreenWidth/10;
     public static final SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
-    public static final float PLAYERS_SPEED = 3;
+    public static final float PLAYERS_SPEED = 2.5f;
     public static final float EXPLOSION_SPEED = 5f;
     public static final float EXPLOSION_DURATION = 2.4f;
     public static final float EXPLOSION_WIDTH = ScreenWidth / 5;

@@ -17,6 +17,7 @@ public class Network {
         kryo.register(UpdatePlayer.class);
         kryo.register(UpdateBall.class);
         kryo.register(RemovePlayer.class);
+        kryo.register(MatchFull.class);
     }
 
     static public class Login {

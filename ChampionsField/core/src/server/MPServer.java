@@ -43,7 +43,7 @@ public class MPServer {
             public void received(Connection c, Object object) {
                 if (object instanceof Network.Login) {
                     Network.Login login = (Network.Login) object;
-                    MatchInfo match = matches.get(0);
+                    MatchInfo match = matches.get(login.room);
 
                     //Checks to see if every team has the right number of players
                     int numPlayerHome = 0;
@@ -90,7 +90,7 @@ public class MPServer {
 
                 if(object instanceof Network.UpdatePlayer) {
                     Network.UpdatePlayer updatePlayer = (Network.UpdatePlayer) object;
-                    MatchInfo match = matches.get(0);
+                    MatchInfo match = matches.get(updatePlayer.room);
 
                     for(Connection connection : match.connections)
                         connection.sendTCP(updatePlayer);
@@ -98,7 +98,7 @@ public class MPServer {
 
                 if(object instanceof Network.RemovePlayer) {
                     Network.RemovePlayer removePlayer = (Network.RemovePlayer) object;
-                    MatchInfo match = matches.get(removePlayer.room - 1);
+                    MatchInfo match = matches.get(removePlayer.room);
 
                     for(PlayerInfo playerInfo : match.playersInfo) {
                         if(playerInfo.team == removePlayer.team && playerInfo.name.equals(removePlayer.name)) {
@@ -115,7 +115,7 @@ public class MPServer {
 
                 if(object instanceof Network.UpdateBall) {
                     Network.UpdateBall updateBall = (Network.UpdateBall) object;
-                    MatchInfo match = matches.get(updateBall.room - 1);
+                    MatchInfo match = matches.get(updateBall.room);
 
                     for(Connection connection : match.connections)
                         connection.sendTCP(updateBall);

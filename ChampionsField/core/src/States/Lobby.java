@@ -8,8 +8,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -23,8 +21,6 @@ import utils.Constants;
 
 public class Lobby extends State{
     private Texture background;
-    private Texture homeTeamTexture;
-    private Texture visitorTeamTexture;
     private BitmapFont font;
     private TextureAtlas buttonsAtlas;
     private Skin buttonSkin;
@@ -37,15 +33,12 @@ public class Lobby extends State{
         super(gsm);
 
         background = new Texture("Connecting.jpg");
-        homeTeamTexture = new Texture("RedPlayer.png");
-        visitorTeamTexture = new Texture("BluePlayer.png");
-        font = new BitmapFont();
-        font.setColor(Color.WHITE);
-
         stage = new Stage();
         rooms = new ArrayList<TextButton>();
 
         //Buttons style
+        font = new BitmapFont();
+        font.setColor(Color.WHITE);
         buttonsAtlas = new TextureAtlas("button.pack");
         buttonSkin = new Skin();
         buttonSkin.addRegions(buttonsAtlas);
@@ -56,17 +49,15 @@ public class Lobby extends State{
 
         for(int i = 0; i < Constants.NUMBER_MATCHES_HOST_BY_SERVER; i++) {
             final TextButton textButton = new TextButton("Room " + Integer.toString(i + 1), style);
-            //System.out.println(Character.getNumericValue(textButton.getName().charAt(5)));
-
             textButton.setWidth(Constants.buttonWidth);
             textButton.setHeight(Constants.buttonHeight);
 
-            if(i < Constants.NUMBER_MATCHES_HOST_BY_SERVER / 2)
-                textButton.setPosition(Constants.ScreenWidth / 4 - Constants.buttonWidth / 2 + (Constants.ScreenWidth / 8 * i), Constants.ScreenHeight / 2 + Constants.ScreenHeight / 4);
+            if(i == 0)
+                textButton.setPosition(Constants.ScreenWidth / 2 - Constants.buttonWidth / 2, Constants.ScreenHeight - Constants.ScreenHeight / 3);
             else
-                textButton.setPosition(Constants.buttonWidth + Constants.buttonWidth * i - 4, Constants.ScreenHeight / 4);
+                textButton.setPosition(Constants.ScreenWidth / 2 - Constants.buttonWidth / 2, Constants.ScreenHeight / 3);
 
-            final int roomNumber = i+1;
+            final int roomNumber = i;
             textButton.addListener(new ChangeListener() {
                 @Override
                 public void changed(ChangeEvent event, Actor actor) {
@@ -104,37 +95,7 @@ public class Lobby extends State{
     @Override
     public void render(SpriteBatch sb) {
         sb.begin();
-
         sb.draw(background, 0, 0, Constants.ScreenWidth, Constants.ScreenHeight);
-        font.draw(sb, "Waiting for more players...", Constants.ScreenWidth / 2, Constants.ScreenHeight - Constants.ScreenHeight / 4);
-        font.draw(sb, "Red Team", Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
-        font.draw(sb, "Blue Team", Constants.ScreenWidth  - Constants.ScreenWidth /4, Constants.ScreenHeight / 2);
-
-        /*float radius = 0;
-        boolean canDrawHomePlayers = false;
-        boolean canDrawVisitorPlayers = false;
-        if(match.getHomeTeam().getPlayers().size() > 0) {
-            radius = match.getHomeTeam().getPlayers().get(0).getBoundingRadius() * 100f;
-            canDrawHomePlayers = true;
-        }
-
-        if(match.getVisitorTeam().getPlayers().size() > 0 && radius == 0) {
-            radius = match.getVisitorTeam().getPlayers().get(0).getBoundingRadius() * 100f;
-            canDrawVisitorPlayers = true;
-        }
-
-        if(canDrawHomePlayers)
-            for(int i = 0; i < match.getHomeTeam().getPlayers().size(); i++) {
-                sb.draw(homeTeamTexture, Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
-                font.draw(sb, match.getHomeTeam().getPlayers().get(i).getName(), Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
-            }
-
-        if(canDrawVisitorPlayers)
-            for(int i = 0; i < match.getVisitorTeam().getPlayers().size(); i++) {
-                sb.draw(visitorTeamTexture, Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4, radius, radius);
-                font.draw(sb, match.getVisitorTeam().getPlayers().get(i).getName(), Constants.ScreenWidth - Constants.ScreenWidth / 8 + radius * i, Constants.ScreenHeight / 2 - Constants.ScreenHeight / 4);
-            }*/
-
         sb.end();
 
         stage.act();

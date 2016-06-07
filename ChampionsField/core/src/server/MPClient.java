@@ -45,8 +45,9 @@ public class MPClient {
 
         while(true) {
             //Checks if game ended
-            if (match.getElapsedTime() >= Constants.GAME_TIME)
-                break;
+            if (match.getElapsedTime() >= Constants.GAME_TIME && match.isScoresSaved()){
+                 break;
+            }
 
             //If someone scored
             if (match.canRepositionAfterScore) {

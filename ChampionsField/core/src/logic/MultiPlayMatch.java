@@ -14,6 +14,7 @@ public class MultiPlayMatch extends Match {
     public volatile boolean controlledPlayerMoved;
     public volatile boolean ballMoved;
     public volatile boolean canRepositionAfterScore;
+    public volatile boolean scoresSaved;
     public volatile Vector2 controlledPlayerInitialPosition;
     public volatile boolean canStepWorld;
     public boolean everyPlayersConnected;
@@ -47,6 +48,14 @@ public class MultiPlayMatch extends Match {
         canStepWorld = true;
         isFull = false;
         controlledPlayerInitialPosition = new Vector2();
+    }
+
+    /**
+     * check if match scores have been saved
+     * @return
+     */
+    public boolean isScoresSaved() {
+        return scoresSaved;
     }
 
     /**
@@ -238,7 +247,6 @@ public class MultiPlayMatch extends Match {
             }
             found = false;
         }
-
         for (int i = 0; i < visitorTeam.getNumberPlayers(); i++) {
             visitorTeam.players.get(i).addMatchPlayed();
             name = visitorTeam.players.get(i).name;
@@ -259,16 +267,23 @@ public class MultiPlayMatch extends Match {
             found = false;
         }
 
-        //Não sei se esta parte funciona devido a ter local. ´É preciso testar. A parte de cima funciona!!!!!!!!!!!!!!!!!!!
         FileHandle statisticsWrite = Gdx.files.local("Statistics.txt");
-        statisticsWrite.writer(false);
-        String output = "";
-        for(int i = 0; i < stats.size(); i++){
-            output = stats.get(i).stringToFile();
-            statisticsWrite.writeString(output, true);
-            if(i != stats.size() - 1)
-                statisticsWrite.writeString("\n", true);
+        exist=Gdx.files.internal("Statistics.txt").exists();
+        if(!exist){
+            System.out.println("Error opening file!");
+            scoresSaved = true;
+            return;
+        }else{
+            statisticsWrite.writer(false);
+            String output = "";
+            for(int i = 0; i < stats.size(); i++){
+                output = stats.get(i).stringToFile();
+                statisticsWrite.writeString(output, true);
+                if(i != stats.size() - 1)
+                    statisticsWrite.writeString("\n", true);
+            }
         }
+        scoresSaved = true;
     }
 
     /**

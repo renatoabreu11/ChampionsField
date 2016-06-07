@@ -101,6 +101,10 @@ public class Player implements Coordinates, Steerable<Vector2>{
         region = rectangle;
     }
 
+    /**
+     * updates the player physics accordingly to the steering behavior
+     * @param dt time between updates
+     */
     public void update(float dt){
         stateMachine.update();
         if(steeringBehavior != null){
@@ -110,6 +114,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
         body.setLinearVelocity(body.getLinearVelocity().x * speedMultiplier, body.getLinearVelocity().y * speedMultiplier);
     }
 
+    /**
+     *takes the accelerations calculated by the steering behavior and the time step.
+     * It updates position, linear velocity, orientation and angular velocity of the steering agent
+     * @param dt time between updates
+     */
     private void applySteering(float dt){
         boolean anyAccelerations = false;
 
@@ -146,6 +155,10 @@ public class Player implements Coordinates, Steerable<Vector2>{
         body.setLinearVelocity(0, 0);
     }
 
+    /**
+     * Changes stateMachine accordingly to control boolean
+     * @param control
+     */
     public void setControlled(boolean control) {
         if(control){
             this.stateMachine.changeState(PlayerState.Controlled);
@@ -154,6 +167,12 @@ public class Player implements Coordinates, Steerable<Vector2>{
         }
     }
 
+    /**
+     *
+     * @param p1
+     * @param p2
+     * @return the distance between two points
+     */
     public float distanceBetweenPoints(Vector2 p1, Vector2 p2){
         float xDiff = (float)Math.pow(p1.x - p2.x, 2);
         float yDiff = (float)Math.pow(p1.y - p2.y, 2);
@@ -167,6 +186,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
         matchesPlayed++;
     }
 
+    /**
+     * Initialize player wayPoints accordingly to the objects passed as parameter
+     * @param ball
+     * @param adversaryTeam
+     */
     public void initWayPoints(Ball ball, Team adversaryTeam) {
         adversaryTeamWayPoint.clear();
         for(int i = 0; i < adversaryTeam.getNumberPlayers(); i++){
@@ -175,6 +199,11 @@ public class Player implements Coordinates, Steerable<Vector2>{
         ballWayPoint = new WayPoint(ball.body, ball.radius);
     }
 
+    /**
+     * updates player wayPoints accordingly to the objects passed as parameter
+     * @param ball
+     * @param adversaryTeam
+     */
     public void updateWayPoints(Ball ball, Team adversaryTeam) {
         for(int i = 0; i < adversaryTeam.getNumberPlayers(); i++){
             adversaryTeamWayPoint.get(i).setWayPoint(adversaryTeam.players.get(i).body, adversaryTeam.players.get(i).radius);
@@ -419,10 +448,10 @@ public class Player implements Coordinates, Steerable<Vector2>{
         return null;
     }
 
-    public SteeringBehavior<Vector2> getSteeringBehavior(){
-        return steeringBehavior;
-    }
-
+    /**
+     * Changes player steering behavior
+     * @param behavior
+     */
     public void setSteeringBehavior(SteeringBehavior<Vector2> behavior){
         steeringBehavior = behavior;
     }

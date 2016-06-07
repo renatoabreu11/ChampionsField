@@ -71,6 +71,10 @@ public class Ball implements Coordinates, Steerable<Vector2> {
         tagged = false;
     }
 
+    /**
+     * updates the ball physics accordingly to the steering behavior
+     * @param dt time between updates
+     */
     public void update(float dt) {
         if (steeringBehavior != null) {
             steeringBehavior.calculateSteering(steeringOutput);
@@ -78,6 +82,11 @@ public class Ball implements Coordinates, Steerable<Vector2> {
         }
     }
 
+    /**
+     *takes the accelerations calculated by the steering behavior and the time step.
+     * It updates position, linear velocity, orientation and angular velocity of the steering agent
+     * @param dt time between updates
+     */
     private void applySteering(float dt) {
         boolean anyAccelerations = false;
 
@@ -186,18 +195,30 @@ public class Ball implements Coordinates, Steerable<Vector2> {
     /*
      * Steerable methods
      */
+
+    /**
+     *
+     * @return actual position
+     */
     public Vector2 getPosition() {
         return position;
     }
 
+    /**
+     *
+     * @return actual orientation
+     */
     @Override
     public float getOrientation() {
         return body.getAngle();
     }
 
+    /**
+     * Sets actual orientation
+     * @param orientation
+     */
     @Override
-    public void setOrientation(float orientation) {
-    }
+    public void setOrientation(float orientation) {}
 
     @Override
     public float vectorToAngle(Vector2 vector) {
@@ -291,14 +312,10 @@ public class Ball implements Coordinates, Steerable<Vector2> {
         return null;
     }
 
-    public SteeringBehavior<Vector2> getSteeringBehavior() {
-        return steeringBehavior;
-    }
-
-    public void setSteeringBehavior(SteeringBehavior<Vector2> behavior) {
-        steeringBehavior = behavior;
-    }
-
+    /**
+     *
+     * @return the last player that touched the ball
+     */
     public String getLastTouch() {
         return lastTouch;
     }

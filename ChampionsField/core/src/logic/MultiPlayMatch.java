@@ -2,13 +2,10 @@ package logic;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import utils.Constants;
 import utils.Statistics;
@@ -253,6 +250,17 @@ public class MultiPlayMatch extends Match {
             if(i != stats.size() - 1)
                 statisticsWrite.writeString("\n", true);
         }
+    }
+
+    /**
+     * Disposes of all the objects
+     */
+    @Override
+    public void dispose() {
+        homeTeam.dispose();
+        visitorTeam.dispose();
+        w.dispose();
+        rain.dispose();
     }
 
     /**

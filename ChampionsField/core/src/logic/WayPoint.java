@@ -1,7 +1,6 @@
 package logic;
 
 import com.badlogic.gdx.ai.steer.Steerable;
-import com.badlogic.gdx.ai.steer.SteeringBehavior;
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -15,15 +14,29 @@ public class WayPoint implements  Steerable<Vector2> {
     Vector2 position;
 
 
+    /**
+     * Initialize a moving waypoint
+     * @param b physics
+     * @param r waypoint radius
+     */
     public WayPoint(Body b, float r){
         body = b;
         radius = r;
     }
 
+    /**
+     * Static waypoint
+     * @param position
+     */
     public WayPoint(Vector2 position){
         this.position = position;
     }
 
+    /**
+     * changes waypoint body physics and radius
+     * @param b
+     * @param r
+     */
     public void setWayPoint(Body b, float r){
         body = b;
         radius = r;

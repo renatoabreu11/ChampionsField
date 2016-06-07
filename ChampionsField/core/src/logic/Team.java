@@ -151,6 +151,12 @@ public class Team {
         }
     }
 
+    /**
+     * update all players waypoints and powerups
+     * @param dt
+     * @param ball
+     * @param adversaryTeam
+     */
     public void updatePlayers(float dt, Ball ball, Team adversaryTeam){
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
@@ -169,6 +175,10 @@ public class Team {
         }
     }
 
+    /**
+     * update all players
+     * @param dt
+     */
     public void updatePlayers(float dt) {
         for(int i = 0; i < players.size(); i++) {
             if (players.get(i).stateMachine.getCurrentState() != PlayerState.Controlled) {
@@ -189,6 +199,12 @@ public class Team {
         }
     }
 
+    /**
+     * returns the distance between two points
+     * @param p1
+     * @param p2
+     * @return distance
+     */
     private float distanceBetweenPoints(Vector2 p1, Vector2 p2){
         float xDiff = (float)Math.pow(p1.x - p2.x, 2);
         float yDiff = (float)Math.pow(p1.y - p2.y, 2);
@@ -219,6 +235,11 @@ public class Team {
         }
     }
 
+    /**
+     * init players waypoints
+     * @param ball
+     * @param adversaryTeam
+     */
     public void initWayPoints(Ball ball, Team adversaryTeam) {
         for(int i = 0; i < players.size(); i++) {
             players.get(i).initWayPoints(ball, adversaryTeam);
